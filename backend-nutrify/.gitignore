@@ -1,0 +1,31 @@
+# Node modules
+node_modules/
+
+# Env files (SANGAT PENTING)
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build / dist
+dist/
+build/
+
+# Uploads (kalau simpan gambar sementara)
+uploads/
+
+# Coverage (testing)
+coverage/
+
+# Editor
+.vscode/
+.idea/
+
+# Mac / Linux temp
+*.swp
