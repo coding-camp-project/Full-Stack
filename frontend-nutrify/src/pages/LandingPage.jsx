@@ -1,15 +1,11 @@
-import Navbar from "../sections/Navbar";
-import Hero from "../sections/Hero";
-import Features from "../sections/Features";
-import Footer from "../sections/Footer";
+
 
 function LandingPage() {
   return (
     <>
-      <Navbar />
-      <Hero />
-      <Features />
-      <Footer />
+       <div>
+        <h1 className="text-4xl font-bold mb-4">Welcome to Nutrifiy</h1>
+       </div>
     </>
   );
 }

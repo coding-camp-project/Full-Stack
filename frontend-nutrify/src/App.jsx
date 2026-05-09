@@ -1,12 +1,27 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from './assets/vite.svg'
-// import heroImg from './assets/hero.png'
-import LandingPage from "/capstone/Full-Stack/frontend-nutrify/src/pages/Landingpage.jsx";
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import LandingPage from "./pages/LandingPage";
+
+import DashboardLayout from "./layout/DashboardLayout";
+import DashboardPage from "./features/Dashboard/pages/DashboardPage";
+
+import "./App.css";
 
 function App() {
-  return <LandingPage />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* landing page */}
+        <Route path="/" element={<LandingPage />} />
+
+        {/* dashboard layout */}
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
+
