@@ -14,7 +14,7 @@ function SummaryCard({
         
         {/* ICON */}
         <div
-          className="flex h-[44px] w-[44px] items-center justify-center rounded-full"
+          className="flex h-11 w-11 items-center justify-center rounded-full"
           style={{
             backgroundColor: `${color}20`,
             color: color,

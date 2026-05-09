@@ -37,7 +37,7 @@ function DashboardNavbar() {
   }, []);
 
   return (
-    <header className="flex h-[72px] items-center justify-between border-b border-[#E7E7E7] bg-white px-8">
+    <header className="flex h-18 items-center justify-between border-b border-[#E7E7E7] bg-white px-8">
       
       {/* LEFT */}
       <div>
@@ -63,7 +63,7 @@ function DashboardNavbar() {
             className="flex items-center gap-4 transition-all duration-200"
           >
             {/* AVATAR */}
-            <div className="h-[52px] w-[52px] overflow-hidden rounded-full border-[3px] border-[#4BAA7A]">
+            <div className="h-13 w-13 overflow-hidden rounded-full border-[3px] border-[#4BAA7A]">
               <img
                 src={profileImage}
                 alt="Profile"
@@ -88,7 +88,7 @@ function DashboardNavbar() {
 
           {/* DROPDOWN MENU */}
           {openDropdown && (
-            <div className="absolute right-0 top-[72px] z-50 w-[220px] overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
+            <div className="absolute right-0 top-18 z-50 w-55 overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
               
               {/* TOP */}
               <div className="border-b border-[#F1F1F1] px-5 py-4">
