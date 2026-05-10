@@ -1,5 +1,5 @@
 import { CheckCircle2 } from "lucide-react"
-import foodImage from "@/assets/healthy-food.png"
+import foodImage from "@/assets/healthy-food-img.png"
 
 const benefits = [
   "Science backed nutrition strategies",
