@@ -1,18 +1,7 @@
-import { Routes, Route } from "react-router-dom";
-
-import DashboardLayout from "./layout/DashboardLayout";
-import DashboardPage from "./features/Dashboard/pages/DashboardPage";
+import LandingPage from "./pages/LandingPage"
 
 function App() {
-  return (
-    
-      <Routes>
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-        </Route>
-      </Routes>
-    
-  );
+  return <LandingPage />
 }
 
-export default App;
+export default App

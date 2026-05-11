@@ -1,13 +1,29 @@
-
+import Navbar from "../sections/Navbar"
+import Hero from "../sections/Hero"
+import Specialization from "../sections/Specialization"
+import NutrifyFeatures from "../sections/NutrifyFeatures"
+import WhyChoose from "../sections/WhyChoose"
+import HowItWorks from "../sections/HowItWorks" 
+import TeamSection from "../sections/TeamSection"
+import FAQSection from "../sections/FAQSection"
+import BlogSection from "../sections/BlogSection"
+import Footer from "../sections/Footer"
 
 function LandingPage() {
   return (
     <>
-       <div>
-        <h1 className="text-4xl font-bold mb-4">Welcome to Nutrifiy</h1>
-       </div>
+      <Navbar />
+      <Hero />
+      <Specialization />
+      <NutrifyFeatures />
+      <WhyChoose />
+      <HowItWorks />
+      <TeamSection />
+      <FAQSection />
+      <BlogSection />
+      <Footer />
     </>
-  );
+  )
 }
 
-export default LandingPage;
+export default LandingPage
