@@ -2,6 +2,8 @@
 import NutritionPieChart from "../Component/NutritionPieChart";
 import CaloriesLineChart from "../Component/CaloriesLineChart";
 import FoodHistorySection from "./FoodHistorySection";
+import InsightCard from "../Component/InsightCard";
+import CalendarWidget from "../Component/CalendarWidget";
 
 function DashboardContentSection() {
   return (
@@ -47,7 +49,7 @@ function DashboardContentSection() {
 
         {/* INSIGHT */}
         <div className="rounded-[18px] bg-white p-5 shadow-sm">
-          <div className="h-30 rounded-xl bg-[#F5F5F5]" />
+            <InsightCard />
         </div>
       </div>
 
@@ -60,7 +62,9 @@ function DashboardContentSection() {
             Kalender
           </h2>
 
-          <div className="mt-5 h-125 rounded-xl bg-[#F5F5F5]" />
+          <div className="mt-5">
+        <CalendarWidget />
+        </div>
         </div>
       </div>
     </section>
