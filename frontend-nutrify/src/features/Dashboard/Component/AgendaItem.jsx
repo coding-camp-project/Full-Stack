@@ -9,7 +9,7 @@ function AgendaItem({
       
       {/* ICON */}
       <div
-        className="flex h-[48px] w-[48px] items-center justify-center rounded-full"
+        className="flex h-12 w-12 items-center justify-center rounded-full"
         style={{
           backgroundColor: `${color}20`,
           color: color,

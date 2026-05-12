@@ -8,7 +8,7 @@ function InsightCard() {
       <div className="flex items-center gap-5">
         
         {/* ICON */}
-        <div className="flex h-[62px] w-[62px] items-center justify-center rounded-full bg-[#DDF5E8]">
+        <div className="flex h-15.5 w-15.5 items-center justify-center rounded-full bg-[#DDF5E8]">
           <Lightbulb
             size={30}
             strokeWidth={2.2}
@@ -22,7 +22,7 @@ function InsightCard() {
             Insight & Rekomendasi
           </h3>
 
-          <p className="mt-2 max-w-[620px] text-[16px] leading-[1.8] text-[#444]">
+          <p className="mt-2 max-w-155 text-[16px] leading-[1.8] text-[#444]">
             Asupan protein anda masih dibawah target.
             Coba tambahkan sumber protein seperti
             telur, ayam, atau kacang-kacangan
