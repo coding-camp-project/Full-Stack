@@ -1,5 +1,8 @@
 import { ArrowRight } from "lucide-react"
 import healthyFood from "@/assets/healthy-food.png"
+import healthyFood2 from "@/assets/healthy-food-2.png"
+import healthyFood3 from "@/assets/healthy-food-3.png"
+import { motion } from "framer-motion"
 
 const blogs = [
   {
@@ -10,14 +13,14 @@ const blogs = [
   },
 
   {
-    image: healthyFood,
+    image: healthyFood2,
     category: "Meals Planning",
     title: "10 Easy Meal Prep Ideas for Bulky",
     readTime: "8 min read",
   },
 
   {
-    image: healthyFood,
+    image: healthyFood3,
     category: "Meals Planning",
     title: "10 Easy Meal Prep Ideas for Bulky",
     readTime: "8 min read",
@@ -55,7 +58,13 @@ function BlogSection() {
         </div>
 
         {/* TITLE */}
-        <div className="text-center mt-6">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: false, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="text-center mt-6"
+        >
 
           <h2 className="text-4xl md:text-5xl font-bold text-[#111111]">
             Nutrition Blog & Article
@@ -65,14 +74,18 @@ function BlogSection() {
             Everything you need to know about our nutrition services
           </p>
 
-        </div>
+        </motion.div>
 
         {/* BLOG GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-20">
 
           {blogs.map((item, index) => (
-            <div
+            <motion.div
               key={index}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: false, margin: "-50px" }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
               className="bg-white border border-[#E5E7EB] rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-300"
             >
 
@@ -116,7 +129,7 @@ function BlogSection() {
 
               </div>
 
-            </div>
+            </motion.div>
           ))}
 
         </div>

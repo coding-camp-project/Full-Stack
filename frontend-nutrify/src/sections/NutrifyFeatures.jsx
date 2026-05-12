@@ -2,6 +2,7 @@ import scanImage from "@/assets/image1.png"
 import analisisImage from "@/assets/image2.png"
 import rekomendasiImage from "@/assets/image3.png"
 import pantauImage from "@/assets/image4.png"
+import { motion } from "framer-motion"
 
 const features = [
   {
@@ -63,7 +64,13 @@ function NutrifyFeatures() {
         </div>
 
         {/* TITLE */}
-        <div className="text-center mt-6">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: false, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="text-center mt-6"
+        >
 
           <h2 className="text-4xl md:text-5xl font-bold leading-tight text-[#111111]">
             Semua yang Kamu Butuhkan
@@ -77,14 +84,18 @@ function NutrifyFeatures() {
             kesehatan secara personal dalam satu platform.
           </p>
 
-        </div>
+        </motion.div>
 
         {/* FEATURE GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
 
           {features.map((item, index) => (
-            <div
+            <motion.div
               key={index}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: false, margin: "-50px" }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
               className="bg-white border border-[#E8F3EE] rounded-[28px] p-8 flex items-center gap-6 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
             >
 
@@ -115,7 +126,7 @@ function NutrifyFeatures() {
 
               </div>
 
-            </div>
+            </motion.div>
           ))}
 
         </div>

@@ -1,12 +1,13 @@
 import { CheckCircle2 } from "lucide-react"
 import foodImage from "@/assets/healthy-food-img.png"
+import { motion } from "framer-motion"
 
 const benefits = [
-  "Science backed nutrition strategies",
-  "Personalized healthy recommendations",
-  "Track your daily nutrition easily",
-  "AI powered food analysis",
-  "Build healthier eating habits",
+  "Strategi nutrisi berbasis sains",
+  "Rekomendasi sehat terpersonalisasi",
+  "Lacak nutrisi harian dengan mudah",
+  "Analisis makanan didukung AI",
+  "Bangun kebiasaan makan yang sehat",
 ]
 
 function WhyChoose() {
@@ -31,18 +32,23 @@ function WhyChoose() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
 
             {/* LEFT CONTENT */}
-            <div className="max-w-2xl text-white text-center lg:text-left">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: false, margin: "-50px" }}
+              transition={{ duration: 0.4 }}
+              className="max-w-2xl text-white text-center lg:text-left"
+            >
 
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Why Choose Our
+                Mengapa Memilih
                 <br />
-                Nutrify Program?
+                Program Nutrify?
               </h2>
 
               <p className="text-green-100 mt-6 leading-relaxed text-sm md:text-base max-w-xl mx-auto lg:mx-0">
-                Our approach combines scientific evidence with practical,
-                sustainable nutrition strategies that seamlessly fit into
-                your daily lifestyle.
+                Pendekatan kami memadukan bukti ilmiah dengan strategi nutrisi
+                praktis yang mudah diterapkan dalam gaya hidup harianmu.
               </p>
 
               {/* BENEFITS */}
@@ -72,10 +78,16 @@ function WhyChoose() {
 
               </div>
 
-            </div>
+            </motion.div>
 
             {/* RIGHT IMAGE */}
-            <div className="relative">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: false, margin: "-50px" }}
+              transition={{ duration: 0.4 }}
+              className="relative"
+            >
 
               {/* GLOW */}
               <div className="absolute inset-0 bg-white/10 blur-3xl rounded-full scale-110" />
@@ -101,14 +113,14 @@ function WhyChoose() {
                   </h4>
 
                   <p className="text-[10px] md:text-xs text-gray-500">
-                    Healthy Food
+                    Makanan Sehat
                   </p>
 
                 </div>
 
               </div>
 
-            </div>
+            </motion.div>
 
           </div>
 

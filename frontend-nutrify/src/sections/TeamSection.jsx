@@ -3,6 +3,7 @@ import {
   BrainCircuit,
   Database,
 } from "lucide-react"
+import { motion } from "framer-motion"
 
 import team1 from "@/assets/team-1.png"
 import team2 from "@/assets/team-2.png"
@@ -92,18 +93,24 @@ function TeamSection() {
         <div className="flex justify-center">
 
           <div className="bg-[#DDF5EC] text-[#3e9d7d] px-5 py-2 rounded-full text-sm font-medium">
-            Models
+            Tim Kami
           </div>
 
         </div>
 
         {/* TITLE */}
-        <div className="text-center mt-6">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: false, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="text-center mt-6"
+        >
 
           <h2 className="text-4xl md:text-5xl font-bold leading-tight text-[#111111]">
-            The Minds Behind
+            Orang-Orang di Balik
             <br />
-            the Models
+            Layar
           </h2>
 
           <p className="text-gray-500 mt-5 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
@@ -112,7 +119,7 @@ function TeamSection() {
             kesehatan secara personal dalam satu platform.
           </p>
 
-        </div>
+        </motion.div>
 
         {/* TEAM GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-20">
@@ -121,8 +128,12 @@ function TeamSection() {
             const Icon = item.icon
 
             return (
-              <div
+              <motion.div
                 key={index}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: false, margin: "-50px" }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
                 className="bg-white border border-[#E5E7EB] rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-300"
               >
 
@@ -167,7 +178,7 @@ function TeamSection() {
 
                 </div>
 
-              </div>
+              </motion.div>
             )
           })}
 
