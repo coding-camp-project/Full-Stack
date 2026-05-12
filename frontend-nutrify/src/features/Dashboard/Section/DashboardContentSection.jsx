@@ -1,3 +1,6 @@
+
+import NutritionPieChart from "../Component/NutritionPieChart";
+
 function DashboardContentSection() {
   return (
     <section className="grid grid-cols-12 gap-5">
@@ -13,7 +16,9 @@ function DashboardContentSection() {
               Ringkasan Nutrisi
             </h2>
 
-            <div className="mt-5 h-[250px] rounded-xl bg-[#F5F5F5]" />
+            <div className="mt-5">
+                <NutritionPieChart />
+            </div>
           </div>
 
           <div className="rounded-[18px] bg-white p-5 shadow-sm">
@@ -21,7 +26,7 @@ function DashboardContentSection() {
               Tren Asupan Kalori
             </h2>
 
-            <div className="mt-5 h-[250px] rounded-xl bg-[#F5F5F5]" />
+            <div className="mt-5 h-55 rounded-xl bg-[#F5F5F5]" />
           </div>
         </div>
 
@@ -31,12 +36,12 @@ function DashboardContentSection() {
             Riwayat Makanan
           </h2>
 
-          <div className="mt-5 h-[140px] rounded-xl bg-[#F5F5F5]" />
+          <div className="mt-5 h-35 rounded-xl bg-[#F5F5F5]" />
         </div>
 
         {/* INSIGHT */}
         <div className="rounded-[18px] bg-white p-5 shadow-sm">
-          <div className="h-[120px] rounded-xl bg-[#F5F5F5]" />
+          <div className="h-30 rounded-xl bg-[#F5F5F5]" />
         </div>
       </div>
 
@@ -49,7 +54,7 @@ function DashboardContentSection() {
             Kalender
           </h2>
 
-          <div className="mt-5 h-[500px] rounded-xl bg-[#F5F5F5]" />
+          <div className="mt-5 h-125 rounded-xl bg-[#F5F5F5]" />
         </div>
       </div>
     </section>
