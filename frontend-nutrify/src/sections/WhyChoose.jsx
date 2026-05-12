@@ -3,11 +3,11 @@ import foodImage from "@/assets/healthy-food-img.png"
 import { motion } from "framer-motion"
 
 const benefits = [
-  "Science backed nutrition strategies",
-  "Personalized healthy recommendations",
-  "Track your daily nutrition easily",
-  "AI powered food analysis",
-  "Build healthier eating habits",
+  "Strategi nutrisi berbasis sains",
+  "Rekomendasi sehat terpersonalisasi",
+  "Lacak nutrisi harian dengan mudah",
+  "Analisis makanan didukung AI",
+  "Bangun kebiasaan makan yang sehat",
 ]
 
 function WhyChoose() {
@@ -33,23 +33,22 @@ function WhyChoose() {
 
             {/* LEFT CONTENT */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: false, margin: "-50px" }}
               transition={{ duration: 0.4 }}
               className="max-w-2xl text-white text-center lg:text-left"
             >
 
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Why Choose Our
+                Mengapa Memilih
                 <br />
-                Nutrify Program?
+                Program Nutrify?
               </h2>
 
               <p className="text-green-100 mt-6 leading-relaxed text-sm md:text-base max-w-xl mx-auto lg:mx-0">
-                Our approach combines scientific evidence with practical,
-                sustainable nutrition strategies that seamlessly fit into
-                your daily lifestyle.
+                Pendekatan kami memadukan bukti ilmiah dengan strategi nutrisi
+                praktis yang mudah diterapkan dalam gaya hidup harianmu.
               </p>
 
               {/* BENEFITS */}
@@ -83,8 +82,8 @@ function WhyChoose() {
 
             {/* RIGHT IMAGE */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: false, margin: "-50px" }}
               transition={{ duration: 0.4 }}
               className="relative"
@@ -114,7 +113,7 @@ function WhyChoose() {
                   </h4>
 
                   <p className="text-[10px] md:text-xs text-gray-500">
-                    Healthy Food
+                    Makanan Sehat
                   </p>
 
                 </div>

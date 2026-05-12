@@ -65,8 +65,8 @@ function NutrifyFeatures() {
 
         {/* TITLE */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: false, margin: "-50px" }}
           transition={{ duration: 0.4 }}
           className="text-center mt-6"
@@ -92,8 +92,8 @@ function NutrifyFeatures() {
           {features.map((item, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: false, margin: "-50px" }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
               className="bg-white border border-[#E8F3EE] rounded-[28px] p-8 flex items-center gap-6 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"

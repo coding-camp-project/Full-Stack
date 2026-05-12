@@ -23,25 +23,25 @@ function Hero() {
 
         {/* LEFT / TEXT */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: false, margin: "-50px" }}
           transition={{ duration: 0.4 }}
           className="w-full lg:w-1/2 text-white flex flex-col text-center lg:text-left items-center lg:items-start"
         >
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight">
-            Your Path to <br className="hidden sm:block" />
-            <span className="text-white">Smarter Nutrition</span>
+            Jalan Menuju <br className="hidden sm:block" />
+            <span className="text-white">Nutrisi Pintar</span>
           </h1>
 
           <p className="mt-6 text-base sm:text-lg md:text-xl text-green-50 leading-relaxed max-w-xl">
-            Scan your food, understand its nutrition, and get personalized recommendations to make healthier choices every single day.
+            Pindai makananmu, pahami nutrisinya, dan dapatkan rekomendasi personal untuk pilihan yang lebih sehat setiap hari.
           </p>
 
           {/* BUTTONS */}
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-10 w-full sm:w-auto">
             <Button className="w-full sm:w-auto bg-white text-[#12B76A] hover:bg-gray-100 rounded-2xl px-8 py-6 md:py-7 text-base md:text-lg font-bold shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 group">
-              Start Your Journey
+              Mulai Perjalananmu
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
 
@@ -50,7 +50,7 @@ function Hero() {
               className="w-full sm:w-auto border-2 border-white text-white bg-transparent hover:bg-white hover:text-[#12B76A] rounded-2xl px-8 py-6 md:py-7 text-base md:text-lg font-bold shadow-lg transition-all hover:-translate-y-1 group"
             >
               <ScanLine className="mr-2 w-5 h-5 group-hover:rotate-12 transition-transform" />
-              Go Scan
+              Mulai Scan
             </Button>
           </div>
           
@@ -58,20 +58,20 @@ function Hero() {
           <div className="flex items-center justify-center lg:justify-start gap-8 mt-12 pt-8 border-t border-white/20 w-full lg:max-w-md">
             <div className="flex flex-col">
               <span className="text-3xl font-bold">10k+</span>
-              <span className="text-green-100 text-sm">Active Users</span>
+              <span className="text-green-100 text-sm">Pengguna Aktif</span>
             </div>
             <div className="w-px h-10 bg-white/20" />
             <div className="flex flex-col">
               <span className="text-3xl font-bold">50k+</span>
-              <span className="text-green-100 text-sm">Foods Scanned</span>
+              <span className="text-green-100 text-sm">Makanan Di-scan</span>
             </div>
           </div>
         </motion.div>
 
         {/* RIGHT / IMAGE */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: false, margin: "-50px" }}
           transition={{ duration: 0.4 }}
           className="w-full lg:w-1/2 relative flex justify-center mt-10 lg:mt-0"
@@ -89,12 +89,12 @@ function Hero() {
             
             {/* Floating Element 1 */}
             <div className="absolute top-10 -left-6 sm:-left-10 bg-white/90 backdrop-blur text-[#12B76A] font-bold px-4 py-2 rounded-xl shadow-xl animate-bounce" style={{ animationDuration: '3s' }}>
-              🥑 120 kcal
+              🥑 120 kkal
             </div>
             
             {/* Floating Element 2 */}
             <div className="absolute bottom-20 -right-6 sm:-right-10 bg-white/90 backdrop-blur text-[#12B76A] font-bold px-4 py-2 rounded-xl shadow-xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
-              🥗 High Protein
+              🥗 Tinggi Protein
             </div>
           </div>
         </motion.div>

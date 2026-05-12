@@ -1,5 +1,7 @@
 import { ArrowRight } from "lucide-react"
 import healthyFood from "@/assets/healthy-food.png"
+import healthyFood2 from "@/assets/healthy-food-2.png"
+import healthyFood3 from "@/assets/healthy-food-3.png"
 import { motion } from "framer-motion"
 
 const blogs = [
@@ -11,14 +13,14 @@ const blogs = [
   },
 
   {
-    image: healthyFood,
+    image: healthyFood2,
     category: "Meals Planning",
     title: "10 Easy Meal Prep Ideas for Bulky",
     readTime: "8 min read",
   },
 
   {
-    image: healthyFood,
+    image: healthyFood3,
     category: "Meals Planning",
     title: "10 Easy Meal Prep Ideas for Bulky",
     readTime: "8 min read",
@@ -57,8 +59,8 @@ function BlogSection() {
 
         {/* TITLE */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: false, margin: "-50px" }}
           transition={{ duration: 0.4 }}
           className="text-center mt-6"
@@ -80,8 +82,8 @@ function BlogSection() {
           {blogs.map((item, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: false, margin: "-50px" }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
               className="bg-white border border-[#E5E7EB] rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-300"

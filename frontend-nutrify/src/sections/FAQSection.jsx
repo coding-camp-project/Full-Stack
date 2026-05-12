@@ -67,8 +67,8 @@ function FAQSection() {
 
         {/* TITLE */}
         <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: false, margin: "-50px" }}
           transition={{ duration: 0.3 }}
           className="text-center mt-6"
@@ -93,8 +93,8 @@ function FAQSection() {
             return (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: false, margin: "-50px" }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
                 className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm transition-all duration-300"
