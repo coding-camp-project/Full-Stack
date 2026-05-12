@@ -1,4 +1,5 @@
 import SummarySection from "../Component/SummarySection";
+import DashboardContentSection from "../Section/DashboardContentSection";
 
 function DashboardPage() {
   return (
@@ -11,6 +12,8 @@ function DashboardPage() {
       </div>
 
       <SummarySection />
+
+      <DashboardContentSection />
     </div>
   );
 }
