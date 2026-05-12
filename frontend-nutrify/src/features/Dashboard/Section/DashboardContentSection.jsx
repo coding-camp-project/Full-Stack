@@ -1,5 +1,7 @@
 
 import NutritionPieChart from "../Component/NutritionPieChart";
+import CaloriesLineChart from "../Component/CaloriesLineChart";
+import FoodHistorySection from "./FoodHistorySection";
 
 function DashboardContentSection() {
   return (
@@ -26,7 +28,9 @@ function DashboardContentSection() {
               Tren Asupan Kalori
             </h2>
 
-            <div className="mt-5 h-55 rounded-xl bg-[#F5F5F5]" />
+            <div className="mt-5">
+                <CaloriesLineChart />
+            </div>  
           </div>
         </div>
 
@@ -36,7 +40,9 @@ function DashboardContentSection() {
             Riwayat Makanan
           </h2>
 
-          <div className="mt-5 h-35 rounded-xl bg-[#F5F5F5]" />
+          <div className="mt-5">
+            <FoodHistorySection />
+            </div>
         </div>
 
         {/* INSIGHT */}
