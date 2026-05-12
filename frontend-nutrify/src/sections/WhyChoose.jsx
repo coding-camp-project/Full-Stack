@@ -1,5 +1,6 @@
 import { CheckCircle2 } from "lucide-react"
 import foodImage from "@/assets/healthy-food-img.png"
+import { motion } from "framer-motion"
 
 const benefits = [
   "Science backed nutrition strategies",
@@ -31,7 +32,13 @@ function WhyChoose() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
 
             {/* LEFT CONTENT */}
-            <div className="max-w-2xl text-white text-center lg:text-left">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, margin: "-50px" }}
+              transition={{ duration: 0.4 }}
+              className="max-w-2xl text-white text-center lg:text-left"
+            >
 
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
                 Why Choose Our
@@ -72,10 +79,16 @@ function WhyChoose() {
 
               </div>
 
-            </div>
+            </motion.div>
 
             {/* RIGHT IMAGE */}
-            <div className="relative">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, margin: "-50px" }}
+              transition={{ duration: 0.4 }}
+              className="relative"
+            >
 
               {/* GLOW */}
               <div className="absolute inset-0 bg-white/10 blur-3xl rounded-full scale-110" />
@@ -108,7 +121,7 @@ function WhyChoose() {
 
               </div>
 
-            </div>
+            </motion.div>
 
           </div>
 

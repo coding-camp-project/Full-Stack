@@ -1,3 +1,5 @@
+import { motion } from "framer-motion"
+
 function HowItWorks() {
   const steps = [
     {
@@ -47,7 +49,13 @@ function HowItWorks() {
         </div>
 
         {/* TITLE */}
-        <div className="text-center mt-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="text-center mt-6"
+        >
 
           <h2 className="text-4xl md:text-5xl font-bold leading-tight text-[#111111]">
             Semua yang Kamu Butuhkan
@@ -55,7 +63,7 @@ function HowItWorks() {
             untuk <span className="text-[#3e9d7d]">Pola Makan</span> Lebih Sehat
           </h2>
 
-        </div>
+        </motion.div>
 
         {/* STEPS */}
         <div className="relative mt-24">
@@ -66,8 +74,12 @@ function HowItWorks() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8">
 
             {steps.map((item, index) => (
-              <div
+              <motion.div
                 key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, margin: "-50px" }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
                 className="relative flex flex-col items-center text-center"
               >
 
@@ -88,7 +100,7 @@ function HowItWorks() {
                   {item.description}
                 </p>
 
-              </div>
+              </motion.div>
             ))}
 
           </div>

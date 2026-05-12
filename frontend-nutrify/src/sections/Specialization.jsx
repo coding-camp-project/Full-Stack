@@ -4,6 +4,7 @@ import {
   ShieldCheck,
   LayoutDashboard,
 } from "lucide-react"
+import { motion } from "framer-motion"
 
 const features = [
   {
@@ -58,7 +59,13 @@ function Specialization() {
         </div>
 
         {/* TITLE */}
-        <div className="text-center mt-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="text-center mt-6"
+        >
 
           <h2 className="text-4xl md:text-5xl font-bold leading-tight text-[#111111]">
             Semua yang Kamu Butuhkan Lebih
@@ -72,7 +79,7 @@ function Specialization() {
             dalam satu platform.
           </p>
 
-        </div>
+        </motion.div>
 
         {/* CARD */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
@@ -81,8 +88,12 @@ function Specialization() {
             const Icon = item.icon
 
             return (
-              <div
+              <motion.div
                 key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, margin: "-50px" }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
                 className="bg-white border border-gray-100 rounded-3xl p-7 shadow-sm hover:shadow-xl transition-all duration-300"
               >
 
@@ -111,7 +122,7 @@ function Specialization() {
                   Lihat Selengkapnya →
                 </button>
 
-              </div>
+              </motion.div>
             )
           })}
 

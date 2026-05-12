@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Plus, Minus } from "lucide-react"
+import { motion } from "framer-motion"
 
 const faqs = [
   {
@@ -65,7 +66,13 @@ function FAQSection() {
         </div>
 
         {/* TITLE */}
-        <div className="text-center mt-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-50px" }}
+          transition={{ duration: 0.3 }}
+          className="text-center mt-6"
+        >
 
           <h2 className="text-4xl md:text-5xl font-bold text-[#111111]">
             Frequently Asked Questions
@@ -75,7 +82,7 @@ function FAQSection() {
             Everything you need to know about our nutrition services
           </p>
 
-        </div>
+        </motion.div>
 
         {/* FAQ LIST */}
         <div className="mt-16 space-y-5">
@@ -84,8 +91,12 @@ function FAQSection() {
             const isOpen = openIndex === index
 
             return (
-              <div
+              <motion.div
                 key={index}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, margin: "-50px" }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
                 className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm transition-all duration-300"
               >
 
@@ -130,7 +141,7 @@ function FAQSection() {
 
                 </div>
 
-              </div>
+              </motion.div>
             )
           })}
 

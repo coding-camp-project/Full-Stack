@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import heroBot from "@/assets/hero-bot.png"
 import { ArrowRight, ScanLine } from "lucide-react"
+import { motion } from "framer-motion"
 
 function Hero() {
   return (
@@ -21,7 +22,13 @@ function Hero() {
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 pt-32 pb-20 md:pt-40 md:pb-24 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
 
         {/* LEFT / TEXT */}
-        <div className="w-full lg:w-1/2 text-white flex flex-col text-center lg:text-left items-center lg:items-start">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="w-full lg:w-1/2 text-white flex flex-col text-center lg:text-left items-center lg:items-start"
+        >
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight">
             Your Path to <br className="hidden sm:block" />
             <span className="text-white">Smarter Nutrition</span>
@@ -59,10 +66,16 @@ function Hero() {
               <span className="text-green-100 text-sm">Foods Scanned</span>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* RIGHT / IMAGE */}
-        <div className="w-full lg:w-1/2 relative flex justify-center mt-10 lg:mt-0">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="w-full lg:w-1/2 relative flex justify-center mt-10 lg:mt-0"
+        >
           {/* GLOW */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] bg-white/30 blur-[80px] rounded-full animate-pulse" />
 
@@ -84,7 +97,7 @@ function Hero() {
               🥗 High Protein
             </div>
           </div>
-        </div>
+        </motion.div>
 
       </div>
     </section>
