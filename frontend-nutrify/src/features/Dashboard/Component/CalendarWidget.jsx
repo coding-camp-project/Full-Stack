@@ -29,11 +29,11 @@ function CalendarWidget() {
 
         <div className="flex items-center gap-2">
           
-          <button className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-[#7BC9A7] text-[#49AE84]">
+          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-[#7BC9A7] text-[#49AE84]">
             <ChevronLeft size={16} />
           </button>
 
-          <button className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-[#7BC9A7] text-[#49AE84]">
+          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-[#7BC9A7] text-[#49AE84]">
             <ChevronRight size={16} />
           </button>
         </div>
@@ -60,7 +60,7 @@ function CalendarWidget() {
             {week.map((date) => (
               <div
                 key={date}
-                className={`mx-auto flex h-[34px] w-[34px] items-center justify-center rounded-full text-[14px]
+                className={`mx-auto flex h-8 w-8 items-center justify-center rounded-full text-[14px]
                   
                   ${
                     date === 16

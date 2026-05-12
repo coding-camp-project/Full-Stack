@@ -69,6 +69,6 @@ function DashboardContentSection() {
       </div>
     </section>
   );
-}
+} 
 
 export default DashboardContentSection;
