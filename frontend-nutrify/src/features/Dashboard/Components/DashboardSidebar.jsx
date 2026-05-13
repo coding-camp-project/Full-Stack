@@ -10,14 +10,14 @@ import { NavLink } from "react-router-dom";
 import logoNutrify from "../../../assets/logo/Logo 2.png";
 
 const menuLinkClass = ({ isActive }) =>
-  `flex h-11.5 w-full items-center gap-3 rounded-xl px-5 text-[15px] transition-all duration-200 ${
+  `relative z-20 flex h-11.5 w-full cursor-pointer items-center gap-3 rounded-xl px-5 text-[15px] transition-all duration-200 ${
     isActive
       ? "bg-[#F4F4F4] font-semibold text-[#69AF96] shadow-[0_2px_10px_rgba(0,0,0,0.15)]"
       : "font-medium text-white hover:translate-x-1"
   }`;
 
 const menuButtonClass =
-  "flex h-11.5 w-full items-center gap-3 rounded-xl px-5 text-[15px] font-medium text-white transition-all duration-200 hover:translate-x-1";
+  "relative z-20 flex h-11.5 w-full cursor-pointer items-center gap-3 rounded-xl px-5 text-[15px] font-medium text-white transition-all duration-200 hover:translate-x-1";
 
 function DashboardSidebar() {
   return (
