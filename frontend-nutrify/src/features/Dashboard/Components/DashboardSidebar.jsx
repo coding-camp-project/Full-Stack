@@ -60,11 +60,11 @@ function DashboardSidebar() {
         </NavLink>
 
         {/* SCAN */}
-        <button className={menuButtonClass}>
+        <NavLink to="/scan" className={menuLinkClass}>
           <ScanSearch size={18} strokeWidth={2.2} />
 
           <span>Scan Nutrify</span>
-        </button>
+        </NavLink>
 
         {/* HISTORY */}
         <button className={menuButtonClass}>
