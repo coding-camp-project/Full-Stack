@@ -67,11 +67,11 @@ function DashboardSidebar() {
         </NavLink>
 
         {/* HISTORY */}
-        <button className={menuButtonClass}>
+        <NavLink to="/history" className={menuLinkClass}>
           <History size={18} strokeWidth={2.2} />
 
           <span>History</span>
-        </button>
+        </NavLink>
       </nav>
 
       {/* BOTTOM MENU */}
