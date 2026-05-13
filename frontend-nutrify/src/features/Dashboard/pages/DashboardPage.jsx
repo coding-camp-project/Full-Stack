@@ -1,4 +1,4 @@
-import SummarySection from "../Component/SummarySection";
+import SummarySection from "../Components/SummarySection";
 import DashboardContentSection from "../Section/DashboardContentSection";
 
 function DashboardPage() {

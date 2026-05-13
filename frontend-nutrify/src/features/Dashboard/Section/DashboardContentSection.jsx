@@ -1,9 +1,9 @@
 
-import NutritionPieChart from "../Component/NutritionPieChart";
-import CaloriesLineChart from "../Component/CaloriesLineChart";
+import NutritionPieChart from "../Components/NutritionPieChart";
+import CaloriesLineChart from "../Components/CaloriesLineChart";
 import FoodHistorySection from "./FoodHistorySection";
-import InsightCard from "../Component/InsightCard";
-import CalendarWidget from "../Component/CalendarWidget";
+import InsightCard from "../Components/InsightCard";
+import CalendarWidget from "../Components/CalendarWidget";
 
 function DashboardContentSection() {
   return (
