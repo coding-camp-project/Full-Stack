@@ -21,7 +21,7 @@ const menuButtonClass =
 
 function DashboardSidebar() {
   return (
-    <aside className="relative flex min-h-screen w-65 shrink-0 self-stretch flex-col overflow-hidden bg-linear-to-b from-[#04A16E] to-[#036245] px-5 py-7">
+    <aside className="relative flex h-screen w-65 shrink-0 flex-col overflow-hidden bg-linear-to-b from-[#04A16E] to-[#036245] px-5 py-7">
       
       {/* BIG CIRCLE */}
       <div className="absolute -left-37.5 bottom-45 h-65 w-65 rounded-full border border-white/20" />
