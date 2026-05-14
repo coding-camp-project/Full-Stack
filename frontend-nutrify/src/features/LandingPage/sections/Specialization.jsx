@@ -38,7 +38,7 @@ const features = [
 
 function Specialization() {
   return (
-    <section className="relative overflow-hidden bg-[#F8FFFC] py-28 px-6">
+    <section id="layanan" className="relative overflow-hidden bg-[#F8FFFC] py-28 px-6">
 
       {/* GRID BACKGROUND */}
       <div className="absolute inset-0 opacity-40">

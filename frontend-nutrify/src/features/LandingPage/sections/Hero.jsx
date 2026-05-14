@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-[#12B76A] min-h-screen rounded-b-[40px] md:rounded-b-[60px] flex items-center">
+    <section id="beranda" className="relative overflow-hidden bg-[#12B76A] min-h-screen rounded-b-[40px] md:rounded-b-[60px] flex items-center">
       {/* Dynamic Background Gradients */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#12B76A] via-[#0FA968] to-[#0B8F61] z-0" />
       

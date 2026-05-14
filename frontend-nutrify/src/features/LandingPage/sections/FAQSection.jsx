@@ -42,7 +42,7 @@ function FAQSection() {
   }
 
   return (
-    <section className="relative overflow-hidden bg-[#FAFFFC] py-28 px-6">
+    <section id="faq" className="relative overflow-hidden bg-[#FAFFFC] py-28 px-6">
 
       {/* GRID BACKGROUND */}
       <div className="absolute inset-0 opacity-40">
@@ -60,7 +60,7 @@ function FAQSection() {
         <div className="flex justify-center">
 
           <div className="bg-[#DDF5EC] text-[#3e9d7d] px-5 py-2 rounded-full text-sm font-medium">
-            Models
+            FAQ
           </div>
 
         </div>
@@ -75,11 +75,11 @@ function FAQSection() {
         >
 
           <h2 className="text-4xl md:text-5xl font-bold text-[#111111]">
-            Frequently Asked Questions
+            Pertanyaan yang Sering Diajukan
           </h2>
 
           <p className="text-gray-500 mt-4 text-sm md:text-base">
-            Everything you need to know about our nutrition services
+            Semua yang perlu kamu ketahui tentang layanan nutrisi kami
           </p>
 
         </motion.div>

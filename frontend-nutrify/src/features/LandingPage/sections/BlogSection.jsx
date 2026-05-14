@@ -7,23 +7,23 @@ import { motion } from "framer-motion"
 const blogs = [
   {
     image: healthyFood,
-    category: "Meals Planning",
-    title: "10 Easy Meal Prep Ideas for Bulky",
-    readTime: "8 min read",
+    category: "Perencanaan Makanan",
+    title: "10 Ide Persiapan Makanan Mudah untuk Bulking",
+    readTime: "Waktu baca 8 mnt",
   },
 
   {
     image: healthyFood2,
-    category: "Meals Planning",
-    title: "10 Easy Meal Prep Ideas for Bulky",
-    readTime: "8 min read",
+    category: "Perencanaan Makanan",
+    title: "10 Ide Persiapan Makanan Mudah untuk Bulking",
+    readTime: "Waktu baca 8 mnt",
   },
 
   {
     image: healthyFood3,
-    category: "Meals Planning",
-    title: "10 Easy Meal Prep Ideas for Bulky",
-    readTime: "8 min read",
+    category: "Perencanaan Makanan",
+    title: "10 Ide Persiapan Makanan Mudah untuk Bulking",
+    readTime: "Waktu baca 8 mnt",
   },
 ]
 
@@ -52,7 +52,7 @@ function BlogSection() {
         <div className="flex justify-center">
 
           <div className="bg-[#DDF5EC] text-[#3e9d7d] px-5 py-2 rounded-full text-sm font-medium">
-            Models
+            Artikel
           </div>
 
         </div>
@@ -67,11 +67,11 @@ function BlogSection() {
         >
 
           <h2 className="text-4xl md:text-5xl font-bold text-[#111111]">
-            Nutrition Blog & Article
+            Blog & Artikel Nutrisi
           </h2>
 
           <p className="text-gray-500 mt-4 text-sm md:text-base">
-            Everything you need to know about our nutrition services
+            Semua yang perlu kamu ketahui tentang layanan nutrisi kami
           </p>
 
         </motion.div>

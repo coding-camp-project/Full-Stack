@@ -50,8 +50,8 @@ function Footer() {
 
             {/* DESCRIPTION */}
             <p className="text-[#D4E5F7] mt-6 leading-relaxed text-sm">
-              Empowering healthier lives through personalized
-              nutrition and evidence based guidance.
+              Memberdayakan hidup lebih sehat melalui nutrisi yang 
+              dipersonalisasi dan panduan berbasis sains.
             </p>
 
             {/* SOCIAL */}
@@ -83,21 +83,21 @@ function Footer() {
           <div>
 
             <h3 className="text-white text-xl font-semibold">
-              Quick Links
+              Tautan Cepat
             </h3>
 
             <div className="flex flex-col gap-4 mt-6 text-[#D4E5F7] text-sm">
 
               <a href="#" className="hover:text-white transition">
-                Home
+                Beranda
               </a>
 
               <a href="#" className="hover:text-white transition">
-                About
+                Tentang
               </a>
 
               <a href="#" className="hover:text-white transition">
-                Features
+                Fitur
               </a>
 
               <a href="#" className="hover:text-white transition">
@@ -112,25 +112,25 @@ function Footer() {
           <div>
 
             <h3 className="text-white text-xl font-semibold">
-              Services
+              Layanan
             </h3>
 
             <div className="flex flex-col gap-4 mt-6 text-[#D4E5F7] text-sm">
 
               <a href="#" className="hover:text-white transition">
-                Nutrition Analysis
+                Analisis Nutrisi
               </a>
 
               <a href="#" className="hover:text-white transition">
-                AI Recommendation
+                Rekomendasi AI
               </a>
 
               <a href="#" className="hover:text-white transition">
-                Food Tracking
+                Pelacakan Makanan
               </a>
 
               <a href="#" className="hover:text-white transition">
-                Healthy Lifestyle
+                Gaya Hidup Sehat
               </a>
 
             </div>
@@ -141,7 +141,7 @@ function Footer() {
           <div>
 
             <h3 className="text-white text-xl font-semibold">
-              Contact
+              Kontak
             </h3>
 
             <div className="flex flex-col gap-4 mt-6 text-[#D4E5F7] text-sm">
@@ -159,7 +159,7 @@ function Footer() {
               </p>
 
               <p>
-                Gunadarma University
+                Universitas Gunadarma
               </p>
 
             </div>
@@ -174,9 +174,9 @@ function Footer() {
         {/* COPYRIGHT */}
         <div className="text-center text-[#D4E5F7] text-sm mt-8 leading-relaxed">
 
-          © 2026 Nutrify. All rights reserved |
-          Privacy Policy |
-          Terms of Service
+          © 2026 Nutrify. Hak cipta dilindungi |
+          Kebijakan Privasi |
+          Syarat Layanan
 
         </div>
 

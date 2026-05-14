@@ -4,21 +4,21 @@ function HowItWorks() {
   const steps = [
     {
       number: "01",
-      title: "Start Scan",
+      title: "Mulai Scan",
       description:
         "Nutrify memberikan analisis nutrisi yang akurat dan dapat dipercaya untuk membantu kamu membuat keputusan yang lebih baik.",
     },
 
     {
       number: "02",
-      title: "Get Your Nutrition",
+      title: "Dapatkan Hasil Nutrisi",
       description:
         "Nutrify memberikan analisis nutrisi yang akurat dan dapat dipercaya untuk membantu kamu membuat keputusan yang lebih baik.",
     },
 
     {
       number: "03",
-      title: "History Scan",
+      title: "Riwayat Scan",
       description:
         "Nutrify memberikan analisis nutrisi yang akurat dan dapat dipercaya untuk membantu kamu membuat keputusan yang lebih baik.",
     },
