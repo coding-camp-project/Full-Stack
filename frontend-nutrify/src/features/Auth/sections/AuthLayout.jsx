@@ -5,7 +5,7 @@ export default function AuthLayout({ children, isRegister }) {
   return (
     <div className="min-h-screen flex w-full">
       {/* Left Side - Green Background */}
-      <div className={`hidden lg:flex w-1/2 bg-[#12B76A] relative overflow-hidden flex-col items-center justify-center p-12 ${isRegister ? 'order-2' : ''}`}>
+      <div className={`hidden lg:flex w-1/2 bg-gradient-to-br from-[#12B76A] to-[#087F5B] relative overflow-hidden flex-col items-center justify-center p-12 ${isRegister ? 'order-2' : ''}`}>
         
         {/* Top Logo */}
         <div className={`absolute top-8 ${isRegister ? 'right-8 flex-row-reverse' : 'left-8'} flex items-center gap-2 z-20`}>
@@ -27,11 +27,8 @@ export default function AuthLayout({ children, isRegister }) {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-[#FAFAFA] relative">
-        {/* Subtle Vertical Stripes Pattern */}
-        <div className="absolute inset-0 z-0 opacity-[0.03]" style={{ backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 40px, #000 40px, #000 80px)" }}></div>
-        
-        <div className="w-full max-w-md px-8 py-12 relative z-10 bg-white/80 backdrop-blur-sm rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white">
+      <div className="w-full lg:w-1/2 flex items-center justify-center bg-white relative">
+        <div className="w-full max-w-md px-8 py-12 relative z-10">
           {children}
         </div>
       </div>
