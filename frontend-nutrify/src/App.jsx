@@ -15,15 +15,14 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<DashboardPage />} />
+        
+        {/* Dashboard Routes with Layout */}
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/chatbot" element={<ChatbotPage />} />
           <Route path="/scan" element={<ScanPage />} />
           <Route path="/history" element={<HistoryPage />} />
         </Route>
-        
       </Routes>
   )
 }
