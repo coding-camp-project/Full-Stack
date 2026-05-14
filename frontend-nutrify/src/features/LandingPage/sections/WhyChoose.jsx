@@ -12,7 +12,7 @@ const benefits = [
 
 function WhyChoose() {
   return (
-    <section className="relative overflow-hidden bg-[#F8FFFC]">
+    <section id="tentang" className="relative overflow-hidden bg-[#F8FFFC]">
 
       {/* GRID BACKGROUND */}
       <div className="absolute inset-0 opacity-40">

@@ -16,7 +16,7 @@ const teams = [
   {
     image: team1,
     name: "Iqbal Apriand Juartono",
-    university: "Gunadarma University",
+    university: "Universitas Gunadarma",
     role: "Fullstack Developer",
     icon: BriefcaseBusiness,
     color: "text-[#3e9d7d]",
@@ -25,7 +25,7 @@ const teams = [
   {
     image: team2,
     name: "Iqbal Apriand Juartono",
-    university: "Gunadarma University",
+    university: "Universitas Gunadarma",
     role: "AI Engineer",
     icon: BrainCircuit,
     color: "text-pink-500",
@@ -34,7 +34,7 @@ const teams = [
   {
     image: team3,
     name: "Iqbal Apriand Juartono",
-    university: "Gunadarma University",
+    university: "Universitas Gunadarma",
     role: "Data Scientist",
     icon: Database,
     color: "text-yellow-500",
@@ -43,7 +43,7 @@ const teams = [
   {
     image: team4,
     name: "Iqbal Apriand Juartono",
-    university: "Gunadarma University",
+    university: "Universitas Gunadarma",
     role: "Fullstack Developer",
     icon: BriefcaseBusiness,
     color: "text-[#3e9d7d]",
@@ -52,7 +52,7 @@ const teams = [
   {
     image: team5,
     name: "Iqbal Apriand Juartono",
-    university: "Gunadarma University",
+    university: "Universitas Gunadarma",
     role: "AI Engineer",
     icon: BrainCircuit,
     color: "text-pink-500",
@@ -61,7 +61,7 @@ const teams = [
   {
     image: team6,
     name: "Iqbal Apriand Juartono",
-    university: "Gunadarma University",
+    university: "Universitas Gunadarma",
     role: "Data Scientist",
     icon: Database,
     color: "text-yellow-500",
@@ -70,7 +70,7 @@ const teams = [
 
 function TeamSection() {
   return (
-    <section className="relative overflow-hidden bg-[#FAFFFC] py-28 px-6">
+    <section id="tim-kami" className="relative overflow-hidden bg-[#FAFFFC] py-28 px-6">
 
       {/* GRID BACKGROUND */}
       <div className="absolute inset-0 opacity-40">
