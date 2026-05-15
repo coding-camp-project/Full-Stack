@@ -1,5 +1,6 @@
 import nutrifyLogo from "@/assets/nutrify-logo.png"
-import mockupImg from "@/assets/logo/Logo 2.png"
+import mockupImg from "@/assets/Login.png"
+import mockupImg2 from "@/assets/Register.png"
 
 export default function AuthLayout({ children, isRegister }) {
   return (
