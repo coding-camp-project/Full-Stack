@@ -10,7 +10,7 @@ function FoodHistoryCard({
     <div className="flex items-center gap-4 rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-3 transition-all duration-200 hover:shadow-sm">
       
       {/* IMAGE */}
-      <div className="h-[78px] w-[92px] overflow-hidden rounded-xl">
+      <div className="h-19.5 w-23 overflow-hidden rounded-xl">
         <img
           src={image}
           alt={title}

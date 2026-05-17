@@ -1,6 +1,6 @@
 
 
-import FoodHistoryCard from "../Component/FoodHistoryCard";
+import FoodHistoryCard from "../Components/FoodHistoryCard";
 
 function FoodHistorySection() {
   const foods = [
