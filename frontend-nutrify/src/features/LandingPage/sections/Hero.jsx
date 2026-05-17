@@ -2,8 +2,21 @@ import { Button } from "@/components/ui/button"
 import heroBot from "@/assets/hero-bot.png"
 import { ArrowRight, ScanLine } from "lucide-react"
 import { motion } from "framer-motion"
+import { useNavigate } from "react-router-dom"
+import { auth } from "@/config/firebase"
 
 function Hero() {
+  const navigate = useNavigate()
+
+  const handleAction = () => {
+    // Mengecek apakah ada user yang sedang login
+    if (auth.currentUser) {
+      navigate("/dashboard")
+    } else {
+      navigate("/login")
+    }
+  }
+
   return (
     <section id="beranda" className="relative overflow-hidden bg-[#12B76A] min-h-screen rounded-b-[40px] md:rounded-b-[60px] flex items-center">
       {/* Dynamic Background Gradients */}
@@ -40,12 +53,13 @@ function Hero() {
 
           {/* BUTTONS */}
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-10 w-full sm:w-auto">
-            <Button className="w-full sm:w-auto bg-white text-[#12B76A] hover:bg-gray-100 rounded-2xl px-8 py-6 md:py-7 text-base md:text-lg font-bold shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 group">
+            <Button onClick={handleAction} className="w-full sm:w-auto bg-white text-[#12B76A] hover:bg-gray-100 rounded-2xl px-8 py-6 md:py-7 text-base md:text-lg font-bold shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 group">
               Mulai Perjalananmu
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
 
             <Button
+              onClick={handleAction}
               variant="outline"
               className="w-full sm:w-auto border-2 border-white text-white bg-transparent hover:bg-white hover:text-[#12B76A] rounded-2xl px-8 py-6 md:py-7 text-base md:text-lg font-bold shadow-lg transition-all hover:-translate-y-1 group"
             >

@@ -2,6 +2,8 @@ import { useState } from "react"
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link, useNavigate } from "react-router-dom"
+import { signInWithPopup } from "firebase/auth"
+import { auth, googleProvider } from "@/config/firebase"
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -10,6 +12,19 @@ export default function LoginForm() {
   const handleLogin = (e) => {
     e.preventDefault()
     navigate("/dashboard")
+  }
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      // Mendapatkan data pengguna jika diperlukan
+      // const user = result.user;
+      console.log("Berhasil masuk dengan Google!", result.user);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Gagal masuk dengan Google:", error);
+      alert("Gagal masuk dengan Google. Pastikan konfigurasi Firebase sudah benar.");
+    }
   }
 
   return (
@@ -82,7 +97,12 @@ export default function LoginForm() {
       </div>
 
       <div className="mt-6">
-        <Button type="button" onClick={() => navigate("/dashboard")} variant="outline" className="w-full border border-gray-200 text-gray-700 py-6 rounded-xl font-medium hover:bg-gray-50 hover:text-gray-900 flex items-center justify-center gap-2 shadow-sm transition-all">
+        <Button 
+          type="button" 
+          onClick={handleGoogleLogin} 
+          variant="outline" 
+          className="w-full border border-gray-200 text-gray-700 py-6 rounded-xl font-medium hover:bg-gray-50 hover:text-gray-900 flex items-center justify-center gap-2 shadow-sm transition-all"
+        >
           <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-5 w-5" />
           Masuk dengan Google
         </Button>
