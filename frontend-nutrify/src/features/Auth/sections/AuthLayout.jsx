@@ -1,9 +1,25 @@
 import nutrifyLogo from "@/assets/nutrify-logo.png"
-import mockupImg from "@/assets/logo/Logo 2.png"
+import mockupImg from "@/assets/Login.png"
+import { motion } from "framer-motion"
+import { Link } from "react-router-dom"
+import { ArrowLeft } from "lucide-react"
 
 export default function AuthLayout({ children, isRegister }) {
+  // Variasi animasi untuk seluruh halaman (fade + slight scale)
+  const pageVariants = {
+    initial: { opacity: 0, x: isRegister ? 50 : -50 },
+    animate: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    exit: { opacity: 0, x: isRegister ? 50 : -50, transition: { duration: 0.4, ease: "easeIn" } }
+  };
+
   return (
-    <div className="min-h-screen flex w-full">
+    <motion.div 
+      className="h-screen overflow-hidden flex w-full"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       {/* Left Side - Green Background */}
       <div className={`hidden lg:flex w-1/2 bg-gradient-to-br from-[#12B76A] to-[#087F5B] relative overflow-hidden flex-col items-center justify-center p-12 ${isRegister ? 'order-2' : ''}`}>
         
@@ -28,10 +44,17 @@ export default function AuthLayout({ children, isRegister }) {
 
       {/* Right Side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-white relative">
+        
+        {/* Back Button */}
+        <Link to="/" className="absolute top-8 left-8 flex items-center gap-2 text-gray-400 hover:text-[#12B76A] transition-colors z-20 group">
+          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          <span className="text-sm font-semibold">Beranda</span>
+        </Link>
+
         <div className="w-full max-w-md px-8 py-12 relative z-10">
           {children}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, useLocation } from "react-router-dom"
+import { AnimatePresence } from "framer-motion"
 
 import LandingPage from "./features/LandingPage/LandingPage"
 import LoginPage from "./features/Auth/LoginPage"
@@ -10,8 +11,11 @@ import ScanPage from "./features/Scan/pages/ScanPage";
 import HistoryPage from "./features/History/pages/HistoryPage";
 
 function App() {
+  const location = useLocation()
+
   return (
-      <Routes>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -24,6 +28,7 @@ function App() {
           <Route path="/history" element={<HistoryPage />} />
         </Route>
       </Routes>
+    </AnimatePresence>
   )
 }
 

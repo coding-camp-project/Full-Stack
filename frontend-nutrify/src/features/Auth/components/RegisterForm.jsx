@@ -2,6 +2,8 @@ import { useState } from "react"
 import { Mail, Lock, Eye, EyeOff, ArrowRight, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link, useNavigate } from "react-router-dom"
+import { signInWithPopup } from "firebase/auth"
+import { auth, googleProvider } from "@/config/firebase"
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -10,6 +12,17 @@ export default function RegisterForm() {
   const handleRegister = (e) => {
     e.preventDefault()
     navigate("/dashboard")
+  }
+
+  const handleGoogleRegister = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log("Berhasil daftar/masuk dengan Google!", result.user);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Gagal daftar dengan Google:", error);
+      alert("Gagal daftar dengan Google. Pastikan konfigurasi Firebase sudah benar.");
+    }
   }
 
   return (
@@ -93,7 +106,12 @@ export default function RegisterForm() {
       </div>
 
       <div className="mt-6">
-        <Button type="button" onClick={() => navigate("/dashboard")} variant="outline" className="w-full border border-gray-200 text-gray-700 py-6 rounded-xl font-medium hover:bg-gray-50 hover:text-gray-900 flex items-center justify-center gap-2 shadow-sm transition-all">
+        <Button 
+          type="button" 
+          onClick={handleGoogleRegister} 
+          variant="outline" 
+          className="w-full border border-gray-200 text-gray-700 py-6 rounded-xl font-medium hover:bg-gray-50 hover:text-gray-900 flex items-center justify-center gap-2 shadow-sm transition-all"
+        >
           <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="h-5 w-5" />
           Daftar dengan Google
         </Button>

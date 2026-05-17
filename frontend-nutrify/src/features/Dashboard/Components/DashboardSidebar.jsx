@@ -4,8 +4,11 @@ import {
   ScanSearch,
   History,
   Plus,
+  LogOut,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "@/config/firebase";
 
 import logoNutrify from "../../../assets/logo/Logo 2.png";
 
@@ -20,6 +23,17 @@ const menuButtonClass =
   "relative z-20 flex h-11.5 w-full cursor-pointer items-center gap-3 rounded-xl px-5 text-[15px] font-medium text-white transition-all duration-200 hover:translate-x-1";
 
 function DashboardSidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/");
+    } catch (error) {
+      console.error("Gagal logout:", error);
+    }
+  };
+
   return (
     <aside className="relative flex h-screen w-65 shrink-0 flex-col overflow-hidden bg-linear-to-b from-[#04A16E] to-[#036245] px-5 py-7">
       
@@ -86,8 +100,8 @@ function DashboardSidebar() {
           </button>
 
           {/* LOGOUT */}
-          <button className={menuButtonClass}>
-            <Plus size={18} strokeWidth={2.2} />
+          <button onClick={handleLogout} className={menuButtonClass}>
+            <LogOut size={18} strokeWidth={2.2} />
 
             <span>Logout</span>
           </button>
