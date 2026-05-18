@@ -1,47 +1,84 @@
-let users = [];
-let nextId = 1;
+import User from "../models/user.model.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-export const createUser = (userData) => {
-  const user = {
-    id: nextId++,
-    ...userData,
-  };
-
-  users.push(user);
-  return user;
+// Generate JWT Token
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
 };
 
-export const getAllUsers = () => {
-  return users;
-};
+export const registerUser = async (userData) => {
+  const { name, email, password } = userData;
 
-export const getUserById = (id) => {
-  return users.find((user) => user.id === Number(id));
-};
-
-export const updateUser = (id, userData) => {
-  const userIndex = users.findIndex((user) => user.id === Number(id));
-
-  if (userIndex === -1) {
-    return null;
+  // Check if email already exists
+  const userExists = await User.findOne({ email });
+  if (userExists) {
+    throw new Error("Email already registered");
   }
 
-  users[userIndex] = {
-    ...users[userIndex],
-    ...userData,
-    id: users[userIndex].id,
-  };
+  // Hash password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
-  return users[userIndex];
+  // Create user in DB
+  const user = await User.create({
+    name,
+    email,
+    password: hashedPassword,
+  });
+
+  return {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    token: generateToken(user._id),
+  };
 };
 
-export const deleteUser = (id) => {
-  const userIndex = users.findIndex((user) => user.id === Number(id));
-
-  if (userIndex === -1) {
-    return null;
+export const loginUser = async (email, password) => {
+  // Find user by email
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error("Invalid email or password");
   }
 
-  const [deletedUser] = users.splice(userIndex, 1);
-  return deletedUser;
+  // Compare password
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error("Invalid email or password");
+  }
+
+  return {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    token: generateToken(user._id),
+  };
+};
+
+export const getAllUsers = async () => {
+  return await User.find({}).select("-password");
+};
+
+export const getUserById = async (id) => {
+  return await User.findById(id).select("-password");
+};
+
+export const updateUser = async (id, userData) => {
+  // If updating password, hash it first
+  if (userData.password) {
+    const salt = await bcrypt.genSalt(10);
+    userData.password = await bcrypt.hash(userData.password, salt);
+  }
+
+  return await User.findByIdAndUpdate(id, userData, {
+    new: true,
+    runValidators: true,
+  }).select("-password");
+};
+
+export const deleteUser = async (id) => {
+  return await User.findByIdAndDelete(id);
 };
