@@ -5,6 +5,7 @@ import {
   History,
   Plus,
   LogOut,
+  UserCog,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
@@ -85,6 +86,13 @@ function DashboardSidebar() {
           <History size={18} strokeWidth={2.2} />
 
           <span>History</span>
+        </NavLink>
+
+        {/* PERSONALISASI */}
+        <NavLink to="/dashboard/personalization" className={menuLinkClass}>
+          <UserCog size={18} strokeWidth={2.2} />
+
+          <span>Personalisasi</span>
         </NavLink>
       </nav>
 
