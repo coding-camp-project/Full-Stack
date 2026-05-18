@@ -4,20 +4,60 @@ import { Button } from "@/components/ui/button"
 import { Link, useNavigate } from "react-router-dom"
 import { signInWithPopup } from "firebase/auth"
 import { auth, googleProvider } from "@/config/firebase"
+import axios from "axios"
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false)
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [agreeTerms, setAgreeTerms] = useState(false)
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault()
-    navigate("/dashboard")
+    
+    if (!agreeTerms) {
+      setError("Anda harus menyetujui Syarat & Ketentuan untuk mendaftar.")
+      return
+    }
+
+    setLoading(true)
+    setError("")
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/users/register", {
+        name,
+        email,
+        password,
+      })
+
+      // Simpan token JWT dan data user ke localStorage
+      const { token, name: registeredName, email: registeredEmail } = response.data.data
+      localStorage.setItem("userToken", token)
+      localStorage.setItem("userData", JSON.stringify({ name: registeredName, email: registeredEmail }))
+
+      console.log("Registrasi manual berhasil!")
+      navigate("/dashboard")
+    } catch (err) {
+      console.error("Gagal registrasi:", err)
+      const errorMessage = err.response?.data?.message || "Terjadi kesalahan. Silakan coba lagi."
+      setError(errorMessage)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleGoogleRegister = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       console.log("Berhasil daftar/masuk dengan Google!", result.user);
+      
+      // Simpan info Google User
+      localStorage.setItem("userData", JSON.stringify({ name: result.user.displayName, email: result.user.email }))
+      
       navigate("/dashboard");
     } catch (error) {
       console.error("Gagal daftar dengan Google:", error);
@@ -30,6 +70,12 @@ export default function RegisterForm() {
       <h2 className="text-3xl font-bold text-gray-900 mb-2">Buat Akun Baru</h2>
       <p className="text-gray-500 text-sm mb-8">Daftar sekarang dan nikmati fitur lengkap Nutrify.</p>
 
+      {error && (
+        <div className="mb-5 p-3.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium">
+          {error}
+        </div>
+      )}
+
       <form onSubmit={handleRegister} className="space-y-5">
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-gray-700">Nama Lengkap</label>
@@ -40,6 +86,9 @@ export default function RegisterForm() {
             <input 
               type="text" 
               placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
               className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-sm focus:ring-[#12B76A] focus:border-[#12B76A] outline-none transition-all bg-gray-50 focus:bg-white"
             />
           </div>
@@ -54,6 +103,9 @@ export default function RegisterForm() {
             <input 
               type="email" 
               placeholder="john@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-sm focus:ring-[#12B76A] focus:border-[#12B76A] outline-none transition-all bg-gray-50 focus:bg-white"
             />
           </div>
@@ -67,7 +119,11 @@ export default function RegisterForm() {
             </div>
             <input 
               type={showPassword ? "text" : "password"} 
-              placeholder="Minimal 8 karakter"
+              placeholder="Minimal 6 karakter"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
               className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl text-sm focus:ring-[#12B76A] focus:border-[#12B76A] outline-none transition-all bg-gray-50 focus:bg-white"
             />
             <button 
@@ -85,6 +141,8 @@ export default function RegisterForm() {
             <input 
               id="agree-terms" 
               type="checkbox" 
+              checked={agreeTerms}
+              onChange={(e) => setAgreeTerms(e.target.checked)}
               className="h-4 w-4 text-[#12B76A] focus:ring-[#12B76A] border-gray-300 rounded cursor-pointer"
             />
             <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-700 cursor-pointer">
@@ -93,8 +151,12 @@ export default function RegisterForm() {
           </div>
         </div>
 
-        <Button type="submit" className="w-full bg-[#469C7B] hover:bg-[#388668] text-white py-6 rounded-xl text-base font-semibold transition-all group mt-4 shadow-md">
-          Daftar
+        <Button 
+          type="submit" 
+          disabled={loading}
+          className="w-full bg-[#469C7B] hover:bg-[#388668] text-white py-6 rounded-xl text-base font-semibold transition-all group mt-4 shadow-md disabled:opacity-75 disabled:cursor-not-allowed"
+        >
+          {loading ? "Mendaftar..." : "Daftar"}
           <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
         </Button>
       </form>
