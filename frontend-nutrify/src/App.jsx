@@ -9,6 +9,7 @@ import DashboardPage from "./features/Dashboard/pages/DashboardPage"
 import ChatbotPage from "./features/Chatbot/pages/ChatbotPage";
 import ScanPage from "./features/Scan/pages/ScanPage";
 import HistoryPage from "./features/History/pages/HistoryPage";
+import PersonalizationPage from "./features/Personalisasi/pages/PersonalizationPage";
 
 function App() {
   const location = useLocation()
@@ -26,6 +27,7 @@ function App() {
           <Route path="/chatbot" element={<ChatbotPage />} />
           <Route path="/scan" element={<ScanPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/personalisasi" element={<PersonalizationPage />} />
         </Route>
       </Routes>
     </AnimatePresence>

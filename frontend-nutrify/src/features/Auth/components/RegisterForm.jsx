@@ -28,19 +28,15 @@ export default function RegisterForm() {
     setError("")
 
     try {
-      const response = await axios.post("http://localhost:5000/api/users/register", {
+      await axios.post("http://localhost:5000/api/users/register", {
         name,
         email,
         password,
       })
 
-      // Simpan token JWT dan data user ke localStorage
-      const { token, name: registeredName, email: registeredEmail } = response.data.data
-      localStorage.setItem("userToken", token)
-      localStorage.setItem("userData", JSON.stringify({ name: registeredName, email: registeredEmail }))
-
       console.log("Registrasi manual berhasil!")
-      navigate("/dashboard")
+      alert("Registrasi berhasil! Silakan masuk dengan akun baru Anda.")
+      navigate("/login")
     } catch (err) {
       console.error("Gagal registrasi:", err)
       const errorMessage = err.response?.data?.message || "Terjadi kesalahan. Silakan coba lagi."

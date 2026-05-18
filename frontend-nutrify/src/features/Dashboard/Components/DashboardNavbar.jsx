@@ -12,8 +12,21 @@ import profileImage from "../../../assets/logo/Logo 2.png";
 
 function DashboardNavbar() {
   const [openDropdown, setOpenDropdown] = useState(false);
+  const [user, setUser] = useState({ name: "John Doe", email: "johndoe@gmail.com" });
 
   const dropdownRef = useRef(null);
+
+  // Load user data from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("userData");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error("Gagal parse userData", e);
+      }
+    }
+  }, []);
 
   // close dropdown when click outside
   useEffect(() => {
@@ -73,7 +86,7 @@ function DashboardNavbar() {
 
             {/* NAME */}
             <span className="text-[18px] font-semibold text-[#1E1E1E]">
-              Hi, John Doe
+              Hi, {user.name}
             </span>
 
             {/* ICON */}
@@ -93,11 +106,11 @@ function DashboardNavbar() {
               {/* TOP */}
               <div className="border-b border-[#F1F1F1] px-5 py-4">
                 <p className="text-[16px] font-semibold text-[#1E1E1E]">
-                  John Doe
+                  {user.name}
                 </p>
 
                 <p className="text-[13px] text-[#9CA3AF]">
-                  johndoe@gmail.com
+                  {user.email}
                 </p>
               </div>
 
@@ -112,11 +125,6 @@ function DashboardNavbar() {
                 <button className="flex items-center gap-3 px-5 py-3 text-left text-[14px] text-[#1E1E1E] transition-all hover:bg-[#F8F8F8]">
                   <Settings size={18} />
                   Settings
-                </button>
-
-                <button className="flex items-center gap-3 px-5 py-3 text-left text-[14px] text-[#EF4444] transition-all hover:bg-red-50">
-                  <LogOut size={18} />
-                  Logout
                 </button>
               </div>
             </div>

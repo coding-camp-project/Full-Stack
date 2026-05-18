@@ -26,9 +26,9 @@ export default function LoginForm() {
       })
 
       // Simpan token JWT dan data user ke localStorage
-      const { token, name, email: userEmail } = response.data.data
+      const { token, name, email: userEmail, _id } = response.data.data
       localStorage.setItem("userToken", token)
-      localStorage.setItem("userData", JSON.stringify({ name, email: userEmail }))
+      localStorage.setItem("userData", JSON.stringify({ id: _id, name, email: userEmail }))
 
       console.log("Login manual berhasil!")
       navigate("/dashboard")

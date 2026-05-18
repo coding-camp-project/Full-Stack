@@ -5,6 +5,7 @@ import {
   History,
   Plus,
   LogOut,
+  Sliders,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
@@ -27,7 +28,13 @@ function DashboardSidebar() {
 
   const handleLogout = async () => {
     try {
+      // Clear manual login session details
+      localStorage.removeItem("userToken");
+      localStorage.removeItem("userData");
+      
+      // Clear Firebase session if active
       await signOut(auth);
+      
       navigate("/");
     } catch (error) {
       console.error("Gagal logout:", error);
@@ -85,6 +92,13 @@ function DashboardSidebar() {
           <History size={18} strokeWidth={2.2} />
 
           <span>History</span>
+        </NavLink>
+
+        {/* PERSONALISASI */}
+        <NavLink to="/personalisasi" className={menuLinkClass}>
+          <Sliders size={18} strokeWidth={2.2} />
+
+          <span>Personalisasi</span>
         </NavLink>
       </nav>
 
