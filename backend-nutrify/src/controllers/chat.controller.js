@@ -20,7 +20,7 @@ export const handleChat = async (req, res) => {
     // Map history to Gemini format
     const contents = messages.map(msg => ({
       role: msg.sender === "user" ? "user" : "model",
-      parts: [{ text: msg.text }]
+      parts: [{ text: msg.message }]
     }));
 
     // Personalization context
