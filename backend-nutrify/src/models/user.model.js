@@ -23,6 +23,55 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"],
     },
+    // Personalization Fields
+    birthDate: {
+      type: String,
+      default: "",
+    },
+    gender: {
+      type: String,
+      default: "",
+    },
+    height: {
+      type: Number,
+      default: 0,
+    },
+    weight: {
+      type: Number,
+      default: 0,
+    },
+    activityLevel: {
+      type: String,
+      default: "",
+    },
+    healthConditions: {
+      type: [String],
+      default: [],
+    },
+    otherConditions: {
+      type: String,
+      default: "",
+    },
+    allergies: {
+      type: [String],
+      default: [],
+    },
+    foodRestrictions: {
+      type: [String],
+      default: [],
+    },
+    primaryGoal: {
+      type: String,
+      default: "",
+    },
+    foodPreferences: {
+      type: [String],
+      default: [],
+    },
+    additionalNotes: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

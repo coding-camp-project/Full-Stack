@@ -4,22 +4,51 @@ import { Button } from "@/components/ui/button"
 import { Link, useNavigate } from "react-router-dom"
 import { signInWithPopup } from "firebase/auth"
 import { auth, googleProvider } from "@/config/firebase"
+import axios from "axios"
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
-    navigate("/dashboard")
+    setLoading(true)
+    setError("")
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/users/login", {
+        email,
+        password,
+      })
+
+      // Simpan token JWT dan data user ke localStorage
+      const { token, name, email: userEmail, _id } = response.data.data
+      localStorage.setItem("userToken", token)
+      localStorage.setItem("userData", JSON.stringify({ id: _id, name, email: userEmail }))
+
+      console.log("Login manual berhasil!")
+      navigate("/dashboard")
+    } catch (err) {
+      console.error("Gagal login:", err)
+      const errorMessage = err.response?.data?.message || "Email atau kata sandi salah."
+      setError(errorMessage)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      // Mendapatkan data pengguna jika diperlukan
-      // const user = result.user;
       console.log("Berhasil masuk dengan Google!", result.user);
+      
+      // Simpan info Google User
+      localStorage.setItem("userData", JSON.stringify({ name: result.user.displayName, email: result.user.email }))
+      
       navigate("/dashboard");
     } catch (error) {
       console.error("Gagal masuk dengan Google:", error);
@@ -32,6 +61,12 @@ export default function LoginForm() {
       <h2 className="text-3xl font-bold text-gray-900 mb-2">Halo, Selamat Datang Kembali!</h2>
       <p className="text-gray-500 text-sm mb-8">Silakan masuk ke akun Anda untuk melanjutkan.</p>
 
+      {error && (
+        <div className="mb-5 p-3.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium">
+          {error}
+        </div>
+      )}
+
       <form onSubmit={handleLogin} className="space-y-5">
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-gray-700">Alamat Email</label>
@@ -42,6 +77,9 @@ export default function LoginForm() {
             <input 
               type="email" 
               placeholder="john@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl text-sm focus:ring-[#12B76A] focus:border-[#12B76A] outline-none transition-all bg-gray-50 focus:bg-white"
             />
           </div>
@@ -55,7 +93,10 @@ export default function LoginForm() {
             </div>
             <input 
               type={showPassword ? "text" : "password"} 
-              placeholder="Minimal 8 karakter"
+              placeholder="Minimal 6 karakter"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl text-sm focus:ring-[#12B76A] focus:border-[#12B76A] outline-none transition-all bg-gray-50 focus:bg-white"
             />
             <button 
@@ -84,8 +125,12 @@ export default function LoginForm() {
           </a>
         </div>
 
-        <Button type="submit" className="w-full bg-[#469C7B] hover:bg-[#388668] text-white py-6 rounded-xl text-base font-semibold transition-all group mt-4 shadow-md">
-          Masuk
+        <Button 
+          type="submit" 
+          disabled={loading}
+          className="w-full bg-[#469C7B] hover:bg-[#388668] text-white py-6 rounded-xl text-base font-semibold transition-all group mt-4 shadow-md disabled:opacity-75 disabled:cursor-not-allowed"
+        >
+          {loading ? "Masuk..." : "Masuk"}
           <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
         </Button>
       </form>
