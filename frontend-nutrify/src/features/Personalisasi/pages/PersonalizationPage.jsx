@@ -975,103 +975,117 @@ export default function PersonalizationPage() {
         <div className="flex flex-col lg:flex-row gap-6 items-stretch w-full">
           
           {/* SUMMARY BOX (75% width on desktop) */}
-          <div className="w-full lg:w-[75%] bg-white p-6 rounded-3xl border border-[#E7E7E7] shadow-xs flex flex-col justify-center">
-            <h3 className="text-xs font-bold text-gray-800 mb-5 flex items-center gap-2">
-              <span className="text-[#1E7F4E]">📋</span>
-              Ringkasan Profil Kesehatanmu
-            </h3>
+          <div className="w-full lg:w-[75%] bg-white p-6 md:p-8 rounded-[28px] border border-[#E7E7E7] shadow-xs flex flex-col justify-center select-none">
+            
+            {/* Header Area */}
+            <div className="flex items-start gap-4 mb-6">
+              {/* Icon Badge */}
+              <div 
+                className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+                style={{ backgroundColor: "#EBF7F0", color: "#1E7F4E" }}
+              >
+                <FileText size={26} />
+              </div>
+              {/* Header Text */}
+              <div>
+                <h3 className="text-[18px] font-bold text-[#1E1E1E]">Ringkasan Profil Kesehatanmu</h3>
+                <p className="text-[13px] text-gray-500 mt-1">Berikut ringkasan informasi kesehatan berdasarkan data yang kamu berikan.</p>
+              </div>
+            </div>
             
             {/* 6 Grid columns side-by-side on desktop */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              
               {/* Usia */}
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-col items-center bg-white border border-[#E7E7E7] rounded-2xl px-2.5 py-5 md:px-4 text-center min-h-[175px] justify-between">
                 <div 
-                  className="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: "#EBF7F0", borderColor: "#D1F2DE", color: "#1E7F4E" }}
+                  className="w-13 h-13 rounded-full flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: "#EBF7F0", color: "#1E7F4E" }}
                 >
-                  <Calendar size={14} />
+                  <Calendar size={20} />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold text-gray-400">Usia</p>
-                  <p className="text-xs font-bold text-gray-700 truncate">{calculateAge(formData.birthDate)}</p>
-                </div>
+                <p className="text-[12px] font-semibold text-gray-400 mt-2.5">Usia</p>
+                <div className="w-full border-t border-dashed border-gray-200 my-2.5" />
+                <p className="text-[13px] sm:text-[14px] font-bold text-gray-800 break-normal w-full">
+                  {calculateAge(formData.birthDate) || "-"}
+                </p>
               </div>
 
               {/* Jenis Kelamin */}
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-col items-center bg-white border border-[#E7E7E7] rounded-2xl px-2.5 py-5 md:px-4 text-center min-h-[175px] justify-between">
                 <div 
-                  className="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: "#EBF7F0", borderColor: "#D1F2DE", color: "#1E7F4E" }}
+                  className="w-13 h-13 rounded-full flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: "#EBF7F0", color: "#1E7F4E" }}
                 >
-                  <User size={14} />
+                  <User size={20} />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold text-gray-400">Jenis Kelamin</p>
-                  <p className="text-xs font-bold text-gray-700 truncate">{formData.gender || "-"}</p>
-                </div>
+                <p className="text-[12px] font-semibold text-gray-400 mt-2.5">Jenis Kelamin</p>
+                <div className="w-full border-t border-dashed border-gray-200 my-2.5" />
+                <p className="text-[13px] sm:text-[14px] font-bold text-gray-800 break-normal w-full">
+                  {formData.gender || "-"}
+                </p>
               </div>
 
               {/* Tinggi / Berat */}
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-col items-center bg-white border border-[#E7E7E7] rounded-2xl px-2.5 py-5 md:px-4 text-center min-h-[175px] justify-between">
                 <div 
-                  className="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: "#EBF7F0", borderColor: "#D1F2DE", color: "#1E7F4E" }}
+                  className="w-13 h-13 rounded-full flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: "#EBF7F0", color: "#1E7F4E" }}
                 >
-                  <Scale size={14} />
+                  <Scale size={20} />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold text-gray-400">Tinggi / Berat</p>
-                  <p className="text-xs font-bold text-gray-700 truncate">
-                    {formData.height && formData.weight ? `${formData.height} cm / ${formData.weight} kg` : "-"}
-                  </p>
-                </div>
+                <p className="text-[12px] font-semibold text-gray-400 mt-2.5">Tinggi / Berat</p>
+                <div className="w-full border-t border-dashed border-gray-200 my-2.5" />
+                <p className="text-[13px] sm:text-[14px] font-bold text-gray-800 break-normal w-full">
+                  {formData.height && formData.weight ? `${formData.height} cm / ${formData.weight} kg` : "-"}
+                </p>
               </div>
 
               {/* Aktivitas */}
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-col items-center bg-white border border-[#E7E7E7] rounded-2xl px-2.5 py-5 md:px-4 text-center min-h-[175px] justify-between">
                 <div 
-                  className="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: "#EBF7F0", borderColor: "#D1F2DE", color: "#1E7F4E" }}
+                  className="w-13 h-13 rounded-full flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: "#EBF7F0", color: "#1E7F4E" }}
                 >
-                  <Activity size={14} />
+                  <Activity size={20} />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold text-gray-400">Aktivitas</p>
-                  <p className="text-xs font-bold text-gray-700 truncate">{formData.activityLevel || "-"}</p>
-                </div>
+                <p className="text-[12px] font-semibold text-gray-400 mt-2.5">Aktivitas</p>
+                <div className="w-full border-t border-dashed border-gray-200 my-2.5" />
+                <p className="text-[13px] sm:text-[14px] font-bold text-gray-800 break-normal w-full">
+                  {formData.activityLevel || "-"}
+                </p>
               </div>
 
               {/* Kondisi */}
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-col items-center bg-white border border-[#E7E7E7] rounded-2xl px-2.5 py-5 md:px-4 text-center min-h-[175px] justify-between">
                 <div 
-                  className="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: "#EBF7F0", borderColor: "#D1F2DE", color: "#1E7F4E" }}
+                  className="w-13 h-13 rounded-full flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: "#EBF7F0", color: "#1E7F4E" }}
                 >
-                  <Heart size={14} />
+                  <Heart size={20} />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold text-gray-400">Kondisi</p>
-                  <p className="text-xs font-bold text-gray-700 truncate" title={formData.healthConditions.filter(c => c !== "Tidak Ada").join(", ") || "Tidak Ada"}>
-                    {formData.healthConditions.filter(c => c !== "Tidak Ada").join(", ") || "Tidak Ada"}
-                  </p>
-                </div>
+                <p className="text-[12px] font-semibold text-gray-400 mt-2.5">Kondisi</p>
+                <div className="w-full border-t border-dashed border-gray-200 my-2.5" />
+                <p className="text-[13px] sm:text-[14px] font-bold text-gray-800 break-normal w-full" title={formData.healthConditions.filter(c => c !== "Tidak Ada").join(", ") || "Tidak Ada"}>
+                  {formData.healthConditions.filter(c => c !== "Tidak Ada").join(", ") || "Tidak Ada"}
+                </p>
               </div>
 
               {/* Tujuan */}
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-col items-center bg-white border border-[#E7E7E7] rounded-2xl px-2.5 py-5 md:px-4 text-center min-h-[175px] justify-between">
                 <div 
-                  className="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: "#EBF7F0", borderColor: "#D1F2DE", color: "#1E7F4E" }}
+                  className="w-13 h-13 rounded-full flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: "#EBF7F0", color: "#1E7F4E" }}
                 >
-                  <Target size={14} />
+                  <Target size={20} />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold text-gray-400">Tujuan</p>
-                  <p className="text-xs font-bold text-gray-700 truncate" title={formData.primaryGoal}>
-                    {formData.primaryGoal || "-"}
-                  </p>
-                </div>
+                <p className="text-[12px] font-semibold text-gray-400 mt-2.5">Tujuan</p>
+                <div className="w-full border-t border-dashed border-gray-200 my-2.5" />
+                <p className="text-[13px] sm:text-[14px] font-bold text-gray-800 break-normal w-full" title={formData.primaryGoal}>
+                  {formData.primaryGoal || "-"}
+                </p>
               </div>
+
             </div>
           </div>
 

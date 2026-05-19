@@ -77,7 +77,7 @@ function ChatSection() {
               {loading && (
                 <div className="flex w-full justify-start">
                   <div className="flex max-w-[75%] items-end gap-3 flex-row">
-                    <div className="flex h-10.5 w-10.5 items-center justify-center rounded-full bg-[#E8FFF4]">
+                    <div className="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full bg-[#E8FFF4]">
                       <img
                         src={logo}
                         alt="bot"

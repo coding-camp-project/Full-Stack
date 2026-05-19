@@ -40,7 +40,7 @@ function ChatMessage({
         
         {/* AVATAR */}
         <div
-          className={`flex h-10.5 w-10.5 items-center justify-center rounded-full overflow-hidden ${
+          className={`flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full overflow-hidden ${
             isBot
               ? "bg-[#E8FFF4]"
               : "bg-[#DCFCE7]"
