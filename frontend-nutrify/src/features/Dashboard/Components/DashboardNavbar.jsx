@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import {
   Bell,
@@ -8,11 +9,12 @@ import {
   LogOut,
 } from "lucide-react";
 
-import profileImage from "../../../assets/logo/Logo 2.png";
+import defaultProfileImage from "../../../assets/logo/Logo 2.png";
 
 function DashboardNavbar() {
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [user, setUser] = useState({ name: "John Doe", email: "johndoe@gmail.com" });
+  const [user, setUser] = useState({ name: "John Doe", email: "johndoe@gmail.com", profileImage: "" });
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const dropdownRef = useRef(null);
 
@@ -78,7 +80,7 @@ function DashboardNavbar() {
             {/* AVATAR */}
             <div className="h-13 w-13 overflow-hidden rounded-full border-[3px] border-[#4BAA7A]">
               <img
-                src={profileImage}
+                src={user.profileImage || defaultProfileImage}
                 alt="Profile"
                 className="h-full w-full object-cover"
               />
@@ -105,11 +107,11 @@ function DashboardNavbar() {
               
               {/* TOP */}
               <div className="border-b border-[#F1F1F1] px-5 py-4">
-                <p className="text-[16px] font-semibold text-[#1E1E1E]">
+                <p className="text-[16px] font-semibold text-[#1E1E1E] truncate max-w-full">
                   {user.name}
                 </p>
 
-                <p className="text-[13px] text-[#9CA3AF]">
+                <p className="text-[13px] text-[#9CA3AF] truncate max-w-full">
                   {user.email}
                 </p>
               </div>
@@ -117,12 +119,24 @@ function DashboardNavbar() {
               {/* MENU */}
               <div className="flex flex-col py-2">
                 
-                <button className="flex items-center gap-3 px-5 py-3 text-left text-[14px] text-[#1E1E1E] transition-all hover:bg-[#F8F8F8]">
+                <button 
+                  onClick={() => {
+                    setSearchParams({ profile: "true" });
+                    setOpenDropdown(false);
+                  }}
+                  className="flex items-center gap-3 px-5 py-3 text-left text-[14px] text-[#1E1E1E] transition-all hover:bg-[#F8F8F8]"
+                >
                   <User size={18} />
                   Profile
                 </button>
 
-                <button className="flex items-center gap-3 px-5 py-3 text-left text-[14px] text-[#1E1E1E] transition-all hover:bg-[#F8F8F8]">
+                <button 
+                  onClick={() => {
+                    setSearchParams({ profile: "true" });
+                    setOpenDropdown(false);
+                  }}
+                  className="flex items-center gap-3 px-5 py-3 text-left text-[14px] text-[#1E1E1E] transition-all hover:bg-[#F8F8F8]"
+                >
                   <Settings size={18} />
                   Settings
                 </button>

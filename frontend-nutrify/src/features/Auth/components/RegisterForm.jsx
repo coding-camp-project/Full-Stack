@@ -14,6 +14,7 @@ export default function RegisterForm() {
   const [agreeTerms, setAgreeTerms] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
   const navigate = useNavigate()
 
   const handleRegister = async (e) => {
@@ -35,8 +36,7 @@ export default function RegisterForm() {
       })
 
       console.log("Registrasi manual berhasil!")
-      alert("Registrasi berhasil! Silakan masuk dengan akun baru Anda.")
-      navigate("/login")
+      setIsSuccess(true)
     } catch (err) {
       console.error("Gagal registrasi:", err)
       const errorMessage = err.response?.data?.message || "Terjadi kesalahan. Silakan coba lagi."
@@ -59,6 +59,29 @@ export default function RegisterForm() {
       console.error("Gagal daftar dengan Google:", error);
       alert("Gagal daftar dengan Google. Pastikan konfigurasi Firebase sudah benar.");
     }
+  }
+
+  if (isSuccess) {
+    return (
+      <div className="w-full flex flex-col items-center justify-center py-8 text-center animate-in fade-in zoom-in duration-300">
+        <div className="w-20 h-20 bg-[#EBF7F0] rounded-full flex items-center justify-center mb-6 shadow-inner border border-[#D1F2DE]">
+          <svg className="w-10 h-10 text-[#12B76A] animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 className="text-3xl font-extrabold text-gray-900 mb-3 tracking-tight">Registrasi Berhasil!</h2>
+        <p className="text-gray-500 text-sm max-w-sm mb-8 leading-relaxed">
+          Akun Anda telah berhasil dibuat. Silakan masuk untuk menikmati semua fitur terbaik dari Nutrify.
+        </p>
+        <Button 
+          onClick={() => navigate("/login")}
+          className="w-full bg-[#469C7B] hover:bg-[#388668] text-white py-6 rounded-xl text-base font-semibold transition-all shadow-md flex items-center justify-center gap-2 group animate-bounce"
+        >
+          Masuk ke Akun Anda
+          <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+        </Button>
+      </div>
+    )
   }
 
   return (
@@ -139,10 +162,11 @@ export default function RegisterForm() {
               type="checkbox" 
               checked={agreeTerms}
               onChange={(e) => setAgreeTerms(e.target.checked)}
+              required
               className="h-4 w-4 text-[#12B76A] focus:ring-[#12B76A] border-gray-300 rounded cursor-pointer"
             />
             <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-700 cursor-pointer">
-              Saya setuju dengan Syarat & Ketentuan
+              Saya setuju dengan Syarat & Ketentuan <span className="text-red-500">*</span>
             </label>
           </div>
         </div>

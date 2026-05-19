@@ -7,7 +7,7 @@ import {
   LogOut,
   Sliders,
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "@/config/firebase";
 
@@ -25,6 +25,7 @@ const menuButtonClass =
 
 function DashboardSidebar() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleLogout = async () => {
     try {
@@ -107,7 +108,10 @@ function DashboardSidebar() {
         <div className="flex flex-col gap-5">
           
           {/* ACCOUNT */}
-          <button className={menuButtonClass}>
+          <button 
+            onClick={() => setSearchParams({ profile: "true" })}
+            className={menuButtonClass}
+          >
             <Plus size={18} strokeWidth={2.2} />
 
             <span>Account</span>
