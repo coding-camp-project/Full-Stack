@@ -1,36 +1,71 @@
 import {
-  Mic,
   SendHorizontal,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import logo from "../../../assets/logo/Logo 2.png";
+import useSpeechRecognition from "../hooks/useSpeechRecognition";
+import ListeningIndicator from "./ListeningIndicator";
+import VoiceButton from "./VoiceButton";
 
 function ChatInput() {
+  const [message, setMessage] = useState("");
+  const {
+    transcript,
+    listening,
+    startListening,
+    stopListening,
+    resetTranscript,
+    error,
+  } = useSpeechRecognition();
+
+  useEffect(() => {
+    if (transcript) {
+      setMessage(transcript);
+    }
+  }, [transcript]);
+
+  const handleVoiceToggle = () => {
+    if (listening) {
+      stopListening();
+      return;
+    }
+
+    resetTranscript();
+    startListening("id-ID");
+  };
+
   return (
-    <div className="mx-auto mt-10 flex w-full max-w-325 items-center rounded-full border border-[#222]/30 bg-white px-5 py-3 shadow-sm">
+    <div className="relative mx-auto mt-10 flex w-full max-w-325 items-center rounded-full border border-[#222]/30 bg-white px-5 py-3 shadow-sm transition-all duration-300 focus-within:border-[#49AE84]/50 focus-within:shadow-[0_14px_40px_rgba(73,174,132,0.14)]">
+      {listening && <ListeningIndicator />}
+
       
       {/* LEFT */}
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 flex-1 items-center gap-3">
         
         <img
           src={logo}
           alt="logo"
-          className="h-8.5 w-8.5 object-contain"
+          className="h-8.5 w-8.5 shrink-0 object-contain"
         />
 
         <input
           type="text"
           placeholder="ask anything!"
-          className="w-full min-w-225 border-none bg-transparent text-[15px] text-[#333] outline-none placeholder:text-[#999]"
+          value={message}
+          onChange={(event) => setMessage(event.target.value)}
+          className="w-full min-w-0 border-none bg-transparent text-[15px] text-[#333] outline-none placeholder:text-[#999]"
         />
       </div>
 
       {/* RIGHT */}
       <div className="ml-auto flex items-center gap-4">
         
-        <button className="text-[#49AE84]">
-          <Mic size={22} />
-        </button>
+        <VoiceButton
+          listening={listening}
+          error={error}
+          onClick={handleVoiceToggle}
+        />
 
         <button className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white transition-all duration-200 hover:scale-105">
           <SendHorizontal size={20} />
