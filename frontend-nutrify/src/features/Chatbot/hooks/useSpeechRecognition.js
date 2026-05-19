@@ -18,16 +18,30 @@ const getPermissionErrorMessage = (permissionError) => {
   return "Unable to access the microphone.";
 };
 
-function useSpeechRecognition() {
+function useSpeechRecognition({ onTranscriptChange } = {}) {
   const recognitionRef = useRef(null);
   const restartTimerRef = useRef(null);
   const shouldListenRef = useRef(false);
   const finalTranscriptRef = useRef("");
   const mediaStreamRef = useRef(null);
+  const transcriptRef = useRef("");
+  const onTranscriptChangeRef = useRef(onTranscriptChange);
 
   const [transcript, setTranscript] = useState("");
   const [listening, setListening] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    onTranscriptChangeRef.current = onTranscriptChange;
+  }, [onTranscriptChange]);
+
+  const updateTranscript = useCallback((nextTranscript) => {
+    if (transcriptRef.current === nextTranscript) return;
+
+    transcriptRef.current = nextTranscript;
+    setTranscript(nextTranscript);
+    onTranscriptChangeRef.current?.(nextTranscript);
+  }, []);
 
   const stopMicrophoneStream = useCallback(() => {
     mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
@@ -36,8 +50,8 @@ function useSpeechRecognition() {
 
   const resetTranscript = useCallback(() => {
     finalTranscriptRef.current = "";
-    setTranscript("");
-  }, []);
+    updateTranscript("");
+  }, [updateTranscript]);
 
   const stopListening = useCallback(() => {
     shouldListenRef.current = false;
@@ -102,7 +116,7 @@ function useSpeechRecognition() {
           }
         }
 
-        setTranscript(`${finalTranscriptRef.current} ${interimTranscript}`.trim());
+        updateTranscript(`${finalTranscriptRef.current} ${interimTranscript}`.trim());
       };
 
       recognition.onerror = (event) => {
@@ -137,7 +151,7 @@ function useSpeechRecognition() {
         setListening(true);
       }
     },
-    [stopMicrophoneStream],
+    [stopMicrophoneStream, updateTranscript],
   );
 
   useEffect(() => {

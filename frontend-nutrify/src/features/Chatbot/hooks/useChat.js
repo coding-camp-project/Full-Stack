@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { sendChatMessage } from "../services/chatbotService";
-
 const createMessage = (sender, message, extra = {}) => ({
   id: `${sender}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
   sender,
@@ -19,6 +17,40 @@ const wait = (duration) =>
   new Promise((resolve) => {
     window.setTimeout(resolve, duration);
   });
+
+const createMockConversationId = () =>
+  `mock-conversation-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+const getMockReply = (message) => {
+  const normalizedMessage = message.toLowerCase();
+
+  if (normalizedMessage.includes("halo") || normalizedMessage.includes("hello")) {
+    return "Halo! Saya Nutrify AI Assistant. Ada yang bisa saya bantu tentang nutrisi hari ini?";
+  }
+
+  if (normalizedMessage.includes("nasi goreng")) {
+    return "Nasi goreng umumnya memiliki sekitar 450 sampai 650 kalori per porsi, tergantung minyak, telur, ayam, dan topping yang digunakan.";
+  }
+
+  if (normalizedMessage.includes("protein")) {
+    return "Untuk menu protein tinggi, kamu bisa memilih telur, dada ayam, ikan, tempe, tahu, greek yogurt, atau kacang-kacangan.";
+  }
+
+  if (normalizedMessage.includes("diet")) {
+    return "Diet sehat sebaiknya fokus pada porsi seimbang: karbohidrat kompleks, protein cukup, sayur, buah, lemak sehat, dan minum air yang cukup.";
+  }
+
+  return "Saya siap membantu sebagai Nutrify AI Assistant. Kamu bisa tanya kalori makanan, rekomendasi menu sehat, atau tips nutrisi harian.";
+};
+
+const sendMockChatMessage = async ({ message, conversationId }) => {
+  await wait(850);
+
+  return {
+    reply: getMockReply(message),
+    conversationId: conversationId || createMockConversationId(),
+  };
+};
 
 function useChat() {
   const [messages, setMessages] = useState([]);
@@ -54,7 +86,7 @@ function useChat() {
       setTyping(true);
 
       try {
-        const data = await sendChatMessage({
+        const data = await sendMockChatMessage({
           message: trimmedMessage,
           conversationId,
         });
