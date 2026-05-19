@@ -52,7 +52,7 @@ Aturan penting:
 3. Jika ditanya di luar topik kesehatan, nutrisi, atau diet, arahkan pengguna kembali dengan ramah ke topik utama Anda (Nutrify AI).
 `;
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const payload = {
       contents,
