@@ -8,7 +8,7 @@ import useSpeechRecognition from "../hooks/useSpeechRecognition";
 import ListeningIndicator from "./ListeningIndicator";
 import VoiceButton from "./VoiceButton";
 
-function ChatInput() {
+function ChatInput({ onSendMessage, loading = false }) {
   const [message, setMessage] = useState("");
   const {
     transcript,
@@ -35,8 +35,23 @@ function ChatInput() {
     startListening("id-ID");
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage || loading) return;
+
+    stopListening();
+    onSendMessage?.(trimmedMessage);
+    setMessage("");
+    resetTranscript();
+  };
+
   return (
-    <div className="relative mx-auto mt-10 flex w-full max-w-325 items-center rounded-full border border-[#222]/30 bg-white px-5 py-3 shadow-sm transition-all duration-300 focus-within:border-[#49AE84]/50 focus-within:shadow-[0_14px_40px_rgba(73,174,132,0.14)]">
+    <form
+      onSubmit={handleSubmit}
+      className="relative mx-auto mt-10 flex w-full max-w-325 items-center rounded-full border border-[#222]/30 bg-white px-5 py-3 shadow-sm transition-all duration-300 focus-within:border-[#49AE84]/50 focus-within:shadow-[0_14px_40px_rgba(73,174,132,0.14)]"
+    >
       {listening && <ListeningIndicator />}
 
       
@@ -67,11 +82,15 @@ function ChatInput() {
           onClick={handleVoiceToggle}
         />
 
-        <button className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white transition-all duration-200 hover:scale-105">
+        <button
+          type="submit"
+          disabled={loading || !message.trim()}
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white transition-all duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:bg-black/30 disabled:hover:scale-100"
+        >
           <SendHorizontal size={20} />
         </button>
       </div>
-    </div>
+    </form>
   );
 }
 
