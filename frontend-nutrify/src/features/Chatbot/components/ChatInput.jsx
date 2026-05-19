@@ -8,7 +8,7 @@ import useSpeechRecognition from "../hooks/useSpeechRecognition";
 import ListeningIndicator from "./ListeningIndicator";
 import VoiceButton from "./VoiceButton";
 
-function ChatInput({ onSendMessage, loading = false }) {
+function ChatInput({ onSendMessage, loading = false, voiceDisabled = false }) {
   const [message, setMessage] = useState("");
   const {
     transcript,
@@ -25,7 +25,15 @@ function ChatInput({ onSendMessage, loading = false }) {
     }
   }, [transcript]);
 
+  useEffect(() => {
+    if (voiceDisabled && listening) {
+      stopListening();
+    }
+  }, [voiceDisabled, listening, stopListening]);
+
   const handleVoiceToggle = () => {
+    if (voiceDisabled) return;
+
     if (listening) {
       stopListening();
       return;
@@ -78,7 +86,7 @@ function ChatInput({ onSendMessage, loading = false }) {
         
         <VoiceButton
           listening={listening}
-          error={error}
+          error={voiceDisabled ? "Nutrify AI is speaking" : error}
           onClick={handleVoiceToggle}
         />
 

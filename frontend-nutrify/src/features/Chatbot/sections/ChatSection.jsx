@@ -1,8 +1,12 @@
+import { useEffect, useRef } from "react";
+
 import WelcomeCard from "../components/WelcomeCard";
 import ChatInput from "../components/ChatInput";
 import ChatMessage from "../components/ChatMessage";
+import SpeakingIndicator from "../components/SpeakingIndicator";
 import TypingIndicator from "../components/TypingIndicator";
 import useChat from "../hooks/useChat";
+import useSpeechSynthesis from "../hooks/useSpeechSynthesis";
 
 function ChatSection() {
   const {
@@ -12,8 +16,28 @@ function ChatSection() {
     sendMessage,
     messagesEndRef,
   } = useChat();
+  const {
+    speaking,
+    speak,
+    stopSpeaking,
+  } = useSpeechSynthesis("id-ID");
+  const lastSpokenMessageIdRef = useRef(null);
 
   const hasMessages = messages.length > 0;
+  const latestMessage = messages[messages.length - 1];
+
+  useEffect(() => {
+    if (!latestMessage || latestMessage.sender !== "bot") return;
+    if (latestMessage.id === lastSpokenMessageIdRef.current) return;
+
+    lastSpokenMessageIdRef.current = latestMessage.id;
+    speak(latestMessage.message);
+  }, [latestMessage, speak]);
+
+  const handleSendMessage = (message) => {
+    stopSpeaking();
+    sendMessage(message);
+  };
 
   return (
     <div className="flex min-h-[82vh] flex-col justify-between">
@@ -38,8 +62,14 @@ function ChatSection() {
         )}
       </div>
 
+      {speaking && <SpeakingIndicator onStop={stopSpeaking} />}
+
       {/* INPUT */}
-      <ChatInput onSendMessage={sendMessage} loading={loading} />
+      <ChatInput
+        onSendMessage={handleSendMessage}
+        loading={loading}
+        voiceDisabled={speaking}
+      />
     </div>
   );
 }
