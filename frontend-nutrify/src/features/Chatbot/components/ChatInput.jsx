@@ -2,7 +2,7 @@ import {
   SendHorizontal,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import logo from "../../../assets/logo/Logo 2.png";
 import useSpeechRecognition from "../hooks/useSpeechRecognition";
@@ -16,25 +16,34 @@ function ChatInput({
   voiceDisabled = false,
 }) {
   const [message, setMessage] = useState("");
+  const handleTranscriptChange = useCallback((nextTranscript) => {
+    if (!nextTranscript) return;
+
+    setMessage((currentMessage) =>
+      currentMessage === nextTranscript ? currentMessage : nextTranscript
+    );
+  }, []);
+
   const {
-    transcript,
     listening,
     startListening,
     stopListening,
     resetTranscript,
     error,
-  } = useSpeechRecognition();
-
-  useEffect(() => {
-    if (transcript) {
-      setMessage(transcript);
-    }
-  }, [transcript]);
+  } = useSpeechRecognition({
+    onTranscriptChange: handleTranscriptChange,
+  });
 
   useEffect(() => {
     if (voiceDisabled && listening) {
-      stopListening();
+      const stopTimer = window.setTimeout(() => {
+        stopListening();
+      }, 0);
+
+      return () => window.clearTimeout(stopTimer);
     }
+
+    return undefined;
   }, [voiceDisabled, listening, stopListening]);
 
   const handleVoiceToggle = () => {
