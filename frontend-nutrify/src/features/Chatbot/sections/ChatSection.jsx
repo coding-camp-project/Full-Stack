@@ -54,54 +54,58 @@ function ChatSection() {
   };
 
   return (
-    <div className="flex h-[82vh] flex-col justify-between max-w-[950px] mx-auto">
+    <div className="flex h-[82vh] flex-col justify-between w-full">
       
       {/* MESSAGES AREA */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
-        {messages.length === 0 ? (
-          <div className="flex h-full items-center justify-center">
-            <WelcomeCard onPromptClick={handleSendMessage} />
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {messages.map((msg, index) => (
-              <ChatMessage 
-                key={index}
-                sender={msg.sender}
-                message={msg.message}
-              />
-            ))}
-            
-            {/* AI TYPING INDICATOR */}
-            {loading && (
-              <div className="flex w-full justify-start">
-                <div className="flex max-w-[75%] items-end gap-3 flex-row">
-                  <div className="flex h-10.5 w-10.5 items-center justify-center rounded-full bg-[#E8FFF4]">
-                    <img
-                      src={logo}
-                      alt="bot"
-                      className="h-6.5 w-6.5 object-contain"
-                    />
-                  </div>
-                  <div className="rounded-[22px] px-5 py-4 bg-white text-gray-500 shadow-sm border border-gray-100">
-                    <div className="flex items-center gap-1.5 py-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+      <div className="flex-1 overflow-y-auto px-6 py-6">
+        <div className="max-w-[950px] mx-auto w-full h-full">
+          {messages.length === 0 ? (
+            <div className="flex h-full items-center justify-center">
+              <WelcomeCard onPromptClick={handleSendMessage} />
+            </div>
+          ) : (
+            <div className="space-y-6 pb-2">
+              {messages.map((msg, index) => (
+                <ChatMessage 
+                  key={index}
+                  sender={msg.sender}
+                  message={msg.message}
+                />
+              ))}
+              
+              {/* AI TYPING INDICATOR */}
+              {loading && (
+                <div className="flex w-full justify-start">
+                  <div className="flex max-w-[75%] items-end gap-3 flex-row">
+                    <div className="flex h-10.5 w-10.5 items-center justify-center rounded-full bg-[#E8FFF4]">
+                      <img
+                        src={logo}
+                        alt="bot"
+                        className="h-6.5 w-6.5 object-contain"
+                      />
+                    </div>
+                    <div className="rounded-[22px] px-5 py-4 bg-white text-gray-500 shadow-sm border border-gray-100">
+                      <div className="flex items-center gap-1.5 py-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
-        )}
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* INPUT */}
-      <div className="px-4 pb-4 bg-transparent shrink-0">
-        <ChatInput onSend={handleSendMessage} loading={loading} />
+      <div className="px-6 pb-4 bg-transparent shrink-0">
+        <div className="max-w-[950px] mx-auto w-full">
+          <ChatInput onSend={handleSendMessage} loading={loading} />
+        </div>
       </div>
     </div>
   );
