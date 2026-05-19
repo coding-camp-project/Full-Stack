@@ -2,17 +2,30 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { sendChatMessage } from "../services/chatbotService";
 
-const createMessage = (sender, message) => ({
+const createMessage = (sender, message, extra = {}) => ({
   id: `${sender}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
   sender,
   message,
+  ...extra,
 });
+
+const splitReplyIntoChunks = (reply) => {
+  const chunks = reply.match(/.{1,18}(\s|$)/g);
+
+  return chunks?.map((chunk) => chunk.trimStart()).filter(Boolean) || [reply];
+};
+
+const wait = (duration) =>
+  new Promise((resolve) => {
+    window.setTimeout(resolve, duration);
+  });
 
 function useChat() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
   const [error, setError] = useState("");
+  const [conversationId, setConversationId] = useState("");
   const messagesEndRef = useRef(null);
 
   const scrollToLatest = useCallback(() => {
@@ -41,13 +54,46 @@ function useChat() {
       setTyping(true);
 
       try {
-        const data = await sendChatMessage(trimmedMessage);
+        const data = await sendChatMessage({
+          message: trimmedMessage,
+          conversationId,
+        });
         const reply = data?.reply || "Sorry, I could not read the response.";
+        const botMessage = createMessage("bot", "", { streaming: true });
 
+        if (data?.conversationId) {
+          setConversationId(data.conversationId);
+        }
+
+        setTyping(false);
         setMessages((currentMessages) => [
           ...currentMessages,
-          createMessage("bot", reply),
+          botMessage,
         ]);
+
+        let renderedReply = "";
+
+        for (const chunk of splitReplyIntoChunks(reply)) {
+          renderedReply = `${renderedReply}${chunk}`;
+
+          setMessages((currentMessages) =>
+            currentMessages.map((currentMessage) =>
+              currentMessage.id === botMessage.id
+                ? { ...currentMessage, message: renderedReply }
+                : currentMessage
+            )
+          );
+
+          await wait(28);
+        }
+
+        setMessages((currentMessages) =>
+          currentMessages.map((currentMessage) =>
+            currentMessage.id === botMessage.id
+              ? { ...currentMessage, message: reply, streaming: false }
+              : currentMessage
+          )
+        );
       } catch (requestError) {
         const errorMessage =
           requestError?.response?.data?.message ||
@@ -64,7 +110,7 @@ function useChat() {
         setTyping(false);
       }
     },
-    [loading],
+    [conversationId, loading],
   );
 
   return {
@@ -72,6 +118,7 @@ function useChat() {
     loading,
     typing,
     error,
+    conversationId,
     sendMessage,
     messagesEndRef,
     scrollToLatest,

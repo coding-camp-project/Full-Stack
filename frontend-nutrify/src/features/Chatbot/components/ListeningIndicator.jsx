@@ -1,23 +1,34 @@
+import { motion } from "framer-motion";
+
 const waveformBars = ["h-3", "h-5", "h-8", "h-4", "h-7", "h-5", "h-3"];
 
 function ListeningIndicator() {
   return (
-    <div className="pointer-events-none absolute -top-15 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full border border-[#49AE84]/20 bg-white/90 px-4 py-2.5 text-[#245747] shadow-[0_18px_44px_rgba(29,69,53,0.14)] backdrop-blur-md">
+    <motion.div
+      initial={{ opacity: 0, y: 10, x: "-50%", scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+      exit={{ opacity: 0, y: 8, x: "-50%", scale: 0.96 }}
+      transition={{ duration: 0.22 }}
+      className="pointer-events-none absolute -top-15 left-1/2 flex items-center gap-3 rounded-full border border-[#49AE84]/20 bg-white/90 px-4 py-2.5 text-[#245747] shadow-[0_18px_44px_rgba(29,69,53,0.14)] backdrop-blur-md"
+    >
       <div className="flex h-8 items-center gap-1">
         {waveformBars.map((height, index) => (
-          <span
+          <motion.span
             key={height + index}
-            className={`${height} w-1.5 rounded-full bg-[#49AE84] animate-pulse`}
-            style={{
-              animationDelay: `${index * 90}ms`,
-              animationDuration: "720ms",
+            animate={{ scaleY: [0.45, 1.2, 0.55] }}
+            transition={{
+              delay: index * 0.07,
+              duration: 0.62,
+              repeat: Infinity,
+              ease: "easeInOut",
             }}
+            className={`${height} w-1.5 rounded-full bg-[#49AE84] animate-pulse`}
           />
         ))}
       </div>
 
       <span className="whitespace-nowrap text-sm font-medium">Listening...</span>
-    </div>
+    </motion.div>
   );
 }
 

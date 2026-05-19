@@ -7,9 +7,10 @@ const chatbotApi = axios.create({
   },
 });
 
-export const sendChatMessage = async (message) => {
+export const sendChatMessage = async ({ message, conversationId }) => {
   const response = await chatbotApi.post("/api/chat", {
     message,
+    conversationId,
   });
 
   return response.data;

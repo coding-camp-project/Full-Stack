@@ -1,14 +1,20 @@
+import { motion } from "framer-motion";
+
 import logo from "../../../assets/logo/Logo 2.png";
 
 function ChatMessage({
   sender,
   message,
+  streaming = false,
 }) {
   const isBot = sender === "bot";
 
   return (
-    <div
-      className={`flex w-full animate-in fade-in slide-in-from-bottom-2 duration-300 ${
+    <motion.div
+      initial={{ opacity: 0, y: 18, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.28, ease: "easeOut" }}
+      className={`flex w-full ${
         isBot ? "justify-start" : "justify-end"
       }`}
     >
@@ -19,10 +25,11 @@ function ChatMessage({
       >
         
         {/* AVATAR */}
-        <div
+        <motion.div
+          whileHover={{ scale: 1.05 }}
           className={`flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full ${
             isBot
-              ? "bg-[#E8FFF4]"
+              ? "bg-[#E8FFF4] shadow-[0_0_24px_rgba(73,174,132,0.18)]"
               : "bg-[#DCFCE7]"
           }`}
         >
@@ -37,10 +44,11 @@ function ChatMessage({
               JD
             </span>
           )}
-        </div>
+        </motion.div>
 
         {/* MESSAGE */}
-        <div
+        <motion.div
+          whileHover={{ y: -1 }}
           className={`rounded-[22px] px-5 py-4 shadow-sm transition-all duration-300 ${
             isBot
               ? "border border-[#49AE84]/10 bg-white text-[#222]"
@@ -49,10 +57,17 @@ function ChatMessage({
         >
           <p className="whitespace-pre-wrap break-words text-[15px] leading-[1.8]">
             {message}
+            {streaming && (
+              <motion.span
+                animate={{ opacity: [0.2, 1, 0.2] }}
+                transition={{ duration: 0.9, repeat: Infinity }}
+                className="ml-1 inline-block h-4 w-1 rounded-full bg-current align-[-2px]"
+              />
+            )}
           </p>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

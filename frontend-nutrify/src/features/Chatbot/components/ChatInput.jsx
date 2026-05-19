@@ -1,6 +1,7 @@
 import {
   SendHorizontal,
 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 import logo from "../../../assets/logo/Logo 2.png";
@@ -8,7 +9,12 @@ import useSpeechRecognition from "../hooks/useSpeechRecognition";
 import ListeningIndicator from "./ListeningIndicator";
 import VoiceButton from "./VoiceButton";
 
-function ChatInput({ onSendMessage, loading = false, voiceDisabled = false }) {
+function ChatInput({
+  onSendMessage,
+  onVoiceStart,
+  loading = false,
+  voiceDisabled = false,
+}) {
   const [message, setMessage] = useState("");
   const {
     transcript,
@@ -40,6 +46,7 @@ function ChatInput({ onSendMessage, loading = false, voiceDisabled = false }) {
     }
 
     resetTranscript();
+    onVoiceStart?.();
     startListening("id-ID");
   };
 
@@ -56,11 +63,16 @@ function ChatInput({ onSendMessage, loading = false, voiceDisabled = false }) {
   };
 
   return (
-    <form
+    <motion.form
       onSubmit={handleSubmit}
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28 }}
       className="relative mx-auto mt-10 flex w-full max-w-325 items-center rounded-full border border-[#222]/30 bg-white px-5 py-3 shadow-sm transition-all duration-300 focus-within:border-[#49AE84]/50 focus-within:shadow-[0_14px_40px_rgba(73,174,132,0.14)]"
     >
-      {listening && <ListeningIndicator />}
+      <AnimatePresence>
+        {listening && <ListeningIndicator />}
+      </AnimatePresence>
 
       
       {/* LEFT */}
@@ -86,19 +98,22 @@ function ChatInput({ onSendMessage, loading = false, voiceDisabled = false }) {
         
         <VoiceButton
           listening={listening}
-          error={voiceDisabled ? "Nutrify AI is speaking" : error}
+          error={error}
+          disabled={voiceDisabled}
           onClick={handleVoiceToggle}
         />
 
-        <button
+        <motion.button
           type="submit"
           disabled={loading || !message.trim()}
+          whileHover={!loading && message.trim() ? { scale: 1.06 } : undefined}
+          whileTap={!loading && message.trim() ? { scale: 0.94 } : undefined}
           className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white transition-all duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:bg-black/30 disabled:hover:scale-100"
         >
           <SendHorizontal size={20} />
-        </button>
+        </motion.button>
       </div>
-    </form>
+    </motion.form>
   );
 }
 
