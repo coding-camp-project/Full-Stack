@@ -4,8 +4,15 @@ import CaloriesLineChart from "../Components/CaloriesLineChart";
 import FoodHistorySection from "./FoodHistorySection";
 import InsightCard from "../Components/InsightCard";
 import CalendarWidget from "../Components/CalendarWidget";
+import WaterIntakeWidget from "../Components/WaterIntakeWidget";
 
-function DashboardContentSection() {
+function DashboardContentSection({ 
+  historyItems = [], 
+  totalCalories = 0, 
+  totalCarbs = 0, 
+  totalFat = 0, 
+  totalProtein = 0 
+}) {
   return (
     <section className="grid grid-cols-12 gap-5">
       
@@ -21,7 +28,12 @@ function DashboardContentSection() {
             </h2>
 
             <div className="mt-5">
-                <NutritionPieChart />
+                <NutritionPieChart 
+                  calories={totalCalories}
+                  carbs={totalCarbs}
+                  fat={totalFat}
+                  protein={totalProtein}
+                />
             </div>
           </div>
 
@@ -31,7 +43,7 @@ function DashboardContentSection() {
             </h2>
 
             <div className="mt-5">
-                <CaloriesLineChart />
+                <CaloriesLineChart historyItems={historyItems} />
             </div>  
           </div>
         </div>
@@ -43,7 +55,7 @@ function DashboardContentSection() {
           </h2>
 
           <div className="mt-5">
-            <FoodHistorySection />
+            <FoodHistorySection items={historyItems} />
             </div>
         </div>
 
@@ -54,18 +66,21 @@ function DashboardContentSection() {
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="col-span-3">
+      <div className="col-span-3 space-y-5">
         
         <div className="rounded-[18px] bg-white p-5 shadow-sm">
-          
           <h2 className="text-[24px] font-bold">
             Kalender
           </h2>
-
           <div className="mt-5">
-        <CalendarWidget />
+            <CalendarWidget />
+          </div>
         </div>
+
+        <div className="rounded-[18px] bg-white p-5 shadow-sm">
+          <WaterIntakeWidget />
         </div>
+        
       </div>
     </section>
   );

@@ -33,6 +33,8 @@ export const registerUser = async (userData) => {
     _id: user._id,
     name: user.name,
     email: user.email,
+    profilePicture: user.profilePicture || "",
+    isPersonalized: false,
     token: generateToken(user._id),
   };
 };
@@ -50,10 +52,14 @@ export const loginUser = async (email, password) => {
     throw new Error("Invalid email or password");
   }
 
+  const isPersonalized = Boolean(user.height && user.weight && user.birthDate);
+
   return {
     _id: user._id,
     name: user.name,
     email: user.email,
+    profilePicture: user.profilePicture || "",
+    isPersonalized,
     token: generateToken(user._id),
   };
 };

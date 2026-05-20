@@ -52,7 +52,7 @@ export default function PersonalizationPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[1200px] px-5 py-7 lg:px-7 space-y-6">
+    <div className="w-full px-5 py-7 lg:px-7 space-y-6">
 
       {/* ── PAGE HEADER ── */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 pb-2 relative">
