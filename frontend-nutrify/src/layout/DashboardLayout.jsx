@@ -1,8 +1,16 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 import DashboardSidebar from "@/features/Dashboard/Components/DashboardSidebar";
 import DashboardNavbar from "@/features/Dashboard/Components/DashboardNavbar";
 
 function DashboardLayout() {
+  const location = useLocation();
+  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+
+  // Jika belum personalisasi dan mencoba akses halaman lain di dashboard, redirect ke personalisasi
+  if (userData.isPersonalized === false && location.pathname !== "/personalisasi") {
+    return <Navigate to="/personalisasi" replace />;
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100">
       {/* SIDEBAR */}

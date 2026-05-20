@@ -6,6 +6,7 @@ import {
   Plus,
   LogOut,
   Sliders,
+  Lock,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
@@ -25,6 +26,8 @@ const menuButtonClass =
 
 function DashboardSidebar() {
   const navigate = useNavigate();
+  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const isPersonalized = userData.isPersonalized !== false;
 
   const handleLogout = async () => {
     try {
@@ -67,31 +70,35 @@ function DashboardSidebar() {
       <nav className="relative z-10 flex flex-col gap-6">
         
         {/* DASHBOARD */}
-        <NavLink to="/dashboard" end className={menuLinkClass}>
+        <NavLink to={isPersonalized ? "/dashboard" : "/personalisasi"} end className={menuLinkClass}>
           <LayoutDashboard size={18} strokeWidth={2.2} />
 
           <span>Dashboard</span>
+          {!isPersonalized && <Lock size={16} className="ml-auto opacity-70" />}
         </NavLink>
 
         {/* CHATBOT */}
-        <NavLink to="/chatbot" className={menuLinkClass}>
+        <NavLink to={isPersonalized ? "/chatbot" : "/personalisasi"} className={menuLinkClass}>
           <Bot size={18} strokeWidth={2.2} />
 
           <span>Chatbot</span>
+          {!isPersonalized && <Lock size={16} className="ml-auto opacity-70" />}
         </NavLink>
 
         {/* SCAN */}
-        <NavLink to="/scan" className={menuLinkClass}>
+        <NavLink to={isPersonalized ? "/scan" : "/personalisasi"} className={menuLinkClass}>
           <ScanSearch size={18} strokeWidth={2.2} />
 
           <span>Scan Nutrify</span>
+          {!isPersonalized && <Lock size={16} className="ml-auto opacity-70" />}
         </NavLink>
 
         {/* HISTORY */}
-        <NavLink to="/history" className={menuLinkClass}>
+        <NavLink to={isPersonalized ? "/history" : "/personalisasi"} className={menuLinkClass}>
           <History size={18} strokeWidth={2.2} />
 
           <span>History</span>
+          {!isPersonalized && <Lock size={16} className="ml-auto opacity-70" />}
         </NavLink>
 
         {/* PERSONALISASI */}
@@ -106,13 +113,6 @@ function DashboardSidebar() {
       <div className="relative z-10 mt-auto border-t border-white/20 pt-6">
         <div className="flex flex-col gap-5">
           
-          {/* ACCOUNT */}
-          <button className={menuButtonClass}>
-            <Plus size={18} strokeWidth={2.2} />
-
-            <span>Account</span>
-          </button>
-
           {/* LOGOUT */}
           <button onClick={handleLogout} className={menuButtonClass}>
             <LogOut size={18} strokeWidth={2.2} />

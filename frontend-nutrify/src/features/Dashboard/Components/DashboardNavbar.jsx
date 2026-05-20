@@ -4,9 +4,9 @@ import {
   Bell,
   ChevronDown,
   User,
-  Settings,
   LogOut,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import profileImage from "../../../assets/logo/Logo 2.png";
 
@@ -17,7 +17,7 @@ function DashboardNavbar() {
   const dropdownRef = useRef(null);
 
   // Load user data from localStorage
-  useEffect(() => {
+  const loadUserFromStorage = () => {
     const storedUser = localStorage.getItem("userData");
     if (storedUser) {
       try {
@@ -26,6 +26,12 @@ function DashboardNavbar() {
         console.error("Gagal parse userData", e);
       }
     }
+  };
+
+  useEffect(() => {
+    loadUserFromStorage();
+    window.addEventListener("storage", loadUserFromStorage);
+    return () => window.removeEventListener("storage", loadUserFromStorage);
   }, []);
 
   // close dropdown when click outside
@@ -78,7 +84,7 @@ function DashboardNavbar() {
             {/* AVATAR */}
             <div className="h-13 w-13 overflow-hidden rounded-full border-[3px] border-[#4BAA7A]">
               <img
-                src={profileImage}
+                src={user.profilePicture || profileImage}
                 alt="Profile"
                 className="h-full w-full object-cover"
               />
@@ -117,15 +123,13 @@ function DashboardNavbar() {
               {/* MENU */}
               <div className="flex flex-col py-2">
                 
-                <button className="flex items-center gap-3 px-5 py-3 text-left text-[14px] text-[#1E1E1E] transition-all hover:bg-[#F8F8F8]">
+                <Link 
+                  to="/personalisasi"
+                  className="flex items-center gap-3 px-5 py-3 text-left text-[14px] text-[#1E1E1E] transition-all hover:bg-[#F8F8F8]"
+                >
                   <User size={18} />
                   Profile
-                </button>
-
-                <button className="flex items-center gap-3 px-5 py-3 text-left text-[14px] text-[#1E1E1E] transition-all hover:bg-[#F8F8F8]">
-                  <Settings size={18} />
-                  Settings
-                </button>
+                </Link>
               </div>
             </div>
           )}

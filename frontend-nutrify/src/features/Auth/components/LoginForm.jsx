@@ -11,6 +11,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -18,6 +19,7 @@ export default function LoginForm() {
     e.preventDefault()
     setLoading(true)
     setError("")
+    setSuccess("")
 
     try {
       const response = await axios.post("http://localhost:5000/api/users/login", {
@@ -26,12 +28,13 @@ export default function LoginForm() {
       })
 
       // Simpan token JWT dan data user ke localStorage
-      const { token, name, email: userEmail, _id } = response.data.data
+      const { token, name, email: userEmail, _id, profilePicture, isPersonalized } = response.data.data
       localStorage.setItem("userToken", token)
-      localStorage.setItem("userData", JSON.stringify({ id: _id, name, email: userEmail }))
+      localStorage.setItem("userData", JSON.stringify({ id: _id, name, email: userEmail, profilePicture, isPersonalized }))
 
       console.log("Login manual berhasil!")
-      navigate("/dashboard")
+      setSuccess("Login berhasil! Mengalihkan...")
+      setTimeout(() => navigate("/dashboard"), 1500)
     } catch (err) {
       console.error("Gagal login:", err)
       const errorMessage = err.response?.data?.message || "Email atau kata sandi salah."
@@ -42,17 +45,23 @@ export default function LoginForm() {
   }
 
   const handleGoogleLogin = async () => {
+    setLoading(true)
+    setError("")
+    setSuccess("")
     try {
       const result = await signInWithPopup(auth, googleProvider);
       console.log("Berhasil masuk dengan Google!", result.user);
       
       // Simpan info Google User
-      localStorage.setItem("userData", JSON.stringify({ name: result.user.displayName, email: result.user.email }))
+      localStorage.setItem("userData", JSON.stringify({ name: result.user.displayName, email: result.user.email, profilePicture: result.user.photoURL, isPersonalized: false }))
       
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Gagal masuk dengan Google:", error);
-      alert("Gagal masuk dengan Google. Pastikan konfigurasi Firebase sudah benar.");
+      setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
+      setTimeout(() => navigate("/dashboard"), 1500)
+    } catch (err) {
+      console.error("Gagal masuk dengan Google:", err);
+      setError("Gagal masuk dengan Google. Pastikan konfigurasi Firebase sudah benar.");
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -64,6 +73,12 @@ export default function LoginForm() {
       {error && (
         <div className="mb-5 p-3.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium">
           {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="mb-5 p-3.5 bg-[#EBF7F0] border border-[#A6E6C5] text-[#12B76A] rounded-xl text-sm font-medium">
+          {success}
         </div>
       )}
 

@@ -118,6 +118,14 @@ export default function PersonalizationPage() {
         </div>
       </div>
 
+      {/* ── MANDATORY ALERT ── */}
+      {(!JSON.parse(localStorage.getItem("userData") || "{}").isPersonalized && JSON.parse(localStorage.getItem("userData") || "{}").isPersonalized === false) && (
+        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-center gap-3">
+          <AlertCircle className="h-5 w-5 shrink-0" />
+          <span className="text-sm font-semibold">Silakan lengkapi data diri Anda terlebih dahulu untuk membuka fitur-fitur lainnya.</span>
+        </div>
+      )}
+
       {/* ── ALERT MESSAGE ── */}
       {message.text && (
         <div
