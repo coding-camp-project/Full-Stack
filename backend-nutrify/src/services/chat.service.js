@@ -1,13 +1,9 @@
-import axios from "axios";
 import crypto from "crypto";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 import Chat from "../models/chat.model.js";
 
 const createConversationId = () => crypto.randomUUID();
-
-const getFastApiChatUrl = () => process.env.FASTAPI_CHAT_URL || "http://localhost:8000/chat";
-
-const getAiRequestTimeout = () => Number(process.env.AI_REQUEST_TIMEOUT_MS) || 30000;
 
 const saveChatMessage = async ({ userId, conversationId, role, message }) => {
   return Chat.create({
@@ -19,31 +15,30 @@ const saveChatMessage = async ({ userId, conversationId, role, message }) => {
   });
 };
 
-const extractReply = (data) => {
-  if (typeof data?.reply === "string") return data.reply;
-  if (typeof data?.response === "string") return data.response;
-  if (typeof data?.message === "string") return data.message;
-
-  return "";
+export const getConversationHistory = async (conversationId) => {
+  return Chat.find({ conversationId }).sort({ timestamp: 1, createdAt: 1 });
 };
 
-export const sendMessageToAI = async (message) => {
+export const sendMessageToAI = async (message, history = []) => {
   try {
-    const response = await axios.post(
-      getFastApiChatUrl(),
-      { message },
-      {
-        timeout: getAiRequestTimeout(),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const reply = extractReply(response.data);
+    // Format previous messages to match Gemini's chat history format
+    const formattedHistory = history.map((msg) => ({
+      role: msg.role === "assistant" ? "model" : "user",
+      parts: [{ text: msg.message }],
+    }));
+
+    const chat = model.startChat({
+      history: formattedHistory,
+    });
+
+    const result = await chat.sendMessage(message);
+    const reply = result.response.text();
 
     if (!reply) {
-      const error = new Error("AI server returned an invalid response.");
+      const error = new Error("AI returned an invalid response.");
       error.statusCode = 502;
       throw error;
     }
@@ -51,30 +46,25 @@ export const sendMessageToAI = async (message) => {
     return reply;
   } catch (error) {
     if (error.statusCode) throw error;
+    
+    console.error("Gemini API Error:", error);
 
-    if (error.code === "ECONNABORTED") {
-      const timeoutError = new Error("AI server request timed out.");
-      timeoutError.statusCode = 504;
-      throw timeoutError;
-    }
-
-    if (error.response) {
-      const upstreamError = new Error(
-        error.response.data?.message || "AI server returned an error."
-      );
-      upstreamError.statusCode = error.response.status >= 500 ? 502 : error.response.status;
-      throw upstreamError;
-    }
-
-    const offlineError = new Error("AI server is unavailable.");
-    offlineError.statusCode = 503;
-    throw offlineError;
+    const backendError = new Error("Failed to connect to Gemini API.");
+    backendError.statusCode = 500;
+    throw backendError;
   }
 };
 
 export const handleChatMessage = async ({ message, userId, conversationId }) => {
   const activeConversationId = conversationId || createConversationId();
 
+  // Fetch history for contextual conversations
+  let history = [];
+  if (conversationId) {
+    history = await getConversationHistory(activeConversationId);
+  }
+
+  // Save the user's new message
   await saveChatMessage({
     userId,
     conversationId: activeConversationId,
@@ -82,8 +72,10 @@ export const handleChatMessage = async ({ message, userId, conversationId }) => 
     message,
   });
 
-  const reply = await sendMessageToAI(message);
+  // Get AI response
+  const reply = await sendMessageToAI(message, history);
 
+  // Save the AI's response
   await saveChatMessage({
     userId,
     conversationId: activeConversationId,
@@ -95,8 +87,4 @@ export const handleChatMessage = async ({ message, userId, conversationId }) => 
     reply,
     conversationId: activeConversationId,
   };
-};
-
-export const getConversationHistory = async (conversationId) => {
-  return Chat.find({ conversationId }).sort({ timestamp: 1, createdAt: 1 });
 };

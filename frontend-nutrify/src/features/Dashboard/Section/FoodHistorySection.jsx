@@ -1,43 +1,24 @@
 
 
 import FoodHistoryCard from "../Components/FoodHistoryCard";
+import foodImage from "../../../assets/healthy-food-img.png";
 
-function FoodHistorySection() {
-  const foods = [
-    {
-      title: "Nasi Goreng",
-      time: "Hari ini, 13.00",
-      components: "4 komponen",
-      image:
-        "https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=1200",
-    },
+function FoodHistorySection({ items = [] }) {
+  const recentItems = items.slice(0, 3);
 
-    {
-      title: "Nasi Goreng",
-      time: "Hari ini, 13.00",
-      components: "4 komponen",
-      image:
-        "https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=1200",
-    },
-
-    {
-      title: "Nasi Goreng",
-      time: "Hari ini, 13.00",
-      components: "4 komponen",
-      image:
-        "https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=1200",
-    },
-  ];
+  if (recentItems.length === 0) {
+    return <p className="text-[#777] text-sm py-4">Belum ada riwayat makanan.</p>;
+  }
 
   return (
     <div className="grid grid-cols-3 gap-4">
-      {foods.map((food, index) => (
+      {recentItems.map((food, index) => (
         <FoodHistoryCard
-          key={index}
-          title={food.title}
+          key={food.id || index}
+          title={food.name}
           time={food.time}
-          components={food.components}
-          image={food.image}
+          components={`${food.components} komponen`}
+          image={food.image || foodImage}
         />
       ))}
     </div>

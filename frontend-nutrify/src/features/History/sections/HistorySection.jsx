@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Droplets, Flame } from "lucide-react";
 
 import foodImage from "../../../assets/healthy-food-img.png";
@@ -7,41 +8,60 @@ import HistoryList from "../components/HistoryList";
 import InsightCard from "../components/InsightCard";
 import NutritionSummaryCard from "../components/NutritionSummaryCard";
 
-const historyItems = Array.from({ length: 5 }, (_, index) => ({
-  id: index + 1,
-  image: foodImage,
-  time: "Hari ini, 13.00",
-  name: "Nasi Goreng",
-  components: 4,
-  calories: 520,
-  protein: 14,
-  carbs: 72,
-  fat: 18,
-}));
-
 function HistorySection() {
+  const [historyItems, setHistoryItems] = useState([]);
+
+  useEffect(() => {
+    const historyStr = localStorage.getItem("scanHistory");
+    if (historyStr) {
+      try {
+        const parsedHistory = JSON.parse(historyStr).map(item => ({
+          ...item,
+          image: item.image || foodImage // Fallback image
+        }));
+        setHistoryItems(parsedHistory);
+      } catch (err) {
+        console.error("Gagal membaca riwayat", err);
+      }
+    }
+  }, []);
+
+  // Hitung total hari ini
+  const today = new Date().toDateString();
+  const todayItems = historyItems.filter(item => new Date(item.date).toDateString() === today);
+  
+  const totalCalories = todayItems.reduce((sum, item) => sum + item.calories, 0);
+  const totalProtein = todayItems.reduce((sum, item) => sum + item.protein, 0);
+
+  // Default target
+  const targetCalories = 2000;
+  const targetProtein = 80;
+
+  const calProgress = Math.min(Math.round((totalCalories / targetCalories) * 100), 100);
+  const proProgress = Math.min(Math.round((totalProtein / targetProtein) * 100), 100);
+
   return (
-    <div className="mx-auto w-full max-w-290 px-5 py-7 lg:px-7">
+    <div className="w-full px-5 py-7 lg:px-7">
       <HistoryFilter />
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr_16rem]">
         <NutritionSummaryCard
           icon={<Flame size={28} />}
           title="Total Kalori Hari Ini"
-          value="1.652"
+          value={totalCalories.toString()}
           unit="kkal"
-          targetText="85% dari target 2.000 kkal"
-          progress={85}
+          targetText={`${calProgress}% dari target ${targetCalories} kkal`}
+          progress={calProgress}
           tone="green"
         />
 
         <NutritionSummaryCard
           icon={<Droplets size={28} />}
           title="Total Protein Hari Ini"
-          value="62"
+          value={totalProtein.toString()}
           unit="g"
-          targetText="75% dari target 80 g"
-          progress={75}
+          targetText={`${proProgress}% dari target ${targetProtein} g`}
+          progress={proProgress}
           tone="blue"
         />
 

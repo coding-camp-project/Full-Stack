@@ -11,6 +11,8 @@ function ScanPage() {
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
+  const [scanResult, setScanResult] = useState(null);
+
   const canAnalyze = Boolean(uploadedImage || manualInput.trim());
 
   useEffect(() => {
@@ -31,28 +33,75 @@ function ScanPage() {
     setUploadedImage(file);
     setImagePreview(URL.createObjectURL(file));
     setShowResult(false);
+    setScanResult(null);
   };
 
-  const handleAnalyze = () => {
-    if (!canAnalyze) {
+  const handleAnalyze = async () => {
+    if (!uploadedImage) {
+      alert("Harap unggah gambar terlebih dahulu.");
       return;
     }
 
     setLoading(true);
     setShowResult(false);
+    setScanResult(null);
 
-    window.setTimeout(() => {
-      setLoading(false);
+    try {
+      const formData = new FormData();
+      formData.append("image", uploadedImage);
+
+      // Optional: send disease from user profile if available
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      // You can append disease here if needed
+
+      const response = await fetch("http://localhost:5000/api/scan", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || data.error || "Gagal memproses gambar.");
+      }
+
+      setScanResult(data);
       setShowResult(true);
-    }, 1400);
+
+      // Simpan ke riwayat lokal
+      try {
+        const historyStr = localStorage.getItem("scanHistory");
+        const history = historyStr ? JSON.parse(historyStr) : [];
+        const newHistoryItem = {
+          id: Date.now(),
+          time: new Date().toLocaleString("id-ID", { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }),
+          name: data.best_prediction?.food_name?.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
+          components: 1, // Default, can be dynamic later
+          calories: Math.round(data.nutrition?.calories || 0),
+          protein: parseFloat((data.nutrition?.protein || 0).toFixed(1)),
+          carbs: parseFloat((data.nutrition?.carbohydrates || 0).toFixed(1)),
+          fat: parseFloat((data.nutrition?.fat || 0).toFixed(1)),
+          date: new Date().toISOString(),
+        };
+        history.unshift(newHistoryItem);
+        localStorage.setItem("scanHistory", JSON.stringify(history));
+      } catch (err) {
+        console.error("Gagal menyimpan ke riwayat lokal", err);
+      }
+    } catch (error) {
+      console.error("Scan error:", error);
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {
     return <ScanLoading />;
   }
 
-  if (showResult) {
-    return <ScanResultSection imagePreview={imagePreview} />;
+  if (showResult && scanResult) {
+    return <ScanResultSection imagePreview={imagePreview} result={scanResult} />;
   }
 
   return (

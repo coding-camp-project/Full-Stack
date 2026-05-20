@@ -13,7 +13,13 @@ ChartJS.register(
   Legend
 );
 
-function NutritionPieChart() {
+function NutritionPieChart({ calories = 0, carbs = 0, protein = 0, fat = 0 }) {
+  const total = carbs + protein + fat;
+  const carbsPct = total > 0 ? Math.round((carbs / total) * 100) : 0;
+  const proteinPct = total > 0 ? Math.round((protein / total) * 100) : 0;
+  const fatPct = total > 0 ? Math.round((fat / total) * 100) : 0;
+  const otherPct = total > 0 ? Math.max(0, 100 - carbsPct - proteinPct - fatPct) : 0;
+
   const data = {
     labels: [
       "Karbohidrat",
@@ -21,27 +27,23 @@ function NutritionPieChart() {
       "Lemak",
       "Lainnya",
     ],
-
     datasets: [
       {
-        data: [50, 15, 30, 5],
-
-        backgroundColor: [
+        data: total > 0 ? [carbsPct, proteinPct, fatPct, otherPct] : [1],
+        backgroundColor: total > 0 ? [
           "#3AC46B",
           "#F5B74F",
           "#8B5CF6",
           "#A3A3A3",
-        ],
-
+        ] : ["#E5E7EB"],
         borderWidth: 0,
-        hoverOffset: 5,
+        hoverOffset: total > 0 ? 5 : 0,
       },
     ],
   };
 
   const options = {
     cutout: "72%",
-
     plugins: {
       legend: {
         display: false,
@@ -62,7 +64,7 @@ function NutritionPieChart() {
         {/* CENTER TEXT */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <p className="text-[28px] font-bold text-[#1E1E1E]">
-            1.652
+            {Math.round(calories).toString()}
           </p>
 
           <span className="text-[14px] text-[#777]">
@@ -84,7 +86,7 @@ function NutritionPieChart() {
             </p>
 
             <span className="text-[13px] text-[#777]">
-              210 g (15%)
+              {Math.round(carbs)} g ({carbsPct}%)
             </span>
           </div>
         </div>
@@ -99,7 +101,7 @@ function NutritionPieChart() {
             </p>
 
             <span className="text-[13px] text-[#777]">
-              210 g (15%)
+              {Math.round(protein)} g ({proteinPct}%)
             </span>
           </div>
         </div>
@@ -114,7 +116,7 @@ function NutritionPieChart() {
             </p>
 
             <span className="text-[13px] text-[#777]">
-              210 g (15%)
+              {Math.round(fat)} g ({fatPct}%)
             </span>
           </div>
         </div>
@@ -129,7 +131,7 @@ function NutritionPieChart() {
             </p>
 
             <span className="text-[13px] text-[#777]">
-              210 g (15%)
+              0 g ({otherPct}%)
             </span>
           </div>
         </div>

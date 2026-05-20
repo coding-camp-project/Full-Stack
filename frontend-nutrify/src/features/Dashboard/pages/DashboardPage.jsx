@@ -1,9 +1,29 @@
+import { useEffect, useState } from "react";
 import SummarySection from "../Components/SummarySection";
 import DashboardContentSection from "../Section/DashboardContentSection";
 
 function DashboardPage() {
+  const [historyItems, setHistoryItems] = useState([]);
+
+  useEffect(() => {
+    const historyStr = localStorage.getItem("scanHistory");
+    if (historyStr) {
+      try {
+        setHistoryItems(JSON.parse(historyStr));
+      } catch (err) {}
+    }
+  }, []);
+
+  const today = new Date().toDateString();
+  const todayItems = historyItems.filter(item => new Date(item.date).toDateString() === today);
+  
+  const totalCalories = todayItems.reduce((sum, item) => sum + item.calories, 0);
+  const totalCarbs = todayItems.reduce((sum, item) => sum + item.carbs, 0);
+  const totalFat = todayItems.reduce((sum, item) => sum + item.fat, 0);
+  const totalProtein = todayItems.reduce((sum, item) => sum + item.protein, 0);
+
   return (
-    <div className="space-y-6 p-6">
+    <div className="w-full space-y-6 p-6">
       
       <div>
         <h1 className="text-3xl font-bold">
@@ -11,9 +31,19 @@ function DashboardPage() {
         </h1>
       </div>
 
-      <SummarySection />
+      <SummarySection 
+        calories={totalCalories} 
+        carbs={totalCarbs} 
+        fat={totalFat} 
+      />
 
-      <DashboardContentSection />
+      <DashboardContentSection 
+        historyItems={historyItems}
+        totalCalories={totalCalories}
+        totalCarbs={totalCarbs}
+        totalFat={totalFat}
+        totalProtein={totalProtein}
+      />
     </div>
   );
 }

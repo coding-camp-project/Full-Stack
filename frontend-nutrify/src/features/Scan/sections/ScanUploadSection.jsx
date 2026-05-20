@@ -14,7 +14,7 @@ function ScanUploadSection({
   canAnalyze,
 }) {
   return (
-    <div className="mx-auto w-full max-w-250 space-y-5 px-4 py-8 lg:px-6">
+    <div className="w-full space-y-5 px-4 py-8 lg:px-6">
       <section className="rounded-2xl border border-[#D8D8D8] bg-white p-6 shadow-sm">
         <div className="grid gap-6 lg:grid-cols-[1.2fr_1px_1fr]">
           <UploadBox imagePreview={imagePreview} onImageChange={onImageChange} />
