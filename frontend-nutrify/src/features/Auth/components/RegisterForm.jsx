@@ -13,6 +13,7 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("")
   const [agreeTerms, setAgreeTerms] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -26,6 +27,7 @@ export default function RegisterForm() {
 
     setLoading(true)
     setError("")
+    setSuccess("")
 
     try {
       await axios.post("http://localhost:5000/api/users/register", {
@@ -35,8 +37,8 @@ export default function RegisterForm() {
       })
 
       console.log("Registrasi manual berhasil!")
-      alert("Registrasi berhasil! Silakan masuk dengan akun baru Anda.")
-      navigate("/login")
+      setSuccess("Registrasi berhasil! Mengalihkan ke halaman masuk...")
+      setTimeout(() => navigate("/login"), 2000)
     } catch (err) {
       console.error("Gagal registrasi:", err)
       const errorMessage = err.response?.data?.message || "Terjadi kesalahan. Silakan coba lagi."
@@ -47,17 +49,23 @@ export default function RegisterForm() {
   }
 
   const handleGoogleRegister = async () => {
+    setLoading(true)
+    setError("")
+    setSuccess("")
     try {
       const result = await signInWithPopup(auth, googleProvider);
       console.log("Berhasil daftar/masuk dengan Google!", result.user);
       
       // Simpan info Google User
-      localStorage.setItem("userData", JSON.stringify({ name: result.user.displayName, email: result.user.email }))
+      localStorage.setItem("userData", JSON.stringify({ name: result.user.displayName, email: result.user.email, profilePicture: result.user.photoURL, isPersonalized: false }))
       
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Gagal daftar dengan Google:", error);
-      alert("Gagal daftar dengan Google. Pastikan konfigurasi Firebase sudah benar.");
+      setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
+      setTimeout(() => navigate("/dashboard"), 1500)
+    } catch (err) {
+      console.error("Gagal daftar dengan Google:", err);
+      setError("Gagal daftar dengan Google. Pastikan konfigurasi Firebase sudah benar.");
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -69,6 +77,12 @@ export default function RegisterForm() {
       {error && (
         <div className="mb-5 p-3.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium">
           {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="mb-5 p-3.5 bg-[#EBF7F0] border border-[#A6E6C5] text-[#12B76A] rounded-xl text-sm font-medium">
+          {success}
         </div>
       )}
 
@@ -139,6 +153,7 @@ export default function RegisterForm() {
               type="checkbox" 
               checked={agreeTerms}
               onChange={(e) => setAgreeTerms(e.target.checked)}
+              required
               className="h-4 w-4 text-[#12B76A] focus:ring-[#12B76A] border-gray-300 rounded cursor-pointer"
             />
             <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-700 cursor-pointer">

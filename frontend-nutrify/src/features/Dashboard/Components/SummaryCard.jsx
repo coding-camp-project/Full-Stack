@@ -7,7 +7,7 @@ function SummaryCard({
   icon,
 }) {
   return (
-    <div className="rounded-[18px] bg-[#F7F7F7] p-5">
+    <div className="rounded-[18px] bg-white border border-[#E7E7E7] shadow-sm p-5">
       
       {/* TOP */}
       <div className="flex items-start justify-between">

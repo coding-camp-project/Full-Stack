@@ -32,6 +32,7 @@ export function usePersonalizationForm() {
         if (userData) {
           setFormData({
             name: userData.name || "",
+            profilePicture: userData.profilePicture || "",
             birthDate: userData.birthDate || "",
             gender: userData.gender || "Perempuan",
             height: userData.height || "",
@@ -152,6 +153,17 @@ export function usePersonalizationForm() {
 
     try {
       await saveUserProfile(formData);
+      
+      const storedUser = localStorage.getItem("userData");
+      if (storedUser) {
+        const userObj = JSON.parse(storedUser);
+        userObj.name = formData.name;
+        userObj.profilePicture = formData.profilePicture;
+        userObj.isPersonalized = true;
+        localStorage.setItem("userData", JSON.stringify(userObj));
+        window.dispatchEvent(new Event("storage"));
+      }
+
       setMessage({
         type: "success",
         text: "Personalisasi data kesehatan berhasil disimpan!",
@@ -169,11 +181,36 @@ export function usePersonalizationForm() {
     }
   };
 
-  /** Reset form ke nilai kosong */
-  const handleReset = () => {
-    if (window.confirm("Apakah Anda yakin ingin menyetel ulang semua isian?")) {
-      setFormData(DEFAULT_FORM_DATA);
-      setMessage({ type: "success", text: "Isian formulir berhasil disetel ulang!" });
+  /** Reset form ke nilai kosong dan lock fitur */
+  const handleReset = async () => {
+    if (window.confirm("Apakah Anda yakin ingin menyetel ulang semua isian? Data yang dihapus tidak dapat dikembalikan.")) {
+      const resetData = {
+        ...DEFAULT_FORM_DATA,
+        name: formData.name, // Pertahankan nama
+        profilePicture: formData.profilePicture, // Pertahankan foto profil
+      };
+
+      setLoading(true);
+      try {
+        await saveUserProfile(resetData);
+        setFormData(resetData);
+
+        const storedUser = localStorage.getItem("userData");
+        if (storedUser) {
+          const userObj = JSON.parse(storedUser);
+          userObj.isPersonalized = false; // Lock fitur kembali
+          localStorage.setItem("userData", JSON.stringify(userObj));
+          window.dispatchEvent(new Event("storage"));
+        }
+
+        setMessage({ type: "success", text: "Data berhasil direset dan fitur dikunci kembali." });
+      } catch (err) {
+        console.error("Gagal mereset data:", err);
+        setMessage({ type: "error", text: "Gagal mereset data di server. Silakan coba lagi." });
+      } finally {
+        setLoading(false);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     }
   };
 

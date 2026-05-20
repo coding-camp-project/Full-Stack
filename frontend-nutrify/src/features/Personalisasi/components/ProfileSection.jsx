@@ -17,8 +17,48 @@ export default function ProfileSection({ formData, onChange }) {
         >
           <User size={16} />
         </span>
-        1. Data Diri
+        1. Data Diri & Profil
       </h2>
+
+      <div className="mb-8 flex flex-col items-center sm:items-start">
+        <label className="text-sm font-medium text-gray-700 mb-2 block">Foto Profil</label>
+        <div className="flex items-center gap-5">
+          <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-[#1E7F4E] bg-gray-100 flex-shrink-0">
+            {formData.profilePicture ? (
+              <img src={formData.profilePicture} alt="Profile" className="h-full w-full object-cover" />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center text-gray-400">
+                <User size={32} />
+              </div>
+            )}
+          </div>
+          <div>
+            <input
+              type="file"
+              accept="image/*"
+              id="profile-upload"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    onChange({ target: { name: "profilePicture", value: reader.result } });
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+            <label
+              htmlFor="profile-upload"
+              className="cursor-pointer bg-white border border-[#E7E7E7] hover:bg-gray-50 text-sm text-[#1E1E1E] font-medium py-2 px-4 rounded-lg inline-block transition-colors"
+            >
+              Ubah Foto
+            </label>
+            <p className="text-xs text-gray-500 mt-1">Format: JPG, PNG (Max 2MB)</p>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <FormInput

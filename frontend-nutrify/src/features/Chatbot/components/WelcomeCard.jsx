@@ -35,9 +35,9 @@ function WelcomeCard({ onPromptSelect }) {
     <motion.div
       initial={{ opacity: 0, y: 18, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -12, scale: 0.98 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="w-full max-w-155 rounded-[28px] bg-linear-to-b from-[#0AAE72] to-[#07895A] p-6 shadow-xl sm:p-10"
+      className="mx-auto w-full max-w-155 rounded-[28px] bg-linear-to-b from-[#0AAE72] to-[#07895A] p-6 shadow-xl sm:p-10"
     >
       
       {/* LOGO */}

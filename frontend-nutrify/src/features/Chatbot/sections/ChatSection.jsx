@@ -8,7 +8,6 @@ import QuickActionBar from "../components/QuickActionBar";
 import SpeakingIndicator from "../components/SpeakingIndicator";
 import TypingIndicator from "../components/TypingIndicator";
 import useChat from "../hooks/useChat";
-import useSpeechSynthesis from "../hooks/useSpeechSynthesis";
 
 function ChatSection() {
   const {
@@ -18,30 +17,14 @@ function ChatSection() {
     sendMessage,
     messagesEndRef,
   } = useChat();
-  const {
-    speaking,
-    speak,
-    stopSpeaking,
-  } = useSpeechSynthesis("id-ID");
-  const lastSpokenMessageIdRef = useRef(null);
 
   const hasMessages = messages.length > 0;
   const latestMessage = messages[messages.length - 1];
   const aiIsResponding = Boolean(
-    typing || speaking || (latestMessage?.sender === "bot" && latestMessage.streaming)
+    typing || (latestMessage?.sender === "bot" && latestMessage.streaming)
   );
 
-  useEffect(() => {
-    if (!latestMessage || latestMessage.sender !== "bot") return;
-    if (latestMessage.streaming) return;
-    if (latestMessage.id === lastSpokenMessageIdRef.current) return;
-
-    lastSpokenMessageIdRef.current = latestMessage.id;
-    speak(latestMessage.message);
-  }, [latestMessage, speak]);
-
   const handleSendMessage = (message) => {
-    stopSpeaking();
     sendMessage(message);
   };
 
@@ -49,7 +32,7 @@ function ChatSection() {
     <div className="flex min-h-[82vh] flex-col justify-between">
       
       {/* CENTER */}
-      <div className={`flex flex-1 ${hasMessages ? "min-h-0 items-stretch" : "items-center justify-center"}`}>
+      <div className="relative flex flex-1 min-h-0 items-stretch">
         <AnimatePresence mode="wait">
           {hasMessages ? (
             <motion.div
@@ -75,14 +58,17 @@ function ChatSection() {
               <div ref={messagesEndRef} />
             </motion.div>
           ) : (
-            <WelcomeCard key="welcome" onPromptSelect={handleSendMessage} />
+            <motion.div
+              key="welcome-wrapper"
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex w-full items-center justify-center"
+            >
+              <WelcomeCard onPromptSelect={handleSendMessage} />
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      <AnimatePresence>
-        {speaking && <SpeakingIndicator onStop={stopSpeaking} />}
-      </AnimatePresence>
 
       {hasMessages && (
         <QuickActionBar
@@ -94,7 +80,6 @@ function ChatSection() {
       {/* INPUT */}
       <ChatInput
         onSendMessage={handleSendMessage}
-        onVoiceStart={stopSpeaking}
         loading={loading}
         voiceDisabled={aiIsResponding}
       />
