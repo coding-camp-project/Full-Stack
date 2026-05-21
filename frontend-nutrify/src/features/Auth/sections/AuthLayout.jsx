@@ -1,4 +1,4 @@
-import nutrifyLogo from "@/assets/nutrify-logo.png"
+import nutrifyLogo from "@/assets/Nutrify-Logo.png"
 import mockupImg from "@/assets/Login.png"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"

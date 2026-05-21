@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 import { Link } from "react-router-dom"
-import logoNutrify from "@/assets/nutrify-logo.png"
+import logoNutrify from "@/assets/Nutrify-Logo.png"
 
 const navLinks = [
   { name: "Beranda", id: "beranda" },
