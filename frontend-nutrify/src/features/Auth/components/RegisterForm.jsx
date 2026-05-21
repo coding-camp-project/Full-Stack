@@ -30,7 +30,8 @@ export default function RegisterForm() {
     setSuccess("")
 
     try {
-      await axios.post("http://localhost:5000/api/users/register", {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      await axios.post(`${API_URL}/api/users/register`, {
         name,
         email,
         password,
