@@ -11,7 +11,7 @@ import Footer from "./sections/Footer"
 
 function LandingPage() {
   return (
-    <div className="min-w-0 overflow-x-hidden">
+    <div className="min-w-0 overflow-x-clip">
       <Navbar />
       <Hero />
       <Specialization />
