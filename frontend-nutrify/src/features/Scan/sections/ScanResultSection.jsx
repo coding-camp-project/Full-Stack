@@ -1,6 +1,5 @@
 import {
   AlertTriangle,
-  Beef,
   Droplets,
   Flame,
   Leaf,
@@ -19,98 +18,10 @@ import NutritionCard from "../components/NutritionCard";
 import RecommendationCard from "../components/RecommendationCard";
 import ResultHeader from "../components/ResultHeader";
 
-const nutritionItems = [
-  {
-    icon: <Flame size={20} />,
-    label: "Kalori",
-    value: "520",
-    unit: "kkal",
-    tone: "orange",
-  },
-  {
-    icon: <Leaf size={20} />,
-    label: "Protein",
-    value: "14",
-    unit: "g",
-    tone: "green",
-  },
-  {
-    icon: <Flame size={20} />,
-    label: "Lemak",
-    value: "18",
-    unit: "g",
-    tone: "orange",
-  },
-  {
-    icon: <Droplets size={20} />,
-    label: "Karbohidrat",
-    value: "72",
-    unit: "g",
-    tone: "blue",
-  },
-  {
-    icon: <Sprout size={20} />,
-    label: "Serat",
-    value: "2",
-    unit: "g",
-    tone: "green",
-  },
-  {
-    icon: <TestTube2 size={20} />,
-    label: "Gula",
-    value: "3",
-    unit: "g",
-    tone: "purple",
-  },
-  {
-    icon: <Lock size={20} />,
-    label: "Sodium",
-    value: "82",
-    unit: "mg",
-    tone: "purple",
-  },
-];
-
-const healthItems = [
-  {
-    icon: <AlertTriangle size={16} className="text-[#F5A623]" />,
-    title: "Nasi Goreng",
-    description: "Kandungan sodium dalam makanan ini tergolong tinggi.",
-  },
-  {
-    icon: <ShieldCheck size={16} className="text-[#49AE84]" />,
-    title: "Rendah Serat",
-    description: "Kandungan serat makanan ini tergolong rendah.",
-  },
-  {
-    icon: <ShieldCheck size={16} className="text-[#49AE84]" />,
-    title: "Gula Aman",
-    description: "Kandungan gula dalam batas aman.",
-  },
-];
-
-const recommendationItems = [
-  {
-    icon: <Salad size={16} className="text-[#49AE84]" />,
-    title: "Tambahkan sayuran",
-    description: "Tambahkan sayuran hijau untuk meningkatkan asupan serat.",
-  },
-  {
-    icon: <Beef size={16} className="text-[#49AE84]" />,
-    title: "Kurangi penggunaan garam",
-    description: "Batasi bumbu berlebih untuk mengurangi asupan sodium.",
-  },
-  {
-    icon: <Sprout size={16} className="text-[#49AE84]" />,
-    title: "Porsi yang disarankan",
-    description: "Konsumsi dalam porsi seimbang dengan makanan bergizi lainnya.",
-  },
-];
-
-function ScanResultSection({ imagePreview, result }) {
+function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
   if (!result || !result.nutrition) return null;
 
-  const { best_prediction, nutrition, recommendation, warning } = result;
+  const { best_prediction, nutrition, recommendation, warning, healthAnalysis } = result;
 
   const dynamicNutritionItems = [
     {
@@ -202,6 +113,23 @@ function ScanResultSection({ imagePreview, result }) {
     });
   }
 
+  if (Array.isArray(healthAnalysis) && healthAnalysis.length > 0) {
+    dynamicHealthItems.splice(
+      0,
+      dynamicHealthItems.length,
+      ...healthAnalysis.map((description, index) => ({
+        icon:
+          index === 0 ? (
+            <AlertTriangle size={16} className="text-[#F5A623]" />
+          ) : (
+            <ShieldCheck size={16} className="text-[#49AE84]" />
+          ),
+        title: index === 0 ? "Analisis Nutrisi" : "Catatan Kesehatan",
+        description,
+      }))
+    );
+  }
+
   const dynamicRecommendationItems = [
     {
       icon: <Salad size={16} className="text-[#49AE84]" />,
@@ -218,14 +146,16 @@ function ScanResultSection({ imagePreview, result }) {
             Hasil Scan: {best_prediction?.food_name?.replace(/_/g, " ").toUpperCase()} ({(best_prediction?.confidence_score * 100).toFixed(1)}%)
           </h2>
 
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="flex h-10 items-center justify-center gap-2 rounded-xl bg-[#1E7F4E] px-4 text-[14px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#16663E]"
-          >
-            <RefreshCcw size={16} />
-            Scan Ulang
-          </button>
+          {showRescanButton && (
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="flex h-10 items-center justify-center gap-2 rounded-xl bg-[#1E7F4E] px-4 text-[14px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#16663E]"
+            >
+              <RefreshCcw size={16} />
+              Scan Ulang
+            </button>
+          )}
         </div>
 
         <div className="grid gap-5 lg:grid-cols-[1.05fr_1.25fr]">
