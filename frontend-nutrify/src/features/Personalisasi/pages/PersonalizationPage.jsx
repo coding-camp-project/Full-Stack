@@ -6,6 +6,7 @@
 
 import { RefreshCw, Shield, AlertCircle, Lock } from "lucide-react";
 import { usePersonalizationForm } from "../hooks/usePersonalizationForm";
+import { useUserSession } from "@/hooks/useUserSession";
 
 import ProfileSection    from "../components/ProfileSection";
 import HealthSection     from "../components/HealthSection";
@@ -14,6 +15,9 @@ import GoalSection       from "../components/GoalSection";
 import ActionButtons     from "../components/ActionButtons";
 
 export default function PersonalizationPage() {
+  const { isOnboardingRequired } = useUserSession();
+  const isOnboardingMode = isOnboardingRequired;
+
   const {
     formData,
     loading,
@@ -37,7 +41,7 @@ export default function PersonalizationPage() {
     handleSubmit,
     handleReset,
     calculateAge,
-  } = usePersonalizationForm();
+  } = usePersonalizationForm({ isOnboardingMode });
 
   // ── Loading skeleton ──────────────────────
   if (fetching) {
@@ -59,11 +63,12 @@ export default function PersonalizationPage() {
         <div className="flex-1 space-y-4">
           <div>
             <h1 className="text-[32px] font-bold text-[#1E1E1E] tracking-tight mb-2">
-              Personalisasi
+              {isOnboardingMode ? "Personalisasi" : "Profil"}
             </h1>
             <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">
-              Lengkapi informasi dirimu agar kami dapat memberikan rekomendasi
-              gizi yang lebih akurat dan sesuai kebutuhanmu.
+              {isOnboardingMode
+                ? "Lengkapi informasi dirimu agar kami dapat memberikan rekomendasi gizi yang lebih akurat dan sesuai kebutuhanmu."
+                : "Perbarui informasi profil kesehatanmu kapan saja. Perubahan akan disimpan untuk rekomendasi gizi yang lebih akurat."}
             </p>
           </div>
 
@@ -119,7 +124,7 @@ export default function PersonalizationPage() {
       </div>
 
       {/* ── MANDATORY ALERT ── */}
-      {(!JSON.parse(localStorage.getItem("userData") || "{}").isPersonalized && JSON.parse(localStorage.getItem("userData") || "{}").isPersonalized === false) && (
+      {isOnboardingMode && (
         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl flex items-center gap-3">
           <AlertCircle className="h-5 w-5 shrink-0" />
           <span className="text-sm font-semibold">Silakan lengkapi data diri Anda terlebih dahulu untuk membuka fitur-fitur lainnya.</span>

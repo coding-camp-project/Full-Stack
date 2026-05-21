@@ -6,6 +6,7 @@
 // ─────────────────────────────────────────────
 
 import axios from "axios";
+import { updateUserData } from "../../../utils/userSession";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -55,15 +56,7 @@ export const saveUserProfile = async (formData) => {
     { headers: { Authorization: `Bearer ${token}` } }
   );
 
-  // Sinkronisasi nama di localStorage agar Navbar langsung terupdate
-  const storedUser = localStorage.getItem("userData");
-  if (storedUser) {
-    const parsed = JSON.parse(storedUser);
-    localStorage.setItem(
-      "userData",
-      JSON.stringify({ ...parsed, name: formData.name })
-    );
-  }
+  updateUserData({ name: formData.name, profilePicture: formData.profilePicture });
 
   return response.data;
 };
