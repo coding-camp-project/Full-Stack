@@ -9,6 +9,7 @@ import DashboardPage from "./features/Dashboard/pages/DashboardPage"
 import ChatbotPage from "./features/Chatbot/pages/ChatbotPage";
 import ScanPage from "./features/Scan/pages/ScanPage";
 import HistoryPage from "./features/History/pages/HistoryPage";
+import HistoryDetailPage from "./features/History/pages/HistoryDetailPage";
 import PersonalizationPage from "./features/Personalisasi/pages/PersonalizationPage";
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path="/chatbot" element={<ChatbotPage />} />
           <Route path="/scan" element={<ScanPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/history/:id" element={<HistoryDetailPage />} />
           <Route path="/personalisasi" element={<PersonalizationPage />} />
         </Route>
       </Routes>

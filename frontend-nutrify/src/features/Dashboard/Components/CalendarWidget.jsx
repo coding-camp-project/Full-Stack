@@ -1,39 +1,117 @@
+import { useEffect, useMemo, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
   CalendarDays,
   ClipboardList,
   Dumbbell,
+  Droplet,
 } from "lucide-react";
 
 import AgendaItem from "./AgendaItem";
+import {
+  addMonths,
+  formatAgendaDate,
+  formatMonthYear,
+  generateCalendarWeeks,
+  getMockAgendaByDate,
+  isSameDay,
+} from "../utils/calendarUtils";
+
+const ONE_MINUTE = 60 * 1000;
+const DAY_LABELS = ["SEN", "SEL", "RAB", "KAM", "JUM", "SAB", "MIN"];
+
+const AGENDA_ICONS = {
+  calendar: CalendarDays,
+  check: ClipboardList,
+  water: Droplet,
+  workout: Dumbbell,
+};
 
 function CalendarWidget() {
-  const dates = [
-    [1, 2, 3, 4, 5],
-    [6, 7, 8, 9, 10, 11, 12],
-    [13, 14, 15, 16, 17, 18, 19],
-    [20, 21, 22, 23, 24, 25, 26],
-    [27, 28, 29, 30, 31],
-  ];
+  const [currentDate, setCurrentDate] = useState(() => new Date());
+  const [visibleMonth, setVisibleMonth] = useState(() => new Date());
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentDate(new Date());
+    }, ONE_MINUTE);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const calendarWeeks = useMemo(
+    () => generateCalendarWeeks(visibleMonth),
+    [visibleMonth]
+  );
+
+  const agendaItems = useMemo(
+    () => getMockAgendaByDate(selectedDate),
+    [selectedDate]
+  );
+  const agendaTitle = isSameDay(selectedDate, currentDate)
+    ? "Agenda Hari Ini"
+    : "Agenda";
+
+  const handleTodayClick = () => {
+    const today = new Date();
+    setCurrentDate(today);
+    setVisibleMonth(today);
+    setSelectedDate(today);
+  };
+
+  const handleMonthChange = (direction) => {
+    setVisibleMonth((month) => {
+      const nextMonth = addMonths(month, direction);
+      setSelectedDate(nextMonth);
+      return nextMonth;
+    });
+  };
+
+  const handleDateSelect = (day) => {
+    setSelectedDate(day.date);
+
+    if (!day.isCurrentMonth) {
+      setVisibleMonth(day.date);
+    }
+  };
 
   return (
     <div>
       
       {/* HEADER */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         
-        <button className="rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 text-[14px] font-medium text-[#444]">
+        <button
+          type="button"
+          onClick={handleTodayClick}
+          className="rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 text-[14px] font-medium text-[#444] transition-all duration-200 hover:border-[#49AE84] hover:text-[#49AE84]"
+        >
           Hari Ini
         </button>
 
+        <h3 className="text-[16px] font-bold capitalize text-[#1E1E1E]">
+          {formatMonthYear(visibleMonth)}
+        </h3>
+
         <div className="flex items-center gap-2">
           
-          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-[#7BC9A7] text-[#49AE84]">
+          <button
+            type="button"
+            onClick={() => handleMonthChange(-1)}
+            aria-label="Bulan sebelumnya"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#7BC9A7] text-[#49AE84] transition-all duration-200 hover:bg-[#EFFFF8]"
+          >
             <ChevronLeft size={16} />
           </button>
 
-          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-[#7BC9A7] text-[#49AE84]">
+          <button
+            type="button"
+            onClick={() => handleMonthChange(1)}
+            aria-label="Bulan berikutnya"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#7BC9A7] text-[#49AE84] transition-all duration-200 hover:bg-[#EFFFF8]"
+          >
             <ChevronRight size={16} />
           </button>
         </div>
@@ -41,37 +119,49 @@ function CalendarWidget() {
 
       {/* DAYS */}
       <div className="mt-6 grid grid-cols-7 text-center text-[12px] font-semibold text-[#999]">
-        <span>MON</span>
-        <span>TUE</span>
-        <span>WED</span>
-        <span>THU</span>
-        <span>FRI</span>
-        <span>SAT</span>
-        <span>SUN</span>
+        {DAY_LABELS.map((label) => (
+          <span key={label}>{label}</span>
+        ))}
       </div>
 
       {/* DATES */}
       <div className="mt-5 space-y-3">
-        {dates.map((week, index) => (
+        {calendarWeeks.map((week) => (
           <div
-            key={index}
+            key={week[0].date.toISOString()}
             className="grid grid-cols-7 text-center"
           >
-            {week.map((date) => (
-              <div
-                key={date}
-                className={`mx-auto flex h-8 w-8 items-center justify-center rounded-full text-[14px]
-                  
-                  ${
-                    date === 16
-                      ? "bg-[#44B678] font-semibold text-white"
-                      : "text-[#777]"
-                  }
-                `}
-              >
-                {date}
-              </div>
-            ))}
+            {week.map((day) => {
+              const isToday = isSameDay(day.date, currentDate);
+              const isSelected = isSameDay(day.date, selectedDate);
+
+              return (
+                <button
+                  key={day.date.toISOString()}
+                  type="button"
+                  onClick={() => handleDateSelect(day)}
+                  className={`mx-auto flex h-8 w-8 items-center justify-center rounded-full text-[14px] transition-all duration-200 hover:bg-[#EFFFF8] hover:text-[#49AE84] ${
+                    isToday
+                      ? "bg-[#44B678] font-semibold text-white hover:bg-[#44B678] hover:text-white"
+                      : ""
+                  } ${
+                    !isToday && isSelected
+                      ? "border border-[#7BC9A7] bg-[#EFFFF8] font-semibold text-[#168C55]"
+                      : ""
+                  } ${
+                    !isToday && !isSelected && day.isCurrentMonth
+                      ? "text-[#777]"
+                      : ""
+                  } ${
+                    !isToday && !isSelected && !day.isCurrentMonth
+                      ? "text-[#C7C7C7]"
+                      : ""
+                  }`}
+                >
+                  {day.day}
+                </button>
+              );
+            })}
           </div>
         ))}
       </div>
@@ -80,37 +170,29 @@ function CalendarWidget() {
       <div className="mt-10 flex items-center justify-between">
         
         <h3 className="text-[24px] font-bold text-[#1E1E1E]">
-          Agenda Hari Ini
+          {agendaTitle}
         </h3>
 
         <span className="text-[13px] text-[#999]">
-          16 Mei 2026
+          {formatAgendaDate(selectedDate)}
         </span>
       </div>
 
       {/* AGENDA LIST */}
       <div className="mt-7 space-y-6">
-        
-        <AgendaItem
-          title="Hari Ini"
-          time="08.30 - 09.00"
-          color="#45C16E"
-          icon={<CalendarDays size={22} />}
-        />
+        {agendaItems.map((item) => {
+          const Icon = AGENDA_ICONS[item.iconType];
 
-        <AgendaItem
-          title="Hari Ini"
-          time="08.30 - 09.00"
-          color="#F5B74F"
-          icon={<ClipboardList size={22} />}
-        />
-
-        <AgendaItem
-          title="Hari Ini"
-          time="08.30 - 09.00"
-          color="#9B6BFF"
-          icon={<Dumbbell size={22} />}
-        />
+          return (
+            <AgendaItem
+              key={`${item.title}-${item.time}`}
+              title={item.title}
+              time={item.time}
+              color={item.color}
+              icon={<Icon size={22} />}
+            />
+          );
+        })}
       </div>
     </div>
   );

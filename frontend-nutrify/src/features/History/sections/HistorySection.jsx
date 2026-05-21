@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Droplets, Flame } from "lucide-react";
 
-import foodImage from "../../../assets/healthy-food-img.png";
-
 import HistoryFilter from "../components/HistoryFilter";
 import HistoryList from "../components/HistoryList";
 import InsightCard from "../components/InsightCard";
 import NutritionSummaryCard from "../components/NutritionSummaryCard";
+import { getHistory } from "../services/historyService";
+import { mapHistoryRecordToCardItem } from "../utils/historyMappers";
 import {
   DEFAULT_TIME_FILTER,
   filterHistoryByTimeRange,
@@ -26,10 +26,7 @@ function getStoredHistoryItems() {
       return [];
     }
 
-    return JSON.parse(historyStr).map((item) => ({
-      ...item,
-      image: item.image || foodImage,
-    }));
+    return JSON.parse(historyStr).map(mapHistoryRecordToCardItem);
   } catch (err) {
     console.error("Gagal membaca riwayat", err);
     return [];
@@ -37,9 +34,37 @@ function getStoredHistoryItems() {
 }
 
 function HistorySection() {
-  const [historyItems] = useState(getStoredHistoryItems);
+  const [historyItems, setHistoryItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedTimeFilter, setSelectedTimeFilter] = useState(DEFAULT_TIME_FILTER);
   const [currentDate, setCurrentDate] = useState(() => new Date());
+
+  useEffect(() => {
+    let isMounted = true;
+
+    getHistory()
+      .then((history) => {
+        if (isMounted) {
+          setHistoryItems(history.map(mapHistoryRecordToCardItem));
+        }
+      })
+      .catch((err) => {
+        console.error("Gagal mengambil riwayat dari server", err);
+
+        if (isMounted) {
+          setHistoryItems(getStoredHistoryItems());
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -106,7 +131,7 @@ function HistorySection() {
       </div>
 
       <div className="mt-6 grid gap-4 xl:grid-cols-[1fr_16rem]">
-        <HistoryList items={filteredHistoryItems} />
+        <HistoryList items={filteredHistoryItems} loading={loading} />
         <InsightCard />
       </div>
     </div>

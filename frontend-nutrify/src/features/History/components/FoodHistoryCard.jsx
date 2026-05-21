@@ -1,10 +1,28 @@
 import { ChevronRight, Droplet, Flame, Leaf, Wheat } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import FoodNutritionInfo from "./FoodNutritionInfo";
 
 function FoodHistoryCard({ item }) {
+  const navigate = useNavigate();
+
+  const handleOpenDetail = () => {
+    navigate(`/history/${item.id}`);
+  };
+
   return (
-    <article className="grid gap-4 border-b border-[#D8D8D8] py-3 transition-all duration-200 last:border-b-0 hover:bg-[#F8FFFB] sm:grid-cols-[7.5rem_1fr_auto] sm:items-center">
+    <article
+      role="button"
+      tabIndex={0}
+      onClick={handleOpenDetail}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          handleOpenDetail();
+        }
+      }}
+      className="group grid cursor-pointer gap-4 border-b border-[#D8D8D8] py-3 transition-all duration-200 last:border-b-0 hover:bg-[#F8FFFB] sm:grid-cols-[7.5rem_1fr_auto] sm:items-center"
+    >
       <div className="flex gap-4 sm:block">
         <img
           src={item.image}
@@ -64,7 +82,12 @@ function FoodHistoryCard({ item }) {
 
         <button
           type="button"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#1E1E1E] transition-all duration-200 hover:bg-[#EFFFF8] hover:text-[#49AE84]"
+          onClick={(event) => {
+            event.stopPropagation();
+            handleOpenDetail();
+          }}
+          aria-label={`Lihat detail ${item.name}`}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#1E1E1E] transition-all duration-200 group-hover:translate-x-1 group-hover:bg-[#EFFFF8] group-hover:text-[#49AE84]"
         >
           <ChevronRight size={25} />
         </button>

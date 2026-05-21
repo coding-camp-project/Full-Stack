@@ -50,12 +50,11 @@ function ScanPage() {
       const formData = new FormData();
       formData.append("image", uploadedImage);
 
-      // Optional: send disease from user profile if available
-      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-      // You can append disease here if needed
+      const token = localStorage.getItem("userToken");
 
       const response = await fetch("http://localhost:5000/api/scan", {
         method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
       });
 
@@ -73,7 +72,7 @@ function ScanPage() {
         const historyStr = localStorage.getItem("scanHistory");
         const history = historyStr ? JSON.parse(historyStr) : [];
         const newHistoryItem = {
-          id: Date.now(),
+          id: data.historyId || Date.now(),
           time: new Date().toLocaleString("id-ID", { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }),
           name: data.best_prediction?.food_name?.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
           components: 1, // Default, can be dynamic later
