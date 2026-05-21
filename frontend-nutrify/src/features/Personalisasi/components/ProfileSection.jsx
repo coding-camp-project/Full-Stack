@@ -67,7 +67,7 @@ export default function ProfileSection({ formData, onChange }) {
           name="name"
           value={formData.name}
           onChange={onChange}
-          placeholder="Aisyah Putri"
+          placeholder="Isi nama lengkap kamu di sini"
           required
         />
 
@@ -77,6 +77,7 @@ export default function ProfileSection({ formData, onChange }) {
           name="birthDate"
           value={formData.birthDate}
           onChange={onChange}
+          placeholder="Isi tanggal lahir kamu di sini"
           required
         />
 
@@ -96,7 +97,7 @@ export default function ProfileSection({ formData, onChange }) {
           name="height"
           value={formData.height}
           onChange={onChange}
-          placeholder="160"
+          placeholder="Isi tinggi badan kamu di sini"
           required
           min={50}
           max={300}
@@ -109,7 +110,7 @@ export default function ProfileSection({ formData, onChange }) {
           name="weight"
           value={formData.weight}
           onChange={onChange}
-          placeholder="55"
+          placeholder="Isi berat badan kamu di sini"
           required
           min={20}
           max={500}

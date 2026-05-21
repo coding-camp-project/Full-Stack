@@ -9,6 +9,7 @@ const navLinks = [
   { name: "Tentang", id: "tentang" },
   { name: "Layanan", id: "layanan" },
   { name: "Tim Kami", id: "tim-kami" },
+  { name: "Blog", id: "blog" },
   { name: "FAQ", id: "faq" },
 ]
 

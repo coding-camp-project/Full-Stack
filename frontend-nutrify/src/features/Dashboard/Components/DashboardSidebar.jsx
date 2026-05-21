@@ -24,7 +24,7 @@ const menuLinkClass = ({ isActive }) =>
 const menuButtonClass =
   "relative z-20 flex h-11.5 w-full cursor-pointer items-center gap-3 rounded-xl px-5 text-[15px] font-medium text-white transition-all duration-200 hover:translate-x-1";
 
-function DashboardSidebar() {
+function DashboardSidebar({ setIsSidebarOpen }) {
   const navigate = useNavigate();
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
   const isPersonalized = userData.isPersonalized !== false;
@@ -70,7 +70,7 @@ function DashboardSidebar() {
       <nav className="relative z-10 flex flex-col gap-6">
         
         {/* DASHBOARD */}
-        <NavLink to={isPersonalized ? "/dashboard" : "/personalisasi"} end className={menuLinkClass}>
+        <NavLink onClick={() => setIsSidebarOpen && setIsSidebarOpen(false)} to={isPersonalized ? "/dashboard" : "/personalisasi"} end className={menuLinkClass}>
           <LayoutDashboard size={18} strokeWidth={2.2} />
 
           <span>Dashboard</span>
@@ -78,7 +78,7 @@ function DashboardSidebar() {
         </NavLink>
 
         {/* CHATBOT */}
-        <NavLink to={isPersonalized ? "/chatbot" : "/personalisasi"} className={menuLinkClass}>
+        <NavLink onClick={() => setIsSidebarOpen && setIsSidebarOpen(false)} to={isPersonalized ? "/chatbot" : "/personalisasi"} className={menuLinkClass}>
           <Bot size={18} strokeWidth={2.2} />
 
           <span>Chatbot</span>
@@ -86,7 +86,7 @@ function DashboardSidebar() {
         </NavLink>
 
         {/* SCAN */}
-        <NavLink to={isPersonalized ? "/scan" : "/personalisasi"} className={menuLinkClass}>
+        <NavLink onClick={() => setIsSidebarOpen && setIsSidebarOpen(false)} to={isPersonalized ? "/scan" : "/personalisasi"} className={menuLinkClass}>
           <ScanSearch size={18} strokeWidth={2.2} />
 
           <span>Scan Nutrify</span>
@@ -94,7 +94,7 @@ function DashboardSidebar() {
         </NavLink>
 
         {/* HISTORY */}
-        <NavLink to={isPersonalized ? "/history" : "/personalisasi"} className={menuLinkClass}>
+        <NavLink onClick={() => setIsSidebarOpen && setIsSidebarOpen(false)} to={isPersonalized ? "/history" : "/personalisasi"} className={menuLinkClass}>
           <History size={18} strokeWidth={2.2} />
 
           <span>History</span>
@@ -102,7 +102,7 @@ function DashboardSidebar() {
         </NavLink>
 
         {/* PERSONALISASI */}
-        <NavLink to="/personalisasi" className={menuLinkClass}>
+        <NavLink onClick={() => setIsSidebarOpen && setIsSidebarOpen(false)} to="/personalisasi" className={menuLinkClass}>
           <Sliders size={18} strokeWidth={2.2} />
 
           <span>Personalisasi</span>

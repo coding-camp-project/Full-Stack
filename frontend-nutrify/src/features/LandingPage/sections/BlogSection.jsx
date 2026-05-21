@@ -3,33 +3,35 @@ import healthyFood from "@/assets/healthy-food.png"
 import healthyFood2 from "@/assets/healthy-food-2.png"
 import healthyFood3 from "@/assets/healthy-food-3.png"
 import { motion } from "framer-motion"
+import { Link } from "react-router-dom"
 
 const blogs = [
   {
+    id: "bulking-prep",
     image: healthyFood,
     category: "Perencanaan Makanan",
     title: "10 Ide Persiapan Makanan Mudah untuk Bulking",
     readTime: "Waktu baca 8 mnt",
   },
-
   {
+    id: "protein-olahraga",
     image: healthyFood2,
-    category: "Perencanaan Makanan",
-    title: "10 Ide Persiapan Makanan Mudah untuk Bulking",
-    readTime: "Waktu baca 8 mnt",
+    category: "Nutrisi & Kesehatan",
+    title: "Pentingnya Asupan Protein Setelah Olahraga",
+    readTime: "Waktu baca 5 mnt",
   },
-
   {
+    id: "diet-sehat",
     image: healthyFood3,
-    category: "Perencanaan Makanan",
-    title: "10 Ide Persiapan Makanan Mudah untuk Bulking",
-    readTime: "Waktu baca 8 mnt",
+    category: "Tips Diet",
+    title: "Cara Menurunkan Berat Badan Tanpa Tersiksa",
+    readTime: "Waktu baca 6 mnt",
   },
 ]
 
 function BlogSection() {
   return (
-    <section className="relative overflow-hidden bg-[#FAFFFC] py-28 px-6">
+    <section id="blog" className="relative overflow-hidden bg-[#FAFFFC] py-28 px-6">
 
       {/* GRID BACKGROUND */}
       <div className="absolute inset-0 opacity-40">
@@ -86,8 +88,8 @@ function BlogSection() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: false, margin: "-50px" }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
-              className="bg-white border border-[#E5E7EB] rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-300"
             >
+              <Link to={`/article/${item.id}`} className="block h-full bg-white border border-[#E5E7EB] rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
 
               {/* IMAGE */}
               <div className="relative overflow-hidden h-[260px]">
@@ -128,6 +130,7 @@ function BlogSection() {
                 </div>
 
               </div>
+              </Link>
 
             </motion.div>
           ))}

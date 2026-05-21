@@ -12,7 +12,7 @@ function SummarySection({ calories = 0, carbs = 0, fat = 0 }) {
   const fatProgress = Math.min(Math.round((fat / targetFat) * 100), 100);
 
   return (
-    <section className="grid grid-cols-3 gap-5">
+    <section className="grid grid-cols-1 md:grid-cols-3 gap-5">
       
       <SummaryCard
         title="Kalori Hari Ini"

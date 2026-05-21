@@ -11,6 +11,7 @@ import ScanPage from "./features/Scan/pages/ScanPage";
 import HistoryPage from "./features/History/pages/HistoryPage";
 import HistoryDetailPage from "./features/History/pages/HistoryDetailPage";
 import PersonalizationPage from "./features/Personalisasi/pages/PersonalizationPage";
+import ArticlePage from "./features/LandingPage/pages/ArticlePage";
 
 function App() {
   const location = useLocation()
@@ -21,6 +22,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/article/:id" element={<ArticlePage />} />
         
         {/* Dashboard Routes with Layout */}
         <Route element={<DashboardLayout />}>

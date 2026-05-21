@@ -112,10 +112,16 @@ export default function FormInput({
       {type !== "select" && type !== "textarea" && (
         <div style={{ position: "relative" }}>
           <input
-            type={type}
+            type={type === "date" && !value ? "text" : type}
             name={name}
             value={value}
             onChange={onChange}
+            onFocus={(e) => {
+              if (type === "date") e.target.type = "date";
+            }}
+            onBlur={(e) => {
+              if (type === "date" && !e.target.value) e.target.type = "text";
+            }}
             placeholder={placeholder}
             required={required}
             min={min}

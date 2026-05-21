@@ -11,7 +11,7 @@ function FoodHistorySection({ items = [] }) {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {recentItems.map((food, index) => (
         <FoodHistoryCard
           key={food.id || index}
