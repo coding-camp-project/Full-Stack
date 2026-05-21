@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import DashboardSidebar from "@/features/Dashboard/Components/DashboardSidebar";
 import DashboardNavbar from "@/features/Dashboard/Components/DashboardNavbar";
@@ -6,8 +6,22 @@ import { useUserSession } from "@/hooks/useUserSession";
 
 function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isRouteLoading, setIsRouteLoading] = useState(false);
   const location = useLocation();
-  const { isOnboardingRequired } = useUserSession();
+  const { isOnboardingRequired, userData } = useUserSession();
+  const isLoggedIn = Boolean(userData && userData.email);
+
+  useEffect(() => {
+    setIsRouteLoading(true);
+    const timer = setTimeout(() => {
+      setIsRouteLoading(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
 
   if (isOnboardingRequired && location.pathname !== "/personalisasi") {
     return <Navigate to="/personalisasi" replace />;
@@ -37,7 +51,15 @@ function DashboardLayout() {
       <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <DashboardNavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-        <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
+        <main className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
+          {isRouteLoading && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-100/60 backdrop-blur-[2px] transition-all duration-300">
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-[#04A16E]" />
+                <span className="text-xs font-semibold text-gray-500 tracking-wider">Memuat...</span>
+              </div>
+            </div>
+          )}
           <Outlet />
         </main>
       </div>

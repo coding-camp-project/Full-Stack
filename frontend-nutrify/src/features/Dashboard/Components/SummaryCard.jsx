@@ -30,7 +30,7 @@ function SummaryCard({
           </p>
 
           <div className="mt-1 flex flex-wrap items-end gap-1">
-            <h2 className="text-2xl font-bold leading-none text-[#111111] sm:text-3xl lg:text-[38px]">
+            <h2 className="text-xl font-bold leading-none text-[#111111] sm:text-2xl lg:text-[28px]">
               {value}
             </h2>
 

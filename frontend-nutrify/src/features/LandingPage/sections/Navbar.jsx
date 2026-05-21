@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 import { Link } from "react-router-dom"
 import logoNutrify from "@/assets/Nutrify-Logo.png"
+import { useUserSession } from "@/hooks/useUserSession"
 
 const navLinks = [
   { name: "Beranda", id: "beranda" },
@@ -17,6 +18,8 @@ function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState("beranda")
+  const { isPersonalized, userData } = useUserSession()
+  const isLoggedIn = Boolean(userData && userData.email)
 
   // Listen for scroll events to change navbar styling dynamically
   useEffect(() => {
@@ -70,7 +73,7 @@ function Navbar() {
                 href={`#${link.id}`}
                 className={`px-4 py-2.5 rounded-full transition-all duration-300 ${
                   activeSection === link.id
-                    ? "bg-[#12B76A] text-white shadow-md hover:bg-[#0FA968] hover:-translate-y-0.5"
+                    ? "bg-[#E7FFF5] text-[#12B76A] font-bold shadow-xs"
                     : "text-gray-600 hover:text-[#12B76A] hover:bg-green-50/50"
                 }`}
               >
@@ -81,11 +84,19 @@ function Navbar() {
 
           {/* ACTIONS */}
           <div className="flex items-center gap-2 sm:gap-4">
-            <Link to="/login">
-              <Button className="hidden sm:flex bg-[#12B76A] hover:bg-[#0FA968] rounded-full px-6 md:px-8 py-5 text-white font-semibold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
-                Masuk
-              </Button>
-            </Link>
+            {isLoggedIn ? (
+              <Link to={isPersonalized ? "/dashboard" : "/personalisasi"}>
+                <Button className="hidden sm:flex bg-[#12B76A] hover:bg-[#0FA968] rounded-full px-6 md:px-8 py-5 text-white font-semibold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
+                  Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <Button className="hidden sm:flex bg-[#12B76A] hover:bg-[#0FA968] rounded-full px-6 md:px-8 py-5 text-white font-semibold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
+                  Masuk
+                </Button>
+              </Link>
+            )}
             
             {/* MOBILE MENU TOGGLE */}
             <Button 
@@ -111,7 +122,7 @@ function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`py-3 rounded-full transition-all duration-300 ${
                     activeSection === link.id
-                      ? "bg-[#12B76A] text-white shadow-sm"
+                      ? "bg-[#E7FFF5] text-[#12B76A] font-bold"
                       : "hover:text-[#12B76A] hover:bg-green-50/50"
                   }`}
                 >
@@ -119,11 +130,19 @@ function Navbar() {
                 </a>
               ))}
               <div className="h-px bg-gray-200 my-2 w-full"></div>
-              <Link to="/login" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="bg-[#12B76A] hover:bg-[#0FA968] rounded-full py-6 text-white font-semibold shadow-md w-full">
-                  Masuk
-                </Button>
-              </Link>
+              {isLoggedIn ? (
+                <Link to={isPersonalized ? "/dashboard" : "/personalisasi"} className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button className="bg-[#12B76A] hover:bg-[#0FA968] rounded-full py-6 text-white font-semibold shadow-md w-full">
+                    Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/login" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button className="bg-[#12B76A] hover:bg-[#0FA968] rounded-full py-6 text-white font-semibold shadow-md w-full">
+                    Masuk
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         )}

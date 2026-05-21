@@ -134,11 +134,11 @@ function TeamSection() {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: false, margin: "-50px" }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="bg-white border border-[#E5E7EB] rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-300"
+                className="bg-white border border-[#D1F2E5] rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(73,174,132,0.15)] hover:border-[#49AE84] transition-all duration-300"
               >
 
                 {/* IMAGE */}
-                <div className="relative h-[320px] flex items-end justify-center overflow-hidden bg-gray-50">
+                <div className="relative h-[400px] flex items-end justify-center overflow-hidden bg-gray-50">
 
                   <img
                     src={item.image}
@@ -147,16 +147,16 @@ function TeamSection() {
                   />
 
                   {/* OVERLAY */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                   {/* TEXT */}
                   <div className="absolute bottom-6 left-6 z-10 text-white">
 
-                    <h3 className="font-semibold text-lg leading-tight">
+                    <h3 className="font-semibold text-lg leading-tight tracking-wide">
                       {item.name}
                     </h3>
 
-                    <p className="text-xs text-green-100 mt-1">
+                    <p className="text-xs text-green-200 mt-1">
                       {item.university}
                     </p>
 
@@ -165,14 +165,16 @@ function TeamSection() {
                 </div>
 
                 {/* ROLE */}
-                <div className="flex items-center gap-3 px-6 py-5">
+                <div className="flex items-center gap-3 px-6 py-5 bg-[#F4FFF9] border-t border-[#E7FFF5]">
 
-                  <Icon
-                    size={20}
-                    className={item.color}
-                  />
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white shadow-xs border border-[#E7FFF5]">
+                    <Icon
+                      size={18}
+                      className={item.color}
+                    />
+                  </div>
 
-                  <p className="font-medium text-[#111111]">
+                  <p className="font-semibold text-sm text-[#1E1E1E] tracking-wide">
                     {item.role}
                   </p>
 
