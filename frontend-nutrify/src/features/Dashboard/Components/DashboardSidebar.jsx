@@ -11,6 +11,7 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "@/config/firebase";
+import { useUserSession } from "@/hooks/useUserSession";
 
 import logoNutrify from "../../../assets/logo/Logo 2.png";
 
@@ -26,8 +27,7 @@ const menuButtonClass =
 
 function DashboardSidebar({ setIsSidebarOpen }) {
   const navigate = useNavigate();
-  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-  const isPersonalized = userData.isPersonalized !== false;
+  const { isPersonalized, isOnboardingRequired } = useUserSession();
 
   const handleLogout = async () => {
     try {
@@ -101,12 +101,14 @@ function DashboardSidebar({ setIsSidebarOpen }) {
           {!isPersonalized && <Lock size={16} className="ml-auto opacity-70" />}
         </NavLink>
 
-        {/* PERSONALISASI */}
-        <NavLink onClick={() => setIsSidebarOpen && setIsSidebarOpen(false)} to="/personalisasi" className={menuLinkClass}>
-          <Sliders size={18} strokeWidth={2.2} />
+        {/* PERSONALISASI – only during onboarding */}
+        {isOnboardingRequired && (
+          <NavLink onClick={() => setIsSidebarOpen && setIsSidebarOpen(false)} to="/personalisasi" className={menuLinkClass}>
+            <Sliders size={18} strokeWidth={2.2} />
 
-          <span>Personalisasi</span>
-        </NavLink>
+            <span>Personalisasi</span>
+          </NavLink>
+        )}
       </nav>
 
       {/* BOTTOM MENU */}

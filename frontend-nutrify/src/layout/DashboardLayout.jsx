@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import DashboardSidebar from "@/features/Dashboard/Components/DashboardSidebar";
 import DashboardNavbar from "@/features/Dashboard/Components/DashboardNavbar";
+import { useUserSession } from "@/hooks/useUserSession";
 
 function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
-  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const { isOnboardingRequired } = useUserSession();
 
-  // Jika belum personalisasi dan mencoba akses halaman lain di dashboard, redirect ke personalisasi
-  if (userData.isPersonalized === false && location.pathname !== "/personalisasi") {
+  if (isOnboardingRequired && location.pathname !== "/personalisasi") {
     return <Navigate to="/personalisasi" replace />;
   }
 

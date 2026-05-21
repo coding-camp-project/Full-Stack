@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom"
+import { Routes, Route, useLocation, Navigate } from "react-router-dom"
 import { AnimatePresence } from "framer-motion"
 
 import LandingPage from "./features/LandingPage/LandingPage"
@@ -32,6 +32,7 @@ function App() {
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/history/:id" element={<HistoryDetailPage />} />
           <Route path="/personalisasi" element={<PersonalizationPage />} />
+          <Route path="/personalization" element={<Navigate to="/personalisasi" replace />} />
         </Route>
       </Routes>
     </AnimatePresence>

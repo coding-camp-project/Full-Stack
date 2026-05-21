@@ -35,7 +35,8 @@ export default function LoginForm() {
 
       console.log("Login manual berhasil!")
       setSuccess("Login berhasil! Mengalihkan...")
-      setTimeout(() => navigate("/dashboard"), 1500)
+      const destination = isPersonalized ? "/dashboard" : "/personalisasi"
+      setTimeout(() => navigate(destination), 1500)
     } catch (err) {
       console.error("Gagal login:", err)
       const errorMessage = err.response?.data?.message || "Email atau kata sandi salah."
@@ -57,7 +58,7 @@ export default function LoginForm() {
       localStorage.setItem("userData", JSON.stringify({ name: result.user.displayName, email: result.user.email, profilePicture: result.user.photoURL, isPersonalized: false }))
       
       setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
-      setTimeout(() => navigate("/dashboard"), 1500)
+      setTimeout(() => navigate("/personalisasi"), 1500)
     } catch (err) {
       console.error("Gagal masuk dengan Google:", err);
       setError("Gagal masuk dengan Google. Pastikan konfigurasi Firebase sudah benar.");

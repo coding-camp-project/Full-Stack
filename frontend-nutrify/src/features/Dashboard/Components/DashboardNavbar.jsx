@@ -7,33 +7,27 @@ import {
   LogOut,
   Menu
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useUserSession } from "@/hooks/useUserSession";
 
 import profileImage from "../../../assets/logo/Logo 2.png";
 
 function DashboardNavbar({ toggleSidebar }) {
+  const navigate = useNavigate();
+  const { userData } = useUserSession();
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [user, setUser] = useState({ name: "Pengguna", email: "pengguna@email.com" });
+  const user = {
+    name: userData.name || "Pengguna",
+    email: userData.email || "pengguna@email.com",
+    profilePicture: userData.profilePicture,
+  };
 
   const dropdownRef = useRef(null);
 
-  // Load user data from localStorage
-  const loadUserFromStorage = () => {
-    const storedUser = localStorage.getItem("userData");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error("Gagal parse userData", e);
-      }
-    }
+  const handleOpenProfile = () => {
+    setOpenDropdown(false);
+    navigate("/personalisasi", { state: { mode: "edit" } });
   };
-
-  useEffect(() => {
-    loadUserFromStorage();
-    window.addEventListener("storage", loadUserFromStorage);
-    return () => window.removeEventListener("storage", loadUserFromStorage);
-  }, []);
 
   // close dropdown when click outside
   useEffect(() => {
@@ -127,13 +121,14 @@ function DashboardNavbar({ toggleSidebar }) {
               {/* MENU */}
               <div className="flex flex-col py-2">
                 
-                <Link 
-                  to="/personalisasi"
-                  className="flex items-center gap-3 px-5 py-3 text-left text-[14px] text-[#1E1E1E] transition-all hover:bg-[#F8F8F8]"
+                <button
+                  type="button"
+                  onClick={handleOpenProfile}
+                  className="flex w-full items-center gap-3 px-5 py-3 text-left text-[14px] text-[#1E1E1E] transition-all hover:bg-[#F8F8F8]"
                 >
                   <User size={18} />
                   Profile
-                </Link>
+                </button>
               </div>
             </div>
           )}

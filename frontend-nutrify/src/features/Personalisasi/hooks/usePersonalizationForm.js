@@ -6,10 +6,16 @@
 // ─────────────────────────────────────────────
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { DEFAULT_FORM_DATA } from "../data/options";
 import { fetchUserProfile, saveUserProfile } from "../services/personalizationService";
+import {
+  markPersonalizationCompleted,
+  markPersonalizationIncomplete,
+} from "../../../utils/userSession";
 
-export function usePersonalizationForm() {
+export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
+  const navigate = useNavigate();
   // ── Core form state ──────────────────────────
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
 
@@ -153,15 +159,15 @@ export function usePersonalizationForm() {
 
     try {
       await saveUserProfile(formData);
-      
-      const storedUser = localStorage.getItem("userData");
-      if (storedUser) {
-        const userObj = JSON.parse(storedUser);
-        userObj.name = formData.name;
-        userObj.profilePicture = formData.profilePicture;
-        userObj.isPersonalized = true;
-        localStorage.setItem("userData", JSON.stringify(userObj));
-        window.dispatchEvent(new Event("storage"));
+
+      markPersonalizationCompleted({
+        name: formData.name,
+        profilePicture: formData.profilePicture,
+      });
+
+      if (isOnboardingMode) {
+        navigate("/dashboard", { replace: true });
+        return;
       }
 
       setMessage({
@@ -195,13 +201,7 @@ export function usePersonalizationForm() {
         await saveUserProfile(resetData);
         setFormData(resetData);
 
-        const storedUser = localStorage.getItem("userData");
-        if (storedUser) {
-          const userObj = JSON.parse(storedUser);
-          userObj.isPersonalized = false; // Lock fitur kembali
-          localStorage.setItem("userData", JSON.stringify(userObj));
-          window.dispatchEvent(new Event("storage"));
-        }
+        markPersonalizationIncomplete();
 
         setMessage({ type: "success", text: "Data berhasil direset dan fitur dikunci kembali." });
       } catch (err) {
