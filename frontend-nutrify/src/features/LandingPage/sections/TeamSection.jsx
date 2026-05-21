@@ -138,7 +138,7 @@ function TeamSection() {
               >
 
                 {/* IMAGE */}
-                <div className="relative h-[320px] flex items-end justify-center overflow-hidden bg-gradient-to-b from-transparent to-[#3e9d7d]/80">
+                <div className="relative h-[320px] flex items-end justify-center overflow-hidden bg-gray-50">
 
                   <img
                     src={item.image}
@@ -147,7 +147,7 @@ function TeamSection() {
                   />
 
                   {/* OVERLAY */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#3e9d7d]/90 via-[#3e9d7d]/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
                   {/* TEXT */}
                   <div className="absolute bottom-6 left-6 z-10 text-white">
