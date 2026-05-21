@@ -2,10 +2,10 @@ import { Lightbulb, BookOpen } from "lucide-react";
 
 function InsightCard() {
   return (
-    <div className="flex items-center justify-between rounded-[22px] border border-[#B7E4CF] bg-[#F3FBF7] px-8 py-7">
+    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 lg:gap-0 rounded-[22px] border border-[#B7E4CF] bg-[#F3FBF7] px-6 py-6 md:px-8 md:py-7">
       
       {/* LEFT */}
-      <div className="flex items-center gap-5">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
         
         {/* ICON */}
         <div className="flex h-15.5 w-15.5 items-center justify-center rounded-full bg-[#DDF5E8]">

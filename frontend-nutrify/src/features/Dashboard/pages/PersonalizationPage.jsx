@@ -14,18 +14,18 @@ import { useState } from "react";
 
 function PersonalizationPage() {
   const [formData, setFormData] = useState({
-    nama: "Aisyah Putri",
-    tanggalLahir: "2003-05-12",
+    nama: "",
+    tanggalLahir: "",
     jenisKelamin: "Perempuan",
-    tinggi: "160",
-    berat: "55",
+    tinggi: "",
+    berat: "",
     aktivitas: "Sedang",
-    riwayatKesehatan: ["Alergi Makanan"],
+    riwayatKesehatan: [],
     penyakitLain: "",
-    alergi: ["Udang"],
-    pantangan: ["Santan", "Gorengan"],
+    alergi: [],
+    pantangan: [],
     tujuan: "Menjaga Berat Badan",
-    preferensi: ["Sayuran", "Buah", "Ikan"],
+    preferensi: [],
     catatan: ""
   });
 
@@ -56,11 +56,18 @@ function PersonalizationPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700">Nama Lengkap</label>
-            <input type="text" defaultValue={formData.nama} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-[#12B76A] focus:border-[#12B76A] outline-none text-sm" />
+            <input type="text" placeholder="Isi nama lengkap kamu di sini" defaultValue={formData.nama} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-[#12B76A] focus:border-[#12B76A] outline-none text-sm" />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700">Tanggal Lahir</label>
-            <input type="date" defaultValue={formData.tanggalLahir} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-[#12B76A] focus:border-[#12B76A] outline-none text-sm" />
+            <input 
+              type="text" 
+              placeholder="Isi tanggal lahir kamu di sini" 
+              defaultValue={formData.tanggalLahir} 
+              onFocus={(e) => (e.target.type = "date")}
+              onBlur={(e) => { if (!e.target.value) e.target.type = "text" }}
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-[#12B76A] focus:border-[#12B76A] outline-none text-sm bg-white" 
+            />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700">Jenis Kelamin</label>
@@ -72,14 +79,14 @@ function PersonalizationPage() {
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700">Tinggi Badan</label>
             <div className="relative">
-              <input type="number" defaultValue={formData.tinggi} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-[#12B76A] focus:border-[#12B76A] outline-none text-sm" />
+              <input type="number" placeholder="Isi tinggi badan kamu di sini" defaultValue={formData.tinggi} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-[#12B76A] focus:border-[#12B76A] outline-none text-sm" />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">cm</span>
             </div>
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700">Berat Badan</label>
             <div className="relative">
-              <input type="number" defaultValue={formData.berat} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-[#12B76A] focus:border-[#12B76A] outline-none text-sm" />
+              <input type="number" placeholder="Isi berat badan kamu di sini" defaultValue={formData.berat} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-[#12B76A] focus:border-[#12B76A] outline-none text-sm" />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">kg</span>
             </div>
           </div>

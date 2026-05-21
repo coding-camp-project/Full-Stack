@@ -5,14 +5,15 @@ import {
   ChevronDown,
   User,
   LogOut,
+  Menu
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import profileImage from "../../../assets/logo/Logo 2.png";
 
-function DashboardNavbar() {
+function DashboardNavbar({ toggleSidebar }) {
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [user, setUser] = useState({ name: "John Doe", email: "johndoe@gmail.com" });
+  const [user, setUser] = useState({ name: "Pengguna", email: "pengguna@email.com" });
 
   const dropdownRef = useRef(null);
 
@@ -56,11 +57,14 @@ function DashboardNavbar() {
   }, []);
 
   return (
-    <header className="flex h-18 items-center justify-between border-b border-[#E7E7E7] bg-white px-8">
+    <header className="flex h-18 items-center justify-between border-b border-[#E7E7E7] bg-white px-4 md:px-8">
       
       {/* LEFT */}
-      <div>
-        <h1 className="text-[20px] font-semibold text-[#1E1E1E]">
+      <div className="flex items-center gap-4">
+        <button className="md:hidden text-[#4BAA7A] hover:scale-105 transition-all" onClick={toggleSidebar}>
+          <Menu size={26} strokeWidth={2.1} />
+        </button>
+        <h1 className="text-[20px] font-semibold text-[#1E1E1E] hidden sm:block">
           Overview
         </h1>
       </div>

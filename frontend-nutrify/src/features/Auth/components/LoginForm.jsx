@@ -91,7 +91,7 @@ export default function LoginForm() {
             </div>
             <input 
               type="email" 
-              placeholder="john@email.com"
+              placeholder="Masukkan email Anda di sini"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -108,7 +108,7 @@ export default function LoginForm() {
             </div>
             <input 
               type={showPassword ? "text" : "password"} 
-              placeholder="Minimal 6 karakter"
+              placeholder="Ketik password Anda"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

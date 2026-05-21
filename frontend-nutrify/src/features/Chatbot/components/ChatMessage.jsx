@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 import logo from "../../../assets/logo/Logo 2.png";
@@ -8,6 +9,40 @@ function ChatMessage({
   streaming = false,
 }) {
   const isBot = sender === "bot";
+  const [user, setUser] = useState({ name: "User", profilePicture: "" });
+
+  useEffect(() => {
+    if (!isBot) {
+      const storedUser = localStorage.getItem("userData");
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  }, [isBot]);
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name.substring(0, 2).toUpperCase();
+  };
+
+  const formatMessage = (text) => {
+    if (!text) return null;
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
+        return (
+          <strong key={index} className="font-bold text-gray-900">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      return part;
+    });
+  };
 
   return (
     <motion.div
@@ -27,7 +62,7 @@ function ChatMessage({
         {/* AVATAR */}
         <motion.div
           whileHover={{ scale: 1.05 }}
-          className={`flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-full ${
+          className={`flex h-10.5 w-10.5 shrink-0 overflow-hidden items-center justify-center rounded-full ${
             isBot
               ? "bg-[#E8FFF4] shadow-[0_0_24px_rgba(73,174,132,0.18)]"
               : "bg-[#DCFCE7]"
@@ -39,9 +74,15 @@ function ChatMessage({
               alt="bot"
               className="h-6.5 w-6.5 object-contain"
             />
+          ) : user.profilePicture ? (
+            <img
+              src={user.profilePicture}
+              alt="User"
+              className="h-full w-full object-cover"
+            />
           ) : (
             <span className="text-[14px] font-semibold text-[#1E1E1E]">
-              JD
+              {getInitials(user.name)}
             </span>
           )}
         </motion.div>
@@ -56,7 +97,7 @@ function ChatMessage({
           }`}
         >
           <p className="whitespace-pre-wrap break-words text-[15px] leading-[1.8]">
-            {message}
+            {formatMessage(message)}
             {streaming && (
               <motion.span
                 animate={{ opacity: [0.2, 1, 0.2] }}

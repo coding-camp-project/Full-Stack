@@ -52,7 +52,7 @@ function NutritionPieChart({ calories = 0, carbs = 0, protein = 0, fat = 0 }) {
   };
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-6 sm:gap-0">
       
       {/* CHART */}
       <div className="relative h-55 w-55">

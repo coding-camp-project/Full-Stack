@@ -97,12 +97,12 @@ function useChat() {
         const errorMessage =
           requestError?.response?.data?.message ||
           requestError?.message ||
-          "Unable to reach Nutrify AI right now.";
+          "Gagal terhubung ke Nutrify AI saat ini.";
 
         setError(errorMessage);
         setMessages((currentMessages) => [
           ...currentMessages,
-          createMessage("bot", "Sorry, I could not connect to Nutrify AI. Please try again."),
+          createMessage("bot", "Maaf, sistem Nutrify AI sedang mengalami gangguan. Tolong kirim ulang pesan Anda kembali."),
         ]);
       } finally {
         setLoading(false);

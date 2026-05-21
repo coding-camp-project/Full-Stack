@@ -95,7 +95,7 @@ export default function RegisterForm() {
             </div>
             <input 
               type="text" 
-              placeholder="John Doe"
+              placeholder="Masukkan nama Anda di sini"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -112,7 +112,7 @@ export default function RegisterForm() {
             </div>
             <input 
               type="email" 
-              placeholder="john@email.com"
+              placeholder="Masukkan email Anda di sini"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -129,7 +129,7 @@ export default function RegisterForm() {
             </div>
             <input 
               type={showPassword ? "text" : "password"} 
-              placeholder="Minimal 6 karakter"
+              placeholder="Ketik password Anda (Min. 6 karakter)"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

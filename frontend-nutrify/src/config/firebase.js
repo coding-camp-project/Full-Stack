@@ -1,11 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-// TODO: Ganti konfigurasi ini dengan dari Firebase Console milikmu!
-// 1. Buat project di https://console.firebase.google.com/
-// 2. Pergi ke Project Settings > General > Your apps (Web)
-// 3. Copy firebaseConfig ke bawah ini.
-// 4. Pastikan kamu sudah mengaktifkan "Google" di menu Authentication > Sign-in method.
 const firebaseConfig = {
   apiKey: "AIzaSyBiJKbvc5byizYVDKA5-SdhVEvJgqCAYT4",
   authDomain: "nutrify-66004.firebaseapp.com",
