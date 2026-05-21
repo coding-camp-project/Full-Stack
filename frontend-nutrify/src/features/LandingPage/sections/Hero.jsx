@@ -28,8 +28,8 @@ function Hero() {
       </div>
 
       {/* Decorative Orbs */}
-      <div className="absolute right-[-20%] top-[-10%] w-[50vw] h-[50vw] bg-white/10 blur-[100px] rounded-full z-0" />
-      <div className="absolute left-[-10%] bottom-[-10%] w-[40vw] h-[40vw] bg-[#0B8F61]/50 blur-[100px] rounded-full z-0" />
+      <div className="absolute right-[-15%] top-[-10%] z-0 h-[40vw] max-h-80 w-[40vw] max-w-80 rounded-full bg-white/10 blur-[100px]" />
+      <div className="absolute bottom-[-10%] left-[-10%] z-0 h-[35vw] max-h-72 w-[35vw] max-w-72 rounded-full bg-[#0B8F61]/50 blur-[100px]" />
 
       {/* CONTENT W/ Z-INDEX TO STAY ABOVE BACKGROUND */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 pt-32 pb-20 md:pt-40 md:pb-24 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
@@ -88,26 +88,26 @@ function Hero() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: false, margin: "-50px" }}
           transition={{ duration: 0.4 }}
-          className="w-full lg:w-1/2 relative flex justify-center mt-10 lg:mt-0"
+          className="relative mt-10 flex w-full min-w-0 justify-center overflow-hidden lg:mt-0 lg:w-1/2"
         >
           {/* GLOW */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] bg-white/30 blur-[80px] rounded-full animate-pulse" />
+          <div className="absolute top-1/2 left-1/2 h-[200px] w-[200px] -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-white/30 blur-[80px] sm:h-[350px] sm:w-[350px]" />
 
           {/* HERO IMAGE */}
-          <div className="relative group perspective-1000">
+          <div className="relative mx-auto max-w-full px-2">
             <img
               src={heroBot}
               alt="Nutrify Bot"
-              className="relative z-10 w-[280px] sm:w-[380px] md:w-[450px] lg:w-[520px] object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.3)] transition-transform duration-700 hover:scale-105 hover:-translate-y-4"
+              className="relative z-10 mx-auto h-auto w-full max-w-[280px] object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.3)] transition-transform duration-700 sm:max-w-[380px] md:max-w-[450px] lg:max-w-[520px] lg:hover:-translate-y-4 lg:hover:scale-105"
             />
             
             {/* Floating Element 1 */}
-            <div className="absolute top-10 -left-6 sm:-left-10 bg-white/90 backdrop-blur text-[#12B76A] font-bold px-4 py-2 rounded-xl shadow-xl animate-bounce" style={{ animationDuration: '3s' }}>
+            <div className="absolute top-6 left-0 hidden rounded-xl bg-white/90 px-3 py-1.5 text-xs font-bold text-[#12B76A] shadow-xl backdrop-blur animate-bounce sm:left-2 sm:block sm:px-4 sm:py-2 sm:text-sm" style={{ animationDuration: '3s' }}>
               🥑 120 kkal
             </div>
             
             {/* Floating Element 2 */}
-            <div className="absolute bottom-20 -right-6 sm:-right-10 bg-white/90 backdrop-blur text-[#12B76A] font-bold px-4 py-2 rounded-xl shadow-xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
+            <div className="absolute bottom-16 right-0 hidden rounded-xl bg-white/90 px-3 py-1.5 text-xs font-bold text-[#12B76A] shadow-xl backdrop-blur animate-bounce sm:right-2 sm:block sm:px-4 sm:py-2 sm:text-sm" style={{ animationDuration: '4s', animationDelay: '1s' }}>
               🥗 Tinggi Protein
             </div>
           </div>

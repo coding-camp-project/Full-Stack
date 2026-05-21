@@ -27,9 +27,9 @@ function WhyChoose() {
       {/* MAIN SECTION */}
       <div className="relative z-10 bg-gradient-to-r from-[#0FA968] to-[#087F5B] ">
 
-        <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 py-20 md:py-28">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:px-10 md:py-20 lg:px-16 lg:py-28">
 
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
+          <div className="flex flex-col items-center justify-between gap-10 lg:flex-row lg:gap-16">
 
             {/* LEFT CONTENT */}
             <motion.div 

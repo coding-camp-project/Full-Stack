@@ -23,8 +23,8 @@ function NutritionSummaryCard({
   const selectedTone = tones[tone];
 
   return (
-    <div className={`rounded-xl p-6 shadow-sm ${selectedTone.wrapper}`}>
-      <div className="flex items-start gap-5">
+    <div className={`min-w-0 overflow-hidden rounded-xl p-4 shadow-sm sm:p-6 ${selectedTone.wrapper}`}>
+      <div className="flex min-w-0 items-start gap-3 sm:gap-5">
         <div className={`flex h-13 w-13 shrink-0 items-center justify-center rounded-full ${selectedTone.icon}`}>
           {icon}
         </div>

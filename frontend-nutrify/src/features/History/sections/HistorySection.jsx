@@ -99,14 +99,14 @@ function HistorySection() {
   const proProgress = Math.min(Math.round((totalProtein / targetProtein) * 100), 100);
 
   return (
-    <div className="w-full px-5 py-7 lg:px-7">
+    <div className="w-full min-w-0 max-w-full px-4 py-5 sm:px-5 sm:py-7 lg:px-7">
       <HistoryFilter
         currentDate={currentDate}
         selectedTimeFilter={selectedTimeFilter}
         onTimeFilterChange={setSelectedTimeFilter}
       />
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr_16rem]">
+      <div className="mt-5 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-5">
         <NutritionSummaryCard
           icon={<Flame size={28} />}
           title="Total Kalori Hari Ini"
@@ -126,11 +126,9 @@ function HistorySection() {
           progress={proProgress}
           tone="blue"
         />
-
-        <div className="hidden lg:block" />
       </div>
 
-      <div className="mt-6 grid gap-4 xl:grid-cols-[1fr_16rem]">
+      <div className="mt-6 grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-[1fr_minmax(0,16rem)]">
         <HistoryList items={filteredHistoryItems} loading={loading} />
         <InsightCard />
       </div>

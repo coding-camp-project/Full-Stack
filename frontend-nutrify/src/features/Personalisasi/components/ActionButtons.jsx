@@ -62,13 +62,13 @@ export default function ActionButtons({
     <div className="flex flex-col lg:flex-row gap-6 items-stretch w-full">
 
       {/* ── Summary box (75%) ── */}
-      <div className="w-full lg:w-[75%] bg-white p-6 rounded-3xl border border-[#E7E7E7] shadow-xs flex flex-col justify-center">
+      <div className="flex w-full min-w-0 flex-col justify-center rounded-3xl border border-[#E7E7E7] bg-white p-5 shadow-xs sm:p-6 lg:flex-[3]">
         <h3 className="text-xs font-bold text-gray-800 mb-5 flex items-center gap-2">
           <ClipboardList size={15} className="text-[#1E7F4E] shrink-0" />
           Ringkasan Profil Kesehatanmu
         </h3>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 sm:gap-4">
           {summaryItems.map(({ icon, label, value }) => (
             <div key={label} className="flex items-center gap-2.5">
               <div
@@ -96,7 +96,7 @@ export default function ActionButtons({
       </div>
 
       {/* ── Action buttons (25%) ── */}
-      <div className="w-full lg:w-[25%] bg-white p-5 rounded-3xl border border-[#E7E7E7] shadow-xs flex flex-col justify-center gap-3">
+      <div className="flex w-full min-w-0 flex-col justify-center gap-3 rounded-3xl border border-[#E7E7E7] bg-white p-5 shadow-xs lg:flex-1">
         {/* Submit */}
         <button
           type="submit"

@@ -14,20 +14,20 @@ function DashboardContentSection({
   totalProtein = 0 
 }) {
   return (
-    <section className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+    <section className="grid min-w-0 grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-12">
       
       {/* LEFT SIDE */}
-      <div className="lg:col-span-8 xl:col-span-9 space-y-5">
+      <div className="min-w-0 space-y-4 sm:space-y-5 lg:col-span-8 xl:col-span-9">
         
         {/* TOP CONTENT */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+        <div className="grid min-w-0 grid-cols-1 gap-4 sm:gap-5 xl:grid-cols-2">
           
-          <div className="rounded-[18px] bg-white p-5 shadow-sm">
-            <h2 className="text-[24px] font-bold">
+          <div className="min-w-0 overflow-hidden rounded-[18px] bg-white p-4 shadow-sm sm:p-5">
+            <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl lg:text-[24px]">
               Ringkasan Nutrisi
             </h2>
 
-            <div className="mt-5">
+            <div className="mt-4 min-w-0 sm:mt-5">
                 <NutritionPieChart 
                   calories={totalCalories}
                   carbs={totalCarbs}
@@ -37,42 +37,42 @@ function DashboardContentSection({
             </div>
           </div>
 
-          <div className="rounded-[18px] bg-white p-5 shadow-sm">
-            <h2 className="text-[24px] font-bold">
+          <div className="min-w-0 overflow-hidden rounded-[18px] bg-white p-4 shadow-sm sm:p-5">
+            <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl lg:text-[24px]">
               Tren Asupan Kalori
             </h2>
 
-            <div className="mt-5">
+            <div className="mt-4 min-w-0 sm:mt-5">
                 <CaloriesLineChart historyItems={historyItems} />
             </div>  
           </div>
         </div>
 
         {/* FOOD HISTORY */}
-        <div className="rounded-[18px] bg-white p-5 shadow-sm">
-          <h2 className="text-[24px] font-bold">
+        <div className="min-w-0 overflow-hidden rounded-[18px] bg-white p-4 shadow-sm sm:p-5">
+          <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl lg:text-[24px]">
             Riwayat Makanan
           </h2>
 
-          <div className="mt-5">
+          <div className="mt-4 min-w-0 sm:mt-5">
             <FoodHistorySection items={historyItems} />
             </div>
         </div>
 
         {/* INSIGHT */}
-        <div className="rounded-[18px] bg-white p-5 shadow-sm">
+        <div className="min-w-0 overflow-hidden rounded-[18px] bg-white p-4 shadow-sm sm:p-5">
             <InsightCard />
         </div>
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="lg:col-span-4 xl:col-span-3 space-y-5">
+      <div className="min-w-0 space-y-4 sm:space-y-5 lg:col-span-4 xl:col-span-3">
         
-        <div className="rounded-[18px] bg-white p-5 shadow-sm">
-          <h2 className="text-[24px] font-bold">
+        <div className="min-w-0 overflow-hidden rounded-[18px] bg-white p-4 shadow-sm sm:p-5">
+          <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl lg:text-[24px]">
             Kalender
           </h2>
-          <div className="mt-5">
+          <div className="mt-4 min-w-0 sm:mt-5">
             <CalendarWidget />
           </div>
         </div>

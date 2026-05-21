@@ -37,7 +37,7 @@ function WelcomeCard({ onPromptSelect }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="mx-auto w-full max-w-155 rounded-[28px] bg-linear-to-b from-[#0AAE72] to-[#07895A] p-6 shadow-xl sm:p-10"
+      className="mx-auto w-full max-w-full rounded-[20px] bg-linear-to-b from-[#0AAE72] to-[#07895A] p-5 shadow-xl sm:max-w-2xl sm:rounded-[28px] sm:p-8 lg:max-w-3xl lg:p-10"
     >
       
       {/* LOGO */}
@@ -50,18 +50,18 @@ function WelcomeCard({ onPromptSelect }) {
       </div>
 
       {/* TITLE */}
-      <h1 className="mt-5 text-center text-[34px] font-semibold leading-[1.2] text-white sm:text-[48px]">
+      <h1 className="mt-5 text-center text-2xl font-semibold leading-[1.2] text-white sm:text-4xl lg:text-[48px]">
         Your AI nutrition coach
       </h1>
 
       {/* DESC */}
-      <p className="mx-auto mt-4 max-w-500 text-center text-[14px] leading-[1.7] text-white/80">
+      <p className="mx-auto mt-4 max-w-full px-2 text-center text-sm leading-[1.7] text-white/80 sm:max-w-lg sm:px-0">
         Ask about calories, balanced meals, nutrition goals, and healthy
         choices in real-time.
       </p>
 
       {/* PROMPTS */}
-      <div className="mt-10 flex flex-wrap items-center justify-center gap-5">
+      <div className="mt-8 grid w-full grid-cols-1 gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
         {promptSuggestions.map((suggestion) => (
           <PromptCard
             key={suggestion.title}

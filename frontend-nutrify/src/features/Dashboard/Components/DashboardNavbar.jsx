@@ -51,36 +51,46 @@ function DashboardNavbar({ toggleSidebar }) {
   }, []);
 
   return (
-    <header className="flex h-18 items-center justify-between border-b border-[#E7E7E7] bg-white px-4 md:px-8">
+    <header className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-[#E7E7E7] bg-white px-3 sm:h-18 sm:px-4 md:px-6 lg:px-8">
       
       {/* LEFT */}
-      <div className="flex items-center gap-4">
-        <button className="md:hidden text-[#4BAA7A] hover:scale-105 transition-all" onClick={toggleSidebar}>
-          <Menu size={26} strokeWidth={2.1} />
+      <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+        <button
+          type="button"
+          className="shrink-0 text-[#4BAA7A] transition-all hover:scale-105 lg:hidden"
+          onClick={toggleSidebar}
+          aria-label="Buka menu"
+        >
+          <Menu size={24} strokeWidth={2.1} className="sm:h-[26px] sm:w-[26px]" />
         </button>
-        <h1 className="text-[20px] font-semibold text-[#1E1E1E] hidden sm:block">
+        <h1 className="truncate text-base font-semibold text-[#1E1E1E] sm:text-[20px] md:block">
           Overview
         </h1>
       </div>
 
       {/* RIGHT */}
-      <div className="flex items-center gap-8">
+      <div className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-4 md:gap-6">
         
         {/* NOTIFICATION */}
-        <button className="text-[#4BAA7A] transition-all duration-200 hover:scale-105">
-          <Bell size={26} strokeWidth={2.1} />
+        <button
+          type="button"
+          className="shrink-0 text-[#4BAA7A] transition-all duration-200 hover:scale-105"
+          aria-label="Notifikasi"
+        >
+          <Bell size={22} strokeWidth={2.1} className="sm:h-[26px] sm:w-[26px]" />
         </button>
 
         {/* PROFILE DROPDOWN */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative min-w-0" ref={dropdownRef}>
           
           {/* BUTTON */}
           <button
+            type="button"
             onClick={() => setOpenDropdown(!openDropdown)}
-            className="flex items-center gap-4 transition-all duration-200"
+            className="flex max-w-full min-w-0 items-center gap-2 transition-all duration-200 sm:gap-3 md:gap-4"
           >
             {/* AVATAR */}
-            <div className="h-13 w-13 overflow-hidden rounded-full border-[3px] border-[#4BAA7A]">
+            <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border-[3px] border-[#4BAA7A] sm:h-13 sm:w-13">
               <img
                 src={user.profilePicture || profileImage}
                 alt="Profile"
@@ -89,15 +99,15 @@ function DashboardNavbar({ toggleSidebar }) {
             </div>
 
             {/* NAME */}
-            <span className="text-[18px] font-semibold text-[#1E1E1E]">
+            <span className="hidden max-w-[8rem] truncate text-sm font-semibold text-[#1E1E1E] sm:inline sm:max-w-[10rem] sm:text-base md:max-w-[14rem] md:text-[18px]">
               Hi, {user.name}
             </span>
 
             {/* ICON */}
             <ChevronDown
-              size={26}
+              size={22}
               strokeWidth={2.2}
-              className={`text-[#4BAA7A] transition-transform duration-300 ${
+              className={`shrink-0 text-[#4BAA7A] transition-transform duration-300 sm:h-[26px] sm:w-[26px] ${
                 openDropdown ? "rotate-180" : ""
               }`}
             />
@@ -105,7 +115,7 @@ function DashboardNavbar({ toggleSidebar }) {
 
           {/* DROPDOWN MENU */}
           {openDropdown && (
-            <div className="absolute right-0 top-18 z-50 w-55 overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
+            <div className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-[min(14rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.08)] sm:w-55">
               
               {/* TOP */}
               <div className="border-b border-[#F1F1F1] px-5 py-4">

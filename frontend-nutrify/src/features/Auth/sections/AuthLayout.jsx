@@ -14,7 +14,7 @@ export default function AuthLayout({ children, isRegister }) {
 
   return (
     <motion.div 
-      className="h-screen overflow-hidden flex w-full"
+      className="flex min-h-dvh w-full max-w-[100vw] overflow-x-hidden"
       variants={pageVariants}
       initial="initial"
       animate="animate"
@@ -43,15 +43,15 @@ export default function AuthLayout({ children, isRegister }) {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-white relative">
+      <div className="relative flex w-full min-h-dvh items-center justify-center overflow-y-auto bg-white lg:min-h-0 lg:w-1/2 lg:overflow-hidden">
         
         {/* Back Button */}
-        <Link to="/" className="absolute top-8 left-8 flex items-center gap-2 text-gray-400 hover:text-[#12B76A] transition-colors z-20 group">
+        <Link to="/" className="absolute top-4 left-4 z-20 flex items-center gap-2 text-gray-400 transition-colors group hover:text-[#12B76A] sm:top-8 sm:left-8">
           <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
           <span className="text-sm font-semibold">Beranda</span>
         </Link>
 
-        <div className="w-full max-w-md px-8 py-12 relative z-10">
+        <div className="relative z-10 w-full max-w-md px-5 py-16 sm:px-8 sm:py-12">
           {children}
         </div>
       </div>

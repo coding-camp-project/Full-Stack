@@ -46,8 +46,8 @@ function Navbar() {
   }, [])
 
   return (
-    <div className={`w-full flex justify-center fixed top-0 left-0 z-50 px-4 transition-all duration-300 ${isScrolled ? "pt-2 md:pt-3" : "pt-4 md:pt-6"}`}>
-      <nav className={`relative w-full md:w-[90%] lg:w-[80%] max-w-6xl bg-white/80 backdrop-blur-xl rounded-full px-4 md:px-6 py-3 border border-white/50 transition-all duration-300 ${isScrolled ? "shadow-[0_8px_30px_rgb(0,0,0,0.12)]" : "shadow-[0_8px_30px_rgb(0,0,0,0.04)]"}`}>
+    <div className={`fixed left-0 top-0 z-50 flex w-full max-w-[100vw] justify-center px-3 transition-all duration-300 sm:px-4 ${isScrolled ? "pt-2 md:pt-3" : "pt-3 sm:pt-4 md:pt-6"}`}>
+      <nav className={`relative w-full max-w-6xl rounded-full border border-white/50 bg-white/80 px-3 py-2.5 backdrop-blur-xl transition-all duration-300 sm:px-4 sm:py-3 md:w-[90%] md:px-6 lg:w-[80%] ${isScrolled ? "shadow-[0_8px_30px_rgb(0,0,0,0.12)]" : "shadow-[0_8px_30px_rgb(0,0,0,0.04)]"}`}>
         <div className="flex items-center justify-between w-full">
           
           {/* LOGO */}

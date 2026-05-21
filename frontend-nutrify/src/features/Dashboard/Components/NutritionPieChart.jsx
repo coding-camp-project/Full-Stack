@@ -52,10 +52,10 @@ function NutritionPieChart({ calories = 0, carbs = 0, protein = 0, fat = 0 }) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-6 sm:gap-0">
+    <div className="flex w-full min-w-0 flex-col items-center justify-center gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
       
       {/* CHART */}
-      <div className="relative h-55 w-55">
+      <div className="relative mx-auto aspect-square h-44 w-44 shrink-0 sm:h-52 sm:w-52 lg:h-55 lg:w-55">
         <Doughnut
           data={data}
           options={options}
@@ -63,7 +63,7 @@ function NutritionPieChart({ calories = 0, carbs = 0, protein = 0, fat = 0 }) {
 
         {/* CENTER TEXT */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-[28px] font-bold text-[#1E1E1E]">
+          <p className="text-xl font-bold text-[#1E1E1E] sm:text-[28px]">
             {Math.round(calories).toString()}
           </p>
 
@@ -74,7 +74,7 @@ function NutritionPieChart({ calories = 0, carbs = 0, protein = 0, fat = 0 }) {
       </div>
 
       {/* LEGEND */}
-      <div className="space-y-5">
+      <div className="w-full min-w-0 space-y-4 sm:w-auto sm:space-y-5">
         
         {/* ITEM */}
         <div className="flex items-start gap-3">

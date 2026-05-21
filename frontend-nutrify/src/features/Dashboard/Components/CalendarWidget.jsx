@@ -78,10 +78,10 @@ function CalendarWidget() {
   };
 
   return (
-    <div>
+    <div className="min-w-0 w-full overflow-hidden">
       
       {/* HEADER */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
         
         <button
           type="button"
@@ -118,7 +118,7 @@ function CalendarWidget() {
       </div>
 
       {/* DAYS */}
-      <div className="mt-6 grid grid-cols-7 text-center text-[12px] font-semibold text-[#999]">
+      <div className="mt-4 grid min-w-0 grid-cols-7 gap-0.5 text-center text-[10px] font-semibold text-[#999] sm:mt-6 sm:text-[12px]">
         {DAY_LABELS.map((label) => (
           <span key={label}>{label}</span>
         ))}
@@ -129,7 +129,7 @@ function CalendarWidget() {
         {calendarWeeks.map((week) => (
           <div
             key={week[0].date.toISOString()}
-            className="grid grid-cols-7 text-center"
+            className="grid min-w-0 grid-cols-7 text-center"
           >
             {week.map((day) => {
               const isToday = isSameDay(day.date, currentDate);
@@ -140,7 +140,7 @@ function CalendarWidget() {
                   key={day.date.toISOString()}
                   type="button"
                   onClick={() => handleDateSelect(day)}
-                  className={`mx-auto flex h-8 w-8 items-center justify-center rounded-full text-[14px] transition-all duration-200 hover:bg-[#EFFFF8] hover:text-[#49AE84] ${
+                  className={`mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs transition-all duration-200 hover:bg-[#EFFFF8] hover:text-[#49AE84] sm:h-8 sm:w-8 sm:text-[14px] ${
                     isToday
                       ? "bg-[#44B678] font-semibold text-white hover:bg-[#44B678] hover:text-white"
                       : ""
@@ -167,9 +167,9 @@ function CalendarWidget() {
       </div>
 
       {/* AGENDA HEADER */}
-      <div className="mt-10 flex items-center justify-between">
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-2 sm:mt-10">
         
-        <h3 className="text-[24px] font-bold text-[#1E1E1E]">
+        <h3 className="text-lg font-bold text-[#1E1E1E] sm:text-xl lg:text-[24px]">
           {agendaTitle}
         </h3>
 

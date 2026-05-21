@@ -8,7 +8,7 @@ import FormInput from "./FormInput";
 
 export default function HealthSection({ formData, onConditionChange, onChange }) {
   return (
-    <div className="bg-white p-6 md:p-8 rounded-3xl border border-[#E7E7E7] shadow-xs">
+    <div className="min-w-0 overflow-hidden rounded-3xl border border-[#E7E7E7] bg-white p-5 shadow-xs sm:p-6 md:p-8">
       {/* Section Header */}
       <h2 className="text-base font-bold text-[#1E1E1E] mb-6 flex items-center gap-3">
         <span
@@ -24,7 +24,7 @@ export default function HealthSection({ formData, onConditionChange, onChange })
       <div className="flex flex-col lg:flex-row gap-6">
 
         {/* ── Left: form inputs (75%) ── */}
-        <div className="w-full lg:w-[75%] space-y-5">
+        <div className="w-full min-w-0 space-y-5 lg:flex-[3]">
 
           {/* Condition Pill Checkboxes */}
           <div className="space-y-2">
@@ -99,7 +99,7 @@ export default function HealthSection({ formData, onConditionChange, onChange })
 
         {/* ── Right: tips card (25%) ── */}
         <div
-          className="w-full lg:w-[25%] p-5 rounded-2xl border flex flex-col justify-start gap-2 self-start"
+          className="flex w-full min-w-0 flex-col justify-start gap-2 self-start rounded-2xl border p-4 sm:p-5 lg:flex-1"
           style={{ backgroundColor: "#F1F8F5", borderColor: "#D1F2DE" }}
         >
           <div className="flex items-center gap-2 text-[#1E7F4E] font-bold text-xs">

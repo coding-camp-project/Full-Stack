@@ -36,7 +36,7 @@ const features = [
 
 function NutrifyFeatures() {
   return (
-    <section className="relative overflow-hidden bg-[#FAFFFC] py-28 px-6">
+    <section className="relative overflow-hidden bg-[#FAFFFC] px-4 py-16 sm:px-6 sm:py-20 lg:py-28">
 
       {/* GRID BACKGROUND */}
       <div className="absolute inset-0 opacity-40">
@@ -96,11 +96,11 @@ function NutrifyFeatures() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: false, margin: "-50px" }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
-              className="bg-white border border-[#E8F3EE] rounded-[28px] p-8 flex items-center gap-6 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
+              className="flex flex-col items-center gap-5 rounded-[28px] border border-[#E8F3EE] bg-white p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:flex-row sm:items-center sm:gap-6 sm:p-8 sm:text-left"
             >
 
               {/* IMAGE */}
-              <div className="relative shrink-0">
+              <div className="relative shrink-0 sm:shrink-0">
 
                 {/* GLOW */}
                 <div className="absolute inset-0 bg-[#3e9d7d]/10 blur-2xl rounded-full" />
@@ -108,13 +108,13 @@ function NutrifyFeatures() {
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="relative w-[90px] md:w-[140px] object-contain"
+                  className="relative mx-auto h-auto w-[90px] object-contain sm:mx-0 md:w-[140px]"
                 />
 
               </div>
 
               {/* CONTENT */}
-              <div>
+              <div className="min-w-0 flex-1">
 
                 <h3 className="text-xl font-semibold text-[#111111]">
                   {item.title}

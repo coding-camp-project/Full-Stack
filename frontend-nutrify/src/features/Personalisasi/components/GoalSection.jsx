@@ -8,7 +8,7 @@ import FormInput from "./FormInput";
 
 export default function GoalSection({ formData, onChange, onPreferenceChange }) {
   return (
-    <div className="bg-white p-6 md:p-8 rounded-3xl border border-[#E7E7E7] shadow-xs flex flex-col justify-between min-h-[360px] relative overflow-hidden">
+    <div className="relative flex min-h-0 flex-col justify-between overflow-hidden rounded-3xl border border-[#E7E7E7] bg-white p-5 shadow-xs sm:p-6 md:min-h-[320px] md:p-8 lg:min-h-[360px]">
       <div>
         {/* Section Header */}
         <div className="flex justify-between items-start">

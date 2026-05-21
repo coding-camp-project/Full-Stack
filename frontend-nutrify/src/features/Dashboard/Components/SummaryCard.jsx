@@ -7,7 +7,7 @@ function SummaryCard({
   icon,
 }) {
   return (
-    <div className="rounded-[18px] bg-white border border-[#E7E7E7] shadow-sm p-5">
+    <div className="min-w-0 overflow-hidden rounded-[18px] border border-[#E7E7E7] bg-white p-4 shadow-sm sm:p-5">
       
       {/* TOP */}
       <div className="flex items-start justify-between">
@@ -24,13 +24,13 @@ function SummaryCard({
         </div>
 
         {/* TITLE */}
-        <div className="ml-4 flex-1">
-          <p className="text-[15px] font-medium text-[#1E1E1E]">
+        <div className="ml-3 min-w-0 flex-1 sm:ml-4">
+          <p className="text-sm font-medium text-[#1E1E1E] sm:text-[15px]">
             {title}
           </p>
 
-          <div className="mt-1 flex items-end gap-1">
-            <h2 className="text-[38px] font-bold leading-none text-[#111111]">
+          <div className="mt-1 flex flex-wrap items-end gap-1">
+            <h2 className="text-2xl font-bold leading-none text-[#111111] sm:text-3xl lg:text-[38px]">
               {value}
             </h2>
 

@@ -25,7 +25,7 @@ function QuickActionBar({ onSelectPrompt, disabled = false }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.24 }}
-      className="mx-auto mt-4 flex w-full max-w-325 flex-wrap items-center justify-center gap-3"
+      className="mx-auto mt-3 flex w-full max-w-full flex-wrap items-center justify-center gap-2 px-1 sm:mt-4 sm:max-w-3xl sm:gap-3 lg:max-w-4xl"
     >
       {quickActions.map(({ icon: Icon, label, prompt }) => (
         <motion.button
