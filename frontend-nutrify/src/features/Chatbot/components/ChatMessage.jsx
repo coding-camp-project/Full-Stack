@@ -54,7 +54,7 @@ function ChatMessage({
       }`}
     >
       <div
-        className={`flex max-w-[85%] items-end gap-3 sm:max-w-[75%] ${
+        className={`flex max-w-[min(85%,calc(100vw-4rem))] items-end gap-2 sm:max-w-[75%] sm:gap-3 ${
           isBot ? "flex-row" : "flex-row-reverse"
         }`}
       >
@@ -90,7 +90,7 @@ function ChatMessage({
         {/* MESSAGE */}
         <motion.div
           whileHover={{ y: -1 }}
-          className={`rounded-[22px] px-5 py-4 shadow-sm transition-all duration-300 ${
+          className={`min-w-0 rounded-[18px] px-4 py-3 shadow-sm transition-all duration-300 sm:rounded-[22px] sm:px-5 sm:py-4 ${
             isBot
               ? "border border-[#49AE84]/10 bg-white text-[#222]"
               : "bg-[#0AAE72] text-white shadow-[#0AAE72]/15"

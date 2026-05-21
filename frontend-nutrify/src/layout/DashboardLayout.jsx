@@ -14,27 +14,30 @@ function DashboardLayout() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-100 relative">
-      {/* SIDEBAR OVERLAY for Mobile */}
+    <div className="relative flex h-dvh min-h-0 w-full max-w-[100vw] overflow-hidden bg-gray-100">
+      {/* SIDEBAR OVERLAY – mobile & tablet */}
       {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
+          aria-hidden="true"
         />
       )}
 
-      {/* SIDEBAR */}
-      <div className={`fixed inset-y-0 left-0 z-50 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 md:relative md:translate-x-0`}>
+      {/* SIDEBAR – drawer until lg, fixed on desktop */}
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-[min(100vw,17rem)] shrink-0 transform transition-transform duration-300 lg:relative lg:w-auto lg:translate-x-0 ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         <DashboardSidebar setIsSidebarOpen={setIsSidebarOpen} />
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* NAVBAR */}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <DashboardNavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-        {/* PAGE */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
           <Outlet />
         </main>
       </div>

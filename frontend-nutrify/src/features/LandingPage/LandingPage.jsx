@@ -11,7 +11,7 @@ import Footer from "./sections/Footer"
 
 function LandingPage() {
   return (
-    <>
+    <div className="min-w-0 overflow-x-hidden">
       <Navbar />
       <Hero />
       <Specialization />
@@ -22,7 +22,7 @@ function LandingPage() {
       <FAQSection />
       <BlogSection />
       <Footer />
-    </>
+    </div>
   )
 }
 

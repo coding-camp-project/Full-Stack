@@ -107,7 +107,7 @@ function CaloriesLineChart({ historyItems = [] }) {
   };
 
   return (
-    <div className="h-62.5 w-full">
+    <div className="h-48 w-full min-w-0 sm:h-56 lg:h-62.5">
       <Line
         data={data}
         options={options}

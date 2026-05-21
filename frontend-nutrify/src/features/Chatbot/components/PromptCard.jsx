@@ -13,7 +13,7 @@ function PromptCard({
       whileHover={{ y: -6, scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
       onClick={() => onSelect?.(prompt)}
-      className="flex h-37.5 w-37.5 flex-col items-center justify-center rounded-2xl bg-white px-4 text-center shadow-sm transition-colors duration-200 hover:bg-[#F7FFFB] hover:shadow-lg"
+      className="flex min-h-[9.5rem] w-full flex-col items-center justify-center rounded-2xl bg-white px-4 py-5 text-center shadow-sm transition-colors duration-200 hover:bg-[#F7FFFB] hover:shadow-lg sm:min-h-[9.375rem]"
     >
       
       <div className="mb-3 text-[#49AE84]">

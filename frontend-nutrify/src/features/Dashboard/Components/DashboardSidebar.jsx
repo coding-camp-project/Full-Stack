@@ -45,7 +45,7 @@ function DashboardSidebar({ setIsSidebarOpen }) {
   };
 
   return (
-    <aside className="relative flex h-screen w-65 shrink-0 flex-col overflow-hidden bg-linear-to-b from-[#04A16E] to-[#036245] px-5 py-7">
+    <aside className="relative flex h-full min-h-dvh w-full shrink-0 flex-col overflow-hidden bg-linear-to-b from-[#04A16E] to-[#036245] px-4 py-6 sm:px-5 sm:py-7 lg:w-65">
       
       {/* BIG CIRCLE */}
       <div className="absolute -left-37.5 bottom-45 h-65 w-65 rounded-full border border-white/20" />
@@ -61,7 +61,7 @@ function DashboardSidebar({ setIsSidebarOpen }) {
           className="h-10.5 w-10.5 object-contain"
         />
 
-        <h1 className="text-[28px] font-extrabold tracking-[0.18em] text-white">
+        <h1 className="truncate text-2xl font-extrabold tracking-[0.12em] text-white sm:text-[28px] sm:tracking-[0.18em]">
           nutrify
         </h1>
       </div>

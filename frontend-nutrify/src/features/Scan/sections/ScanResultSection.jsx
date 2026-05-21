@@ -139,8 +139,8 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
   ];
 
   return (
-    <div className="w-full px-4 py-8 lg:px-6">
-      <section className="rounded-2xl border border-[#D8D8D8] bg-white p-6 shadow-sm">
+    <div className="w-full min-w-0 max-w-full px-3 py-5 sm:px-4 sm:py-8 lg:px-6">
+      <section className="min-w-0 overflow-hidden rounded-2xl border border-[#D8D8D8] bg-white p-4 shadow-sm sm:p-6">
         {showRescanButton && (
           <div className="mb-4 flex justify-end">
             <button
@@ -154,21 +154,21 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
           </div>
         )}
 
-        <div className="grid gap-5 lg:grid-cols-[1.05fr_1.25fr]">
+        <div className="grid min-w-0 gap-4 sm:gap-5 lg:grid-cols-2 lg:gap-5 xl:grid-cols-[1.05fr_1.25fr]">
           <img
             src={imagePreview || healthyFoodImage}
             alt="Hasil scan makanan"
-            className="h-72 w-full rounded-xl object-cover lg:h-77"
+            className="h-48 w-full min-w-0 rounded-xl object-cover sm:h-60 lg:h-72 xl:h-77"
           />
 
-          <div>
+          <div className="min-w-0">
             <div className="mb-3 flex items-center gap-2">
-              <h3 className="text-[14px] font-bold text-[#1E1E1E]">
+              <h3 className="text-sm font-bold text-[#1E1E1E] sm:text-[14px]">
                 Informasi Nutrisi (per 100g)
               </h3>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 xl:grid-cols-2">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {dynamicNutritionItems.map((item) => (
                 <NutritionCard key={item.label} {...item} />
               ))}
@@ -183,7 +183,7 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
           />
         </div>
 
-        <div className="mt-5 grid gap-5 lg:grid-cols-2">
+        <div className="mt-5 grid min-w-0 grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2">
           <HealthAnalysisCard items={dynamicHealthItems} />
           <RecommendationCard items={dynamicRecommendationItems} />
         </div>

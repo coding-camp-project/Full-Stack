@@ -2,15 +2,15 @@ import { ImagePlus, Upload } from "lucide-react";
 
 function UploadBox({ imagePreview, onImageChange }) {
   return (
-    <label className="flex min-h-75 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#9BDCC8] bg-white px-6 py-8 text-center transition-all duration-200 hover:border-[#18A873] hover:bg-[#F6FFFB]">
+    <label className="flex min-h-56 w-full min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#9BDCC8] bg-white px-4 py-6 text-center transition-all duration-200 hover:border-[#18A873] hover:bg-[#F6FFFB] sm:min-h-75 sm:px-6 sm:py-8">
       {imagePreview ? (
         <img
           src={imagePreview}
           alt="Preview makanan"
-          className="mb-5 h-34 w-full max-w-80 rounded-xl object-cover"
+          className="mb-5 h-auto max-h-48 w-full max-w-full rounded-xl object-contain sm:max-h-56 sm:max-w-80"
         />
       ) : (
-        <ImagePlus size={78} strokeWidth={1.8} className="mb-4 text-[#49AE84]" />
+        <ImagePlus size={56} strokeWidth={1.8} className="mb-4 text-[#49AE84] sm:h-[78px] sm:w-[78px]" />
       )}
 
       <h3 className="text-[18px] font-bold text-[#1E1E1E]">

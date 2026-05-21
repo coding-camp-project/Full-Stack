@@ -29,10 +29,10 @@ function ChatSection() {
   };
 
   return (
-    <div className="flex min-h-[82vh] flex-col justify-between">
+    <div className="flex h-full min-h-0 w-full max-w-full flex-1 flex-col">
       
       {/* CENTER */}
-      <div className="relative flex flex-1 min-h-0 items-stretch">
+      <div className="relative flex min-h-0 flex-1 items-stretch overflow-hidden">
         <AnimatePresence mode="wait">
           {hasMessages ? (
             <motion.div
@@ -41,7 +41,7 @@ function ChatSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.28 }}
-              className="flex max-h-[62vh] w-full flex-col gap-5 overflow-y-auto scroll-smooth px-2 py-4 pr-3"
+              className="flex w-full min-h-0 flex-1 flex-col gap-4 overflow-y-auto scroll-smooth px-1 py-3 pr-2 sm:gap-5 sm:px-2 sm:py-4 sm:pr-3"
             >
               {messages.map((message) => (
                 <ChatMessage
@@ -62,7 +62,7 @@ function ChatSection() {
               key="welcome-wrapper"
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex w-full items-center justify-center"
+              className="flex w-full min-h-0 flex-1 items-center justify-center overflow-y-auto px-1 py-4"
             >
               <WelcomeCard onPromptSelect={handleSendMessage} />
             </motion.div>
@@ -77,12 +77,14 @@ function ChatSection() {
         />
       )}
 
-      {/* INPUT */}
-      <ChatInput
-        onSendMessage={handleSendMessage}
-        loading={loading}
-        voiceDisabled={aiIsResponding}
-      />
+      {/* INPUT – sticky at bottom */}
+      <div className="sticky bottom-0 z-10 shrink-0 bg-gray-100/95 pb-1 pt-3 backdrop-blur-sm sm:pb-2 sm:pt-4">
+        <ChatInput
+          onSendMessage={handleSendMessage}
+          loading={loading}
+          voiceDisabled={aiIsResponding}
+        />
+      </div>
     </div>
   );
 }

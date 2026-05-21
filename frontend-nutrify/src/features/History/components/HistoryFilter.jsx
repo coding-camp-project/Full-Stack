@@ -45,27 +45,27 @@ function HistoryFilter({ currentDate, selectedTimeFilter, onTimeFilterChange }) 
   };
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row">
+    <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap">
       <button
         type="button"
         onClick={handleDateFilterClick}
         aria-haspopup="dialog"
-        className="flex h-11.5 min-w-58 items-center justify-between rounded-lg border border-[#D8D8D8] bg-white px-4 text-[14px] font-semibold text-[#1E1E1E] shadow-sm transition-all duration-200 hover:border-[#49AE84]"
+        className="flex h-11.5 w-full min-w-0 items-center justify-between rounded-lg border border-[#D8D8D8] bg-white px-4 text-sm font-semibold text-[#1E1E1E] shadow-sm transition-all duration-200 hover:border-[#49AE84] sm:flex-1 sm:min-w-[12rem] sm:text-[14px]"
       >
-        <span className="flex items-center gap-3">
-          <CalendarDays size={18} className="text-[#1E1E1E]" />
-          {currentWeekRange}
+        <span className="flex min-w-0 items-center gap-2 truncate sm:gap-3">
+          <CalendarDays size={18} className="shrink-0 text-[#1E1E1E]" />
+          <span className="truncate">{currentWeekRange}</span>
         </span>
         <ChevronDown size={18} />
       </button>
 
-      <div ref={dropdownRef} className="relative">
+      <div ref={dropdownRef} className="relative w-full sm:w-auto sm:min-w-[10.5rem]">
         <button
           type="button"
           aria-expanded={isTimeFilterOpen}
           aria-haspopup="listbox"
           onClick={() => setIsTimeFilterOpen((isOpen) => !isOpen)}
-          className="flex h-11.5 min-w-42 items-center justify-between rounded-lg border border-[#D8D8D8] bg-white px-4 text-[14px] font-semibold text-[#1E1E1E] shadow-sm transition-all duration-200 hover:border-[#49AE84]"
+          className="flex h-11.5 w-full items-center justify-between rounded-lg border border-[#D8D8D8] bg-white px-4 text-sm font-semibold text-[#1E1E1E] shadow-sm transition-all duration-200 hover:border-[#49AE84] sm:text-[14px]"
         >
           {selectedTimeFilterLabel}
           <ChevronDown

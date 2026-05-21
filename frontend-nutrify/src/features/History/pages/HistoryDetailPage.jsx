@@ -51,8 +51,8 @@ function HistoryDetailPage() {
 
   if (error || !historyDetail) {
     return (
-      <div className="w-full px-5 py-7 lg:px-7">
-        <div className="rounded-2xl border border-[#D8D8D8] bg-white p-8 text-center shadow-sm">
+      <div className="w-full min-w-0 px-4 py-5 sm:px-5 sm:py-7 lg:px-7">
+        <div className="rounded-2xl border border-[#D8D8D8] bg-white p-6 text-center shadow-sm sm:p-8">
           <h2 className="text-[18px] font-bold text-[#1E1E1E]">
             Riwayat tidak ditemukan
           </h2>

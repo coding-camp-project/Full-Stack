@@ -7,10 +7,10 @@ function FoodHistoryCard({
   components,
 }) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-3 transition-all duration-200 hover:shadow-sm">
+    <div className="flex min-w-0 items-center gap-3 rounded-2xl border border-[#EAEAEA] bg-[#FAFAFA] p-3 transition-all duration-200 hover:shadow-sm sm:gap-4">
       
       {/* IMAGE */}
-      <div className="h-19.5 w-23 overflow-hidden rounded-xl">
+      <div className="h-16 w-20 shrink-0 overflow-hidden rounded-xl sm:h-19.5 sm:w-23">
         <img
           src={image}
           alt={title}
@@ -19,15 +19,15 @@ function FoodHistoryCard({
       </div>
 
       {/* CONTENT */}
-      <div className="flex flex-col">
+      <div className="min-w-0 flex-1 flex-col">
         
         {/* TIME */}
-        <span className="text-[13px] text-[#7A7A7A]">
+        <span className="text-xs text-[#7A7A7A] sm:text-[13px]">
           {time}
         </span>
 
         {/* TITLE */}
-        <h3 className="mt-1 text-[22px] font-semibold leading-none text-[#1E1E1E]">
+        <h3 className="mt-1 truncate text-base font-semibold leading-tight text-[#1E1E1E] sm:text-lg lg:text-[22px]">
           {title}
         </h3>
 

@@ -2,7 +2,7 @@ import { Lightbulb, BookOpen } from "lucide-react";
 
 function InsightCard() {
   return (
-    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 lg:gap-0 rounded-[22px] border border-[#B7E4CF] bg-[#F3FBF7] px-6 py-6 md:px-8 md:py-7">
+    <div className="flex w-full min-w-0 flex-col items-stretch justify-between gap-5 rounded-[22px] border border-[#B7E4CF] bg-[#F3FBF7] px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-7 lg:flex-row lg:items-center lg:gap-6">
       
       {/* LEFT */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
@@ -18,11 +18,11 @@ function InsightCard() {
 
         {/* TEXT */}
         <div>
-          <h3 className="text-[24px] font-semibold text-[#1E1E1E]">
+          <h3 className="text-lg font-semibold text-[#1E1E1E] sm:text-xl lg:text-[24px]">
             Insight & Rekomendasi
           </h3>
 
-          <p className="mt-2 max-w-155 text-[16px] leading-[1.8] text-[#444]">
+          <p className="mt-2 max-w-full text-sm leading-[1.8] text-[#444] sm:text-base lg:max-w-xl">
             Asupan protein anda masih dibawah target.
             Coba tambahkan sumber protein seperti
             telur, ayam, atau kacang-kacangan
@@ -32,7 +32,10 @@ function InsightCard() {
       </div>
 
       {/* BUTTON */}
-      <button className="flex items-center gap-3 rounded-2xl border border-[#62C49D] bg-white px-7 py-4 text-[16px] font-semibold text-[#49AE84] transition-all duration-200 hover:bg-[#ECFFF5]">
+      <button
+        type="button"
+        className="flex w-full shrink-0 items-center justify-center gap-3 rounded-2xl border border-[#62C49D] bg-white px-5 py-3 text-sm font-semibold text-[#49AE84] transition-all duration-200 hover:bg-[#ECFFF5] sm:w-auto sm:px-7 sm:py-4 sm:text-[16px]"
+      >
         
         <BookOpen size={20} />
 

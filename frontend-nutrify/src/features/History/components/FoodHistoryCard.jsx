@@ -21,7 +21,7 @@ function FoodHistoryCard({ item }) {
           handleOpenDetail();
         }
       }}
-      className="group grid cursor-pointer gap-4 border-b border-[#D8D8D8] py-3 transition-all duration-200 last:border-b-0 hover:bg-[#F8FFFB] sm:grid-cols-[7.5rem_1fr_auto] sm:items-center"
+      className="group grid min-w-0 cursor-pointer gap-3 border-b border-[#D8D8D8] py-3 transition-all duration-200 last:border-b-0 hover:bg-[#F8FFFB] sm:grid-cols-[minmax(0,7.5rem)_1fr_auto] sm:items-center sm:gap-4"
     >
       <div className="flex gap-4 sm:block">
         <img
@@ -34,17 +34,17 @@ function FoodHistoryCard({ item }) {
           <p className="text-[12px] font-medium text-[#777]">
             {item.time}
           </p>
-          <h3 className="mt-1 text-[16px] font-bold text-[#1E1E1E]">
+          <h3 className="mt-1 line-clamp-2 text-base font-bold text-[#1E1E1E]">
             {item.name}
           </h3>
         </div>
       </div>
 
-      <div className="hidden sm:block">
+      <div className="hidden min-w-0 sm:block">
         <p className="text-[12px] font-medium text-[#777]">
           {item.time}
         </p>
-        <h3 className="mt-1 text-[16px] font-bold text-[#1E1E1E]">
+        <h3 className="mt-1 line-clamp-2 text-base font-bold text-[#1E1E1E] sm:line-clamp-1">
           {item.name}
         </h3>
         <span className="mt-2 inline-flex rounded-full border border-[#B9EBD7] bg-[#EFFFF8] px-2.5 py-1 text-[10px] font-semibold text-[#49AE84]">
@@ -52,8 +52,8 @@ function FoodHistoryCard({ item }) {
         </span>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
-        <div className="grid flex-1 grid-cols-4 gap-4">
+      <div className="flex min-w-0 items-center justify-between gap-2 sm:gap-4">
+        <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3 md:gap-4">
           <FoodNutritionInfo
             icon={<Flame size={16} />}
             value={item.calories}

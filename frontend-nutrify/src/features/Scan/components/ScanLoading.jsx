@@ -2,8 +2,8 @@ import { LoaderCircle, Sparkles } from "lucide-react";
 
 function ScanLoading() {
   return (
-    <div className="flex min-h-[70vh] items-center justify-center px-6">
-      <div className="w-full max-w-110 rounded-2xl border border-[#D9EFE7] bg-white p-8 text-center shadow-sm">
+    <div className="flex min-h-[50vh] w-full items-center justify-center px-4 py-8 sm:min-h-[60vh] sm:px-6">
+      <div className="w-full max-w-md rounded-2xl border border-[#D9EFE7] bg-white p-6 text-center shadow-sm sm:p-8">
         <div className="mx-auto flex h-18 w-18 items-center justify-center rounded-full bg-[#E7FFF5] text-[#49AE84]">
           <LoaderCircle size={34} className="animate-spin" />
         </div>
@@ -15,7 +15,7 @@ function ScanLoading() {
           </span>
         </div>
 
-        <h2 className="mt-3 text-[24px] font-bold text-[#1E1E1E]">
+        <h2 className="mt-3 text-xl font-bold text-[#1E1E1E] sm:text-[24px]">
           Menganalisis makanan Anda
         </h2>
 

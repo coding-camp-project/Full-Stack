@@ -46,7 +46,7 @@ export default function PersonalizationPage() {
   // ── Loading skeleton ──────────────────────
   if (fetching) {
     return (
-      <div className="flex h-[80vh] items-center justify-center">
+      <div className="flex min-h-[50vh] items-center justify-center px-4 sm:min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
           <RefreshCw className="h-10 w-10 animate-spin text-[#1E7F4E]" />
           <p className="text-gray-500 font-medium">Memuat profil kesehatan Anda...</p>
@@ -56,13 +56,13 @@ export default function PersonalizationPage() {
   }
 
   return (
-    <div className="w-full px-5 py-7 lg:px-7 space-y-6">
+    <div className="w-full min-w-0 max-w-full space-y-5 px-4 py-5 sm:space-y-6 sm:px-5 sm:py-7 lg:px-7">
 
       {/* ── PAGE HEADER ── */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 pb-2 relative">
-        <div className="flex-1 space-y-4">
+      <div className="relative flex flex-col items-start justify-between gap-4 pb-2 sm:gap-6 lg:flex-row lg:items-center">
+        <div className="min-w-0 flex-1 space-y-4">
           <div>
-            <h1 className="text-[32px] font-bold text-[#1E1E1E] tracking-tight mb-2">
+            <h1 className="mb-2 text-2xl font-bold tracking-tight text-[#1E1E1E] sm:text-3xl lg:text-[32px]">
               {isOnboardingMode ? "Personalisasi" : "Profil"}
             </h1>
             <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">
@@ -150,7 +150,7 @@ export default function PersonalizationPage() {
       )}
 
       {/* ── MAIN FORM ── */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="min-w-0 space-y-5 sm:space-y-6">
 
         {/* Section 1 – Data Diri */}
         <ProfileSection formData={formData} onChange={handleChange} />
@@ -163,7 +163,7 @@ export default function PersonalizationPage() {
         />
 
         {/* Section 3 & 4 – Side by side grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid min-w-0 grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-2">
           {/* Section 3 – Alergi & Pantangan */}
           <PreferenceSection
             formData={formData}

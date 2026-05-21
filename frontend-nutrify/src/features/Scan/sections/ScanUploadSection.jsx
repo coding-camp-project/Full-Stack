@@ -14,9 +14,9 @@ function ScanUploadSection({
   canAnalyze,
 }) {
   return (
-    <div className="w-full space-y-5 px-4 py-8 lg:px-6">
-      <section className="rounded-2xl border border-[#D8D8D8] bg-white p-6 shadow-sm">
-        <div className="grid gap-6 lg:grid-cols-[1.2fr_1px_1fr]">
+    <div className="w-full min-w-0 max-w-full space-y-5 px-3 py-5 sm:px-4 sm:py-8 lg:px-6">
+      <section className="min-w-0 overflow-hidden rounded-2xl border border-[#D8D8D8] bg-white p-4 shadow-sm sm:p-6">
+        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8 xl:grid-cols-[1.2fr_1px_1fr]">
           <UploadBox imagePreview={imagePreview} onImageChange={onImageChange} />
 
           <div className="hidden bg-[#D8D8D8] lg:block" />
@@ -38,7 +38,7 @@ function ScanUploadSection({
           Cara kerja scan nutrify
         </h3>
 
-        <div className="mt-5 grid gap-5 lg:grid-cols-3">
+        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
           <WorkflowCard
             icon={<ImagePlus size={30} />}
             title="1.Upload atau Input"
