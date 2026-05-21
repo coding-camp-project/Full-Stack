@@ -10,7 +10,8 @@ function Hero() {
 
   const handleAction = () => {
     // Mengecek apakah ada user yang sedang login
-    if (auth.currentUser) {
+    const token = localStorage.getItem("userToken") || sessionStorage.getItem("userToken");
+    if (auth.currentUser || token) {
       navigate("/dashboard")
     } else {
       navigate("/login")

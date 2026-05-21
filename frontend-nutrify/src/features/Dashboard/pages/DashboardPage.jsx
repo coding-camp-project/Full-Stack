@@ -23,7 +23,7 @@ function DashboardPage() {
   const totalProtein = todayItems.reduce((sum, item) => sum + item.protein, 0);
 
   return (
-    <div className="w-full min-w-0 max-w-full space-y-5 p-4 sm:space-y-6 sm:p-5 md:p-6 lg:max-w-[1600px] lg:mx-auto">
+    <div className="w-full min-w-0 max-w-full space-y-5 p-4 sm:space-y-6 sm:p-5 md:p-6 lg:max-w-[1360px] lg:mx-auto">
       
       <div className="min-w-0">
         <h1 className="text-2xl font-bold text-[#1E1E1E] sm:text-3xl">

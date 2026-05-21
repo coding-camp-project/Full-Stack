@@ -97,7 +97,11 @@ function FAQSection() {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: false, margin: "-50px" }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm transition-all duration-300"
+                className={`transition-all duration-300 border rounded-2xl overflow-hidden ${
+                  isOpen
+                    ? "bg-[#E7FFF5] border-[#49AE84] shadow-[0_10px_25px_-5px_rgba(73,174,132,0.12)] -translate-y-[2px]"
+                    : "bg-white border-[#D1F2E5] hover:border-[#49AE84] hover:shadow-[0_8px_20px_-6px_rgba(73,174,132,0.08)]"
+                }`}
               >
 
                 {/* QUESTION */}
@@ -106,7 +110,9 @@ function FAQSection() {
                   className="w-full flex items-center justify-between px-6 py-6 text-left"
                 >
 
-                  <h3 className="font-semibold text-[#111111] text-sm md:text-base">
+                  <h3 className={`font-semibold text-sm md:text-base transition-colors duration-350 ${
+                    isOpen ? "text-[#0C6A48]" : "text-[#111111]"
+                  }`}>
                     {item.question}
                   </h3>
 
@@ -124,7 +130,7 @@ function FAQSection() {
 
                 {/* ANSWER */}
                 <div
-                  className={`grid transition-all duration-300 ease-in-out ${
+                  className={`grid transition-all duration-350 ease-in-out ${
                     isOpen
                       ? "grid-rows-[1fr] opacity-100"
                       : "grid-rows-[0fr] opacity-0"
@@ -133,7 +139,9 @@ function FAQSection() {
 
                   <div className="overflow-hidden">
 
-                    <p className="px-6 pb-6 text-gray-500 text-sm leading-relaxed">
+                    <p className={`px-6 pb-6 text-sm leading-relaxed transition-colors duration-350 ${
+                      isOpen ? "text-[#1F543F]" : "text-gray-500"
+                    }`}>
                       {item.answer}
                     </p>
 

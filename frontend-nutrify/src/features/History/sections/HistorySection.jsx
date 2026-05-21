@@ -99,7 +99,7 @@ function HistorySection() {
   const proProgress = Math.min(Math.round((totalProtein / targetProtein) * 100), 100);
 
   return (
-    <div className="w-full min-w-0 max-w-full px-4 py-5 sm:px-5 sm:py-7 lg:px-7">
+    <div className="w-full min-w-0 max-w-full px-4 py-5 sm:px-5 sm:py-7 lg:px-7 lg:max-w-[1360px] lg:mx-auto">
       <HistoryFilter
         currentDate={currentDate}
         selectedTimeFilter={selectedTimeFilter}

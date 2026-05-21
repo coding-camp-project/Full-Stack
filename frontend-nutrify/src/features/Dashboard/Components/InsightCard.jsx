@@ -18,11 +18,11 @@ function InsightCard() {
 
         {/* TEXT */}
         <div>
-          <h3 className="text-lg font-semibold text-[#1E1E1E] sm:text-xl lg:text-[24px]">
+          <h3 className="text-lg font-bold text-[#1E1E1E] sm:text-xl">
             Insight & Rekomendasi
           </h3>
 
-          <p className="mt-2 max-w-full text-sm leading-[1.8] text-[#444] sm:text-base lg:max-w-xl">
+          <p className="mt-2 max-w-full text-sm leading-[1.8] text-[#444] lg:max-w-xl">
             Asupan protein anda masih dibawah target.
             Coba tambahkan sumber protein seperti
             telur, ayam, atau kacang-kacangan

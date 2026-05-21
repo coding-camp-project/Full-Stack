@@ -23,7 +23,7 @@ function DashboardContentSection({
         <div className="grid min-w-0 grid-cols-1 gap-4 sm:gap-5 xl:grid-cols-2">
           
           <div className="min-w-0 overflow-hidden rounded-[18px] bg-white p-4 shadow-sm sm:p-5">
-            <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl lg:text-[24px]">
+            <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl">
               Ringkasan Nutrisi
             </h2>
 
@@ -38,7 +38,7 @@ function DashboardContentSection({
           </div>
 
           <div className="min-w-0 overflow-hidden rounded-[18px] bg-white p-4 shadow-sm sm:p-5">
-            <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl lg:text-[24px]">
+            <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl">
               Tren Asupan Kalori
             </h2>
 
@@ -50,7 +50,7 @@ function DashboardContentSection({
 
         {/* FOOD HISTORY */}
         <div className="min-w-0 overflow-hidden rounded-[18px] bg-white p-4 shadow-sm sm:p-5">
-          <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl lg:text-[24px]">
+          <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl">
             Riwayat Makanan
           </h2>
 
@@ -69,7 +69,7 @@ function DashboardContentSection({
       <div className="min-w-0 space-y-4 sm:space-y-5 lg:col-span-4 xl:col-span-3">
         
         <div className="min-w-0 overflow-hidden rounded-[18px] bg-white p-4 shadow-sm sm:p-5">
-          <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl lg:text-[24px]">
+          <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl">
             Kalender
           </h2>
           <div className="mt-4 min-w-0 sm:mt-5">

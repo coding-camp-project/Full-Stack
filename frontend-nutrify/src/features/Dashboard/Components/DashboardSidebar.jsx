@@ -7,11 +7,13 @@ import {
   LogOut,
   Sliders,
   Lock,
+  Home,
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "@/config/firebase";
 import { useUserSession } from "@/hooks/useUserSession";
+import { clearUserSession } from "@/utils/userSession";
 
 import logoNutrify from "../../../assets/logo/Logo 2.png";
 
@@ -31,9 +33,8 @@ function DashboardSidebar({ setIsSidebarOpen }) {
 
   const handleLogout = async () => {
     try {
-      // Clear manual login session details
-      localStorage.removeItem("userToken");
-      localStorage.removeItem("userData");
+      // Clear manual login session details (both localStorage and sessionStorage)
+      clearUserSession();
       
       // Clear Firebase session if active
       await signOut(auth);
@@ -114,7 +115,12 @@ function DashboardSidebar({ setIsSidebarOpen }) {
       {/* BOTTOM MENU */}
       <div className="relative z-10 mt-auto border-t border-white/20 pt-6">
         <div className="flex flex-col gap-5">
-          
+          {/* LANDING PAGE */}
+          <Link to="/" className={menuButtonClass}>
+            <Home size={18} strokeWidth={2.2} />
+            <span>Kembali ke Home</span>
+          </Link>
+
           {/* LOGOUT */}
           <button onClick={handleLogout} className={menuButtonClass}>
             <LogOut size={18} strokeWidth={2.2} />

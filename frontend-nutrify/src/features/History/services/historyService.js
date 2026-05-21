@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-const getAuthToken = () => localStorage.getItem("userToken");
+const getAuthToken = () => localStorage.getItem("userToken") || sessionStorage.getItem("userToken");
 
 const getAuthHeaders = () => {
   const token = getAuthToken();

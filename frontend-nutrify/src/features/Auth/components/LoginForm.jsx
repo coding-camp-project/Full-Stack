@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link, useNavigate } from "react-router-dom"
 import { signInWithPopup } from "firebase/auth"
 import { auth, googleProvider } from "@/config/firebase"
 import axios from "axios"
+import { setUserSession } from "@/utils/userSession"
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -13,7 +14,23 @@ export default function LoginForm() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const navigate = useNavigate()
+
+  // Redirect if already logged in
+  useEffect(() => {
+    const token = localStorage.getItem("userToken") || sessionStorage.getItem("userToken");
+    const userDataStr = localStorage.getItem("userData") || sessionStorage.getItem("userData");
+    if (token || userDataStr) {
+      try {
+        const userData = JSON.parse(userDataStr || "{}");
+        const destination = userData.isPersonalized ? "/dashboard" : "/personalisasi";
+        navigate(destination, { replace: true });
+      } catch (e) {
+        console.error("Failed to parse user session during auto-redirect:", e);
+      }
+    }
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -28,10 +45,9 @@ export default function LoginForm() {
         password,
       })
 
-      // Simpan token JWT dan data user ke localStorage
+      // Simpan token JWT dan data user menggunakan setUserSession
       const { token, name, email: userEmail, _id, profilePicture, isPersonalized } = response.data.data
-      localStorage.setItem("userToken", token)
-      localStorage.setItem("userData", JSON.stringify({ id: _id, name, email: userEmail, profilePicture, isPersonalized }))
+      setUserSession(token, { id: _id, name, email: userEmail, profilePicture, isPersonalized }, rememberMe)
 
       console.log("Login manual berhasil!")
       setSuccess("Login berhasil! Mengalihkan...")
@@ -55,7 +71,8 @@ export default function LoginForm() {
       console.log("Berhasil masuk dengan Google!", result.user);
       
       // Simpan info Google User
-      localStorage.setItem("userData", JSON.stringify({ name: result.user.displayName, email: result.user.email, profilePicture: result.user.photoURL, isPersonalized: false }))
+      const userData = { name: result.user.displayName, email: result.user.email, profilePicture: result.user.photoURL, isPersonalized: false };
+      setUserSession("", userData, rememberMe);
       
       setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
       setTimeout(() => navigate("/personalisasi"), 1500)
@@ -131,6 +148,8 @@ export default function LoginForm() {
             <input 
               id="remember-me" 
               type="checkbox" 
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
               className="h-4 w-4 text-[#12B76A] focus:ring-[#12B76A] border-gray-300 rounded cursor-pointer"
             />
             <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 cursor-pointer">

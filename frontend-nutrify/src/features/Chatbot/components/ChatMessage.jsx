@@ -13,7 +13,7 @@ function ChatMessage({
 
   useEffect(() => {
     if (!isBot) {
-      const storedUser = localStorage.getItem("userData");
+      const storedUser = localStorage.getItem("userData") || sessionStorage.getItem("userData");
       if (storedUser) {
         try {
           setUser(JSON.parse(storedUser));

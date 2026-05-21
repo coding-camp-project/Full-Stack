@@ -34,19 +34,19 @@ function Footer() {
           <div>
 
             {/* LOGO */}
-            <div className="flex items-center gap-4">
+            <a href="#beranda" className="flex items-center gap-4 cursor-pointer group">
 
               <img
                 src={nutrifyLogo}
                 alt="Nutrify"
-                className="w-14 h-14 object-contain"
+                className="w-14 h-14 object-contain transition-transform duration-300 group-hover:scale-105"
               />
 
               <h2 className="text-3xl font-bold text-white">
                 nutrify
               </h2>
 
-            </div>
+            </a>
 
             {/* DESCRIPTION */}
             <p className="text-[#D4E5F7] mt-6 leading-relaxed text-sm">
@@ -57,23 +57,29 @@ function Footer() {
             {/* SOCIAL */}
             <div className="flex items-center gap-4 mt-8">
 
-              <button className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#3e9d7d] transition-all duration-300 flex items-center justify-center text-white">
-
+              <a 
+                href="mailto:nutrify@gmail.com" 
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#3e9d7d] transition-all duration-300 flex items-center justify-center text-white"
+                title="Kirim Email"
+              >
                 <Mail size={18} />
+              </a>
 
-              </button>
-
-              <button className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#3e9d7d] transition-all duration-300 flex items-center justify-center text-white">
-
+              <a 
+                href="#beranda" 
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#3e9d7d] transition-all duration-300 flex items-center justify-center text-white"
+                title="Website Nutrify"
+              >
                 <Globe size={18} />
+              </a>
 
-              </button>
-
-              <button className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#3e9d7d] transition-all duration-300 flex items-center justify-center text-white">
-
+              <a 
+                href="tel:+6281234567890" 
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#3e9d7d] transition-all duration-300 flex items-center justify-center text-white"
+                title="Hubungi Kami"
+              >
                 <Phone size={18} />
-
-              </button>
+              </a>
 
             </div>
 
@@ -88,19 +94,19 @@ function Footer() {
 
             <div className="flex flex-col gap-4 mt-6 text-[#D4E5F7] text-sm">
 
-              <a href="#" className="hover:text-white transition">
+              <a href="#beranda" className="hover:text-white transition">
                 Beranda
               </a>
 
-              <a href="#" className="hover:text-white transition">
+              <a href="#tentang" className="hover:text-white transition">
                 Tentang
               </a>
 
-              <a href="#" className="hover:text-white transition">
+              <a href="#layanan" className="hover:text-white transition">
                 Fitur
               </a>
 
-              <a href="#" className="hover:text-white transition">
+              <a href="#faq" className="hover:text-white transition">
                 FAQ
               </a>
 
@@ -117,19 +123,19 @@ function Footer() {
 
             <div className="flex flex-col gap-4 mt-6 text-[#D4E5F7] text-sm">
 
-              <a href="#" className="hover:text-white transition">
+              <a href="#layanan" className="hover:text-white transition">
                 Analisis Nutrisi
               </a>
 
-              <a href="#" className="hover:text-white transition">
+              <a href="#layanan" className="hover:text-white transition">
                 Rekomendasi AI
               </a>
 
-              <a href="#" className="hover:text-white transition">
+              <a href="#layanan" className="hover:text-white transition">
                 Pelacakan Makanan
               </a>
 
-              <a href="#" className="hover:text-white transition">
+              <a href="#layanan" className="hover:text-white transition">
                 Gaya Hidup Sehat
               </a>
 
@@ -146,13 +152,13 @@ function Footer() {
 
             <div className="flex flex-col gap-4 mt-6 text-[#D4E5F7] text-sm">
 
-              <p>
+              <a href="mailto:nutrify@gmail.com" className="hover:text-white transition">
                 nutrify@gmail.com
-              </p>
+              </a>
 
-              <p>
+              <a href="tel:+6281234567890" className="hover:text-white transition">
                 +62 812 3456 7890
-              </p>
+              </a>
 
               <p>
                 Depok, Indonesia

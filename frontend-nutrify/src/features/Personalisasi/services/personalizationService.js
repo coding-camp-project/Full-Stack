@@ -15,8 +15,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
  * @returns {{ id: string, token: string } | null}
  */
 const getAuthCredentials = () => {
-  const storedUser = localStorage.getItem("userData");
-  const token = localStorage.getItem("userToken");
+  const storedUser = localStorage.getItem("userData") || sessionStorage.getItem("userData");
+  const token = localStorage.getItem("userToken") || sessionStorage.getItem("userToken");
   if (!storedUser || !token) return null;
   const { id } = JSON.parse(storedUser);
   return { id, token };
