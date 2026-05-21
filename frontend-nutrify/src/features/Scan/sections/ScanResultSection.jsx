@@ -141,12 +141,8 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
   return (
     <div className="w-full px-4 py-8 lg:px-6">
       <section className="rounded-2xl border border-[#D8D8D8] bg-white p-6 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-[18px] font-bold text-[#1E1E1E]">
-            Hasil Scan: {best_prediction?.food_name?.replace(/_/g, " ").toUpperCase()} ({(best_prediction?.confidence_score * 100).toFixed(1)}%)
-          </h2>
-
-          {showRescanButton && (
+        {showRescanButton && (
+          <div className="mb-4 flex justify-end">
             <button
               type="button"
               onClick={() => window.location.reload()}
@@ -155,8 +151,8 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
               <RefreshCcw size={16} />
               Scan Ulang
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="grid gap-5 lg:grid-cols-[1.05fr_1.25fr]">
           <img
