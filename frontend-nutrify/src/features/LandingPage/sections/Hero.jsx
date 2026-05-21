@@ -18,7 +18,7 @@ function Hero() {
   }
 
   return (
-    <section id="beranda" className="relative flex min-h-screen items-center overflow-x-hidden bg-[#12B76A] rounded-b-[40px] md:rounded-b-[60px]">
+    <section id="beranda" className="relative flex min-h-screen items-center overflow-hidden bg-[#12B76A] rounded-b-[40px] md:rounded-b-[60px]">
       {/* Dynamic Background Gradients */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#12B76A] via-[#0FA968] to-[#0B8F61] z-0" />
       
@@ -88,20 +88,20 @@ function Hero() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: false, margin: "-50px" }}
           transition={{ duration: 0.4 }}
-          className="relative mt-10 flex w-full min-w-0 justify-center overflow-visible lg:mt-0 lg:w-1/2"
+          className="relative mt-10 flex w-full min-w-0 justify-center lg:mt-0 lg:w-1/2"
         >
-          {/* GLOW – behind mascot, no clipping */}
+          {/* GLOW – behind mascot */}
           <div
             className="pointer-events-none absolute left-1/2 top-[55%] z-0 h-[200px] w-[200px] -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-white/30 blur-[80px] sm:h-[320px] sm:w-[320px] md:h-[350px] md:w-[350px]"
             aria-hidden="true"
           />
 
-          {/* Mascot frame – overflow visible + top padding for ears */}
-          <div className="relative z-10 mx-auto w-full max-w-full overflow-visible px-2 pt-6 pb-2 sm:px-4 sm:pt-8 sm:pb-4 md:pt-10 lg:pt-12">
+          {/* Mascot – contained inside hero, no extra scroll */}
+          <div className="relative z-10 mx-auto w-full max-w-full px-2 sm:px-4">
             <img
               src={heroBot}
               alt="Nutrify Bot"
-              className="relative z-10 mx-auto block h-auto w-full max-w-[280px] object-contain object-center drop-shadow-[0_35px_35px_rgba(0,0,0,0.3)] transition-transform duration-700 sm:max-w-[380px] md:max-w-[450px] lg:max-w-[520px] lg:hover:-translate-y-4 lg:hover:scale-105"
+              className="relative z-10 mx-auto block h-auto w-full max-w-[280px] object-contain object-[50%_48%] drop-shadow-[0_35px_35px_rgba(0,0,0,0.3)] transition-transform duration-700 sm:max-w-[380px] md:max-w-[450px] lg:max-w-[520px] lg:hover:-translate-y-4 lg:hover:scale-105"
             />
             
             {/* Floating Element 1 */}
