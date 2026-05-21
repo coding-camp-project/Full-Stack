@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Droplets, Flame } from "lucide-react";
 
 import foodImage from "../../../assets/healthy-food-img.png";
@@ -7,27 +7,60 @@ import HistoryFilter from "../components/HistoryFilter";
 import HistoryList from "../components/HistoryList";
 import InsightCard from "../components/InsightCard";
 import NutritionSummaryCard from "../components/NutritionSummaryCard";
+import {
+  DEFAULT_TIME_FILTER,
+  filterHistoryByTimeRange,
+} from "../utils/historyFilters";
+
+const ONE_MINUTE = 60 * 1000;
+
+function getStoredHistoryItems() {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const historyStr = localStorage.getItem("scanHistory");
+
+    if (!historyStr) {
+      return [];
+    }
+
+    return JSON.parse(historyStr).map((item) => ({
+      ...item,
+      image: item.image || foodImage,
+    }));
+  } catch (err) {
+    console.error("Gagal membaca riwayat", err);
+    return [];
+  }
+}
 
 function HistorySection() {
-  const [historyItems, setHistoryItems] = useState([]);
+  const [historyItems] = useState(getStoredHistoryItems);
+  const [selectedTimeFilter, setSelectedTimeFilter] = useState(DEFAULT_TIME_FILTER);
+  const [currentDate, setCurrentDate] = useState(() => new Date());
 
   useEffect(() => {
-    const historyStr = localStorage.getItem("scanHistory");
-    if (historyStr) {
-      try {
-        const parsedHistory = JSON.parse(historyStr).map(item => ({
-          ...item,
-          image: item.image || foodImage // Fallback image
-        }));
-        setHistoryItems(parsedHistory);
-      } catch (err) {
-        console.error("Gagal membaca riwayat", err);
-      }
-    }
+    const intervalId = setInterval(() => {
+      setCurrentDate(new Date());
+    }, ONE_MINUTE);
+
+    return () => clearInterval(intervalId);
   }, []);
 
+  const filteredHistoryItems = useMemo(
+    () =>
+      filterHistoryByTimeRange(
+        historyItems,
+        selectedTimeFilter,
+        currentDate
+      ),
+    [historyItems, selectedTimeFilter, currentDate]
+  );
+
   // Hitung total hari ini
-  const today = new Date().toDateString();
+  const today = currentDate.toDateString();
   const todayItems = historyItems.filter(item => new Date(item.date).toDateString() === today);
   
   const totalCalories = todayItems.reduce((sum, item) => sum + item.calories, 0);
@@ -42,7 +75,11 @@ function HistorySection() {
 
   return (
     <div className="w-full px-5 py-7 lg:px-7">
-      <HistoryFilter />
+      <HistoryFilter
+        currentDate={currentDate}
+        selectedTimeFilter={selectedTimeFilter}
+        onTimeFilterChange={setSelectedTimeFilter}
+      />
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr_16rem]">
         <NutritionSummaryCard
@@ -69,7 +106,7 @@ function HistorySection() {
       </div>
 
       <div className="mt-6 grid gap-4 xl:grid-cols-[1fr_16rem]">
-        <HistoryList items={historyItems} />
+        <HistoryList items={filteredHistoryItems} />
         <InsightCard />
       </div>
     </div>
