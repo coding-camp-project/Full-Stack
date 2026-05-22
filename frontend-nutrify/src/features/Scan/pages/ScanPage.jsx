@@ -98,9 +98,9 @@ function ScanPage() {
           name: data.best_prediction?.food_name?.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
           components: data.details?.length || 1,
           calories: Math.round(data.nutrition?.calories || 0),
-          protein: parseFloat((data.nutrition?.protein || 0).toFixed(1)),
-          carbs: parseFloat((data.nutrition?.carbohydrates || 0).toFixed(1)),
-          fat: parseFloat((data.nutrition?.fat || 0).toFixed(1)),
+          protein: Math.round(data.nutrition?.protein || 0),
+          carbs: Math.round(data.nutrition?.carbohydrates || 0),
+          fat: Math.round(data.nutrition?.fat || 0),
           date: new Date().toISOString(),
         };
         history.unshift(newHistoryItem);
