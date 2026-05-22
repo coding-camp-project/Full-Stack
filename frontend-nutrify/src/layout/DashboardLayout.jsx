@@ -52,7 +52,9 @@ function DashboardLayout() {
         <DashboardNavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
         <main className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
-          {isRouteLoading && (
+          {/* Route-change overlay – hidden on /personalisasi because that page
+              renders its own full-page fetching spinner (avoids double loader). */}
+          {isRouteLoading && location.pathname !== "/personalisasi" && (
             <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-100/60 backdrop-blur-[2px] transition-all duration-300">
               <div className="flex flex-col items-center gap-3">
                 <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-[#04A16E]" />
