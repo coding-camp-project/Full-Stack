@@ -1,17 +1,49 @@
 import { useEffect, useState } from "react";
 import SummarySection from "../Components/SummarySection";
 import DashboardContentSection from "../Section/DashboardContentSection";
+import { getHistory } from "@/features/History/services/historyService";
+import { mapHistoryRecordToCardItem } from "@/features/History/utils/historyMappers";
+import { getUserData } from "@/utils/userSession";
 
 function DashboardPage() {
   const [historyItems, setHistoryItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const historyStr = localStorage.getItem("scanHistory");
-    if (historyStr) {
-      try {
-        setHistoryItems(JSON.parse(historyStr));
-      } catch (err) {}
-    }
+    let isMounted = true;
+    const userData = getUserData();
+    const userId = userData?.id || "guest";
+
+    getHistory()
+      .then((history) => {
+        if (isMounted) {
+          setHistoryItems(history.map(mapHistoryRecordToCardItem));
+        }
+      })
+      .catch((err) => {
+        console.error("Gagal mengambil riwayat dari server, menggunakan fallback lokal:", err);
+        
+        if (isMounted) {
+          const localHistoryKey = `scanHistory_${userId}`;
+          const historyStr = localStorage.getItem(localHistoryKey);
+          if (historyStr) {
+            try {
+              setHistoryItems(JSON.parse(historyStr));
+            } catch (parseErr) {
+              console.error("Gagal membaca riwayat lokal", parseErr);
+            }
+          }
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const today = new Date().toDateString();
