@@ -1,10 +1,5 @@
 export const TIME_FILTERS = [
-  { label: "Hari Ini", value: "today" },
-  { label: "Kemarin", value: "yesterday" },
-  { label: "7 Hari Terakhir", value: "last-7-days" },
-  { label: "1 Minggu Lalu", value: "last-week" },
-  { label: "1 Bulan Terakhir", value: "last-month" },
-  { label: "Semua Waktu", value: "all-time" },
+  { label: "24 Jam Terakhir", value: "all-time" },
 ];
 
 export const DEFAULT_TIME_FILTER = "all-time";

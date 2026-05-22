@@ -169,6 +169,14 @@ const generateRecommendationLocally = (details, totalNutrition, userDisease = ""
     } else {
       recommendation = `Makanan ini aman untuk kondisi asam urat Anda. Pastikan tetap menjaga hidrasi tubuh dengan baik.`;
     }
+  } else if (diseaseClean.includes("obesitas")) {
+    const cal = totalNutrition.calories;
+    if (cal >= 500) {
+      warning = `Peringatan Obesitas: Kandungan kalori (${cal.toFixed(0)} kkal) cukup tinggi untuk satu porsi makanan.`;
+      recommendation = `Untuk kondisi obesitas Anda, disarankan untuk mengontrol porsi makan, mengurangi makanan tinggi lemak/gula, dan meningkatkan konsumsi sayuran kaya serat.`;
+    } else {
+      recommendation = `Porsi kalori makanan ini tergolong aman untuk mengontrol berat badan. Jaga asupan harian tetap seimbang dan imbangi dengan olahraga.`;
+    }
   } else {
     const cal = totalNutrition.calories;
     if (cal >= 600) {
