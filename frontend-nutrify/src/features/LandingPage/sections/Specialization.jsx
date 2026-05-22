@@ -5,11 +5,13 @@ import {
   LayoutDashboard,
 } from "lucide-react"
 import { motion } from "framer-motion"
+import { Link } from "react-router-dom"
 
 const features = [
   {
     icon: Leaf,
     title: "Scan Makanan",
+    to: "/scan",
     description:
       "Cukup ambil foto makananmu, Nutrify akan mengenali jenis makanan dan menampilkan kandungan nutrisinya secara otomatis.",
   },
@@ -17,6 +19,7 @@ const features = [
   {
     icon: ChartPie,
     title: "Analisis Nutrisi",
+    to: "/dashboard",
     description:
       "Dapatkan informasi lengkap seperti kalori, protein, karbohidrat, lemak, dan kandungan lainnya untuk setiap makanan.",
   },
@@ -24,6 +27,7 @@ const features = [
   {
     icon: ShieldCheck,
     title: "Rekomendasi",
+    to: "/chatbot",
     description:
       "Nutrify memberikan saran makanan berdasarkan kondisi kesehatanmu seperti diabetes, hipertensi, dan lainnya.",
   },
@@ -31,6 +35,7 @@ const features = [
   {
     icon: LayoutDashboard,
     title: "Dashboard",
+    to: "/dashboard",
     description:
       "Lihat riwayat makanan, pantau nutrisi harian, dan pahami pola makanmu untuk hidup lebih sehat.",
   },
@@ -41,13 +46,13 @@ function Specialization() {
     <section id="layanan" className="relative overflow-hidden bg-[#F8FFFC] py-28 px-6">
 
       {/* GRID BACKGROUND */}
-      <div className="absolute inset-0 opacity-40">
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-40">
         <div className="w-full h-full bg-[linear-gradient(to_right,#22c55e10_1px,transparent_1px)] bg-[size:80px_80px]" />
       </div>
 
       {/* CIRCLE EFFECT */}
-      <div className="absolute top-0 right-0 w-[300px] h-[300px] border border-[#3e9d7d]/20 rounded-full" />
-      <div className="absolute top-10 right-10 w-[200px] h-[200px] border border-[#3e9d7d]/10 rounded-full" />
+      <div className="pointer-events-none absolute top-0 right-0 z-0 h-[300px] w-[300px] rounded-full border border-[#3e9d7d]/20" />
+      <div className="pointer-events-none absolute top-10 right-10 z-0 h-[200px] w-[200px] rounded-full border border-[#3e9d7d]/10" />
 
       <div className="max-w-7xl mx-auto relative z-10">
 
@@ -68,7 +73,7 @@ function Specialization() {
         >
 
           <h2 className="text-4xl md:text-5xl font-bold leading-tight text-[#111111]">
-            Semua yang Kamu Butuhkan Lebih
+            Semua yang Kamu Butuhkan
             <br />
             untuk <span className="text-[#3e9d7d]">Hidup </span>
             Lebih Sehat
@@ -94,7 +99,7 @@ function Specialization() {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: false, margin: "-50px" }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="bg-white border border-gray-100 rounded-3xl p-7 shadow-sm hover:shadow-xl transition-all duration-300"
+                className="relative z-10 bg-white border border-gray-100 rounded-3xl p-7 shadow-sm hover:shadow-xl transition-all duration-300"
               >
 
                 {/* ICON */}
@@ -118,9 +123,12 @@ function Specialization() {
                 </p>
 
                 {/* LINK */}
-                <button className="mt-8 text-[#3e9d7d] font-medium text-sm hover:translate-x-1 transition-all">
+                <Link
+                  to={item.to}
+                  className="relative z-20 mt-8 inline-flex cursor-pointer items-center text-sm font-medium text-[#3e9d7d] transition-all hover:translate-x-1 hover:text-[#2d8a6a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3e9d7d]/40 focus-visible:ring-offset-2 rounded-sm"
+                >
                   Lihat Selengkapnya →
-                </button>
+                </Link>
 
               </motion.div>
             )
