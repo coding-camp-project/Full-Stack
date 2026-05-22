@@ -2,6 +2,7 @@ import express from "express";
 import {
   registerUser,
   loginUser,
+  googleLoginUser,
   getAllUsers,
   getUserById,
   updateUser,
@@ -14,6 +15,7 @@ const router = express.Router();
 // Public routes
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+router.post("/google-login", googleLoginUser);
 
 // Protected routes (require valid JWT)
 router.get("/", protect, getAllUsers);

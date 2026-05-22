@@ -8,7 +8,7 @@ import { GENDER_OPTIONS, ACTIVITY_LEVELS } from "../data/options";
 
 export default function ProfileSection({ formData, onChange }) {
   return (
-    <div className="min-w-0 overflow-hidden rounded-3xl border border-[#E7E7E7] bg-white p-5 shadow-xs sm:p-6 md:p-8">
+    <div className="min-w-0 rounded-3xl border border-[#E7E7E7] bg-white p-5 shadow-xs sm:p-6 md:p-8">
       {/* Section Header */}
       <h2 className="text-base font-bold text-[#1E1E1E] mb-6 flex items-center gap-3">
         <span

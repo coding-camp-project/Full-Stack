@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { signInWithPopup } from "firebase/auth"
 import { auth, googleProvider } from "@/config/firebase"
 import axios from "axios"
+import { setUserSession } from "@/utils/userSession"
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -57,14 +58,28 @@ export default function RegisterForm() {
       const result = await signInWithPopup(auth, googleProvider);
       console.log("Berhasil daftar/masuk dengan Google!", result.user);
       
-      // Simpan info Google User
-      localStorage.setItem("userData", JSON.stringify({ name: result.user.displayName, email: result.user.email, profilePicture: result.user.photoURL, isPersonalized: false }))
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await axios.post(`${API_URL}/api/users/google-login`, {
+        name: result.user.displayName,
+        email: result.user.email,
+        profilePicture: result.user.photoURL,
+      });
+
+      const { token, name, email: userEmail, _id, profilePicture, isPersonalized } = response.data.data;
+      
+      setUserSession(
+        token, 
+        { id: _id, name, email: userEmail, profilePicture, isPersonalized }, 
+        false
+      );
       
       setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
-      setTimeout(() => navigate("/personalisasi"), 1500)
+      const destination = isPersonalized ? "/dashboard" : "/personalisasi";
+      setTimeout(() => navigate(destination), 1500)
     } catch (err) {
       console.error("Gagal daftar dengan Google:", err);
-      setError("Gagal daftar dengan Google. Pastikan konfigurasi Firebase sudah benar.");
+      const errorMessage = err.response?.data?.message || "Gagal daftar dengan Google. Pastikan konfigurasi Firebase sudah benar.";
+      setError(errorMessage);
     } finally {
       setLoading(false)
     }

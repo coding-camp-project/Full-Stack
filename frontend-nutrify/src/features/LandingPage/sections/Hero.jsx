@@ -107,7 +107,7 @@ function Hero() {
             
             {/* Floating Element 1 */}
             <div
-              className="absolute top-[18%] left-0 z-20 hidden rounded-xl bg-white/90 px-3 py-1.5 text-xs font-bold text-[#12B76A] shadow-xl backdrop-blur animate-bounce sm:left-0 sm:block sm:px-4 sm:py-2 sm:text-sm md:left-2"
+              className="absolute top-[18%] left-1 z-20 block rounded-xl bg-white/90 px-2.5 py-1 text-xs font-bold text-[#12B76A] shadow-xl backdrop-blur animate-bounce sm:left-0 sm:px-4 sm:py-2 sm:text-sm md:left-2"
               style={{ animationDuration: "3s" }}
             >
               🥑 120 kkal
@@ -115,7 +115,7 @@ function Hero() {
             
             {/* Floating Element 2 */}
             <div
-              className="absolute bottom-[22%] right-0 z-20 hidden rounded-xl bg-white/90 px-3 py-1.5 text-xs font-bold text-[#12B76A] shadow-xl backdrop-blur animate-bounce sm:right-0 sm:block sm:px-4 sm:py-2 sm:text-sm md:right-2"
+              className="absolute bottom-[22%] right-1 z-20 block rounded-xl bg-white/90 px-2.5 py-1 text-xs font-bold text-[#12B76A] shadow-xl backdrop-blur animate-bounce sm:right-0 sm:px-4 sm:py-2 sm:text-sm md:right-2"
               style={{ animationDuration: "4s", animationDelay: "1s" }}
             >
               🥗 Tinggi Protein

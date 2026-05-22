@@ -1,5 +1,6 @@
+import { useEffect } from "react";
 import { ArrowLeft, Clock, Calendar, User } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import healthyFood from "@/assets/healthy-food.png";
 import healthyFood2 from "@/assets/healthy-food-2.png";
 import healthyFood3 from "@/assets/healthy-food-3.png";
@@ -103,7 +104,22 @@ const articles = {
 
 function ArticlePage() {
   const { id } = useParams();
-  
+  const navigate = useNavigate();
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleBack = (e) => {
+    e.preventDefault();
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
+
   // Ambil artikel sesuai id, atau gunakan artikel pertama sebagai fallback
   const article = articles[id] || articles["bulking-prep"];
 
@@ -112,10 +128,14 @@ function ArticlePage() {
       {/* Navbar Minimalis */}
       <nav className="border-b border-gray-100 bg-white">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center">
-          <Link to="/" className="flex items-center gap-2 text-gray-500 hover:text-[#3e9d7d] transition-colors">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="flex items-center gap-2 text-gray-500 hover:text-[#3e9d7d] transition-colors bg-transparent border-none cursor-pointer outline-none"
+          >
             <ArrowLeft size={20} />
             <span className="font-medium">Kembali ke Beranda</span>
-          </Link>
+          </button>
         </div>
       </nav>
 
