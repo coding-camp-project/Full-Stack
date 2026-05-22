@@ -139,36 +139,39 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
   ];
 
   return (
-    <div className="w-full min-w-0 max-w-full px-3 py-5 sm:px-4 sm:py-8 lg:px-6 lg:max-w-[1360px] lg:mx-auto">
-      <section className="min-w-0 overflow-hidden rounded-2xl border border-[#D8D8D8] bg-white p-4 shadow-sm sm:p-6">
+    <div className="w-full min-w-0 max-w-full px-3 py-4 sm:px-4 sm:py-6 lg:px-6 lg:py-8 lg:max-w-[1360px] lg:mx-auto">
+      <section className="min-w-0 overflow-hidden rounded-2xl border border-[#D8D8D8] bg-white p-3 shadow-sm sm:p-5 lg:p-6">
+
+        {/* Rescan button */}
         {showRescanButton && (
-          <div className="mb-4 flex justify-end">
+          <div className="mb-3 flex justify-end sm:mb-4">
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="flex h-10 items-center justify-center gap-2 rounded-xl bg-[#1E7F4E] px-4 text-[14px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#16663E]"
+              className="flex h-9 items-center justify-center gap-1.5 rounded-xl bg-[#1E7F4E] px-3 text-[12px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#16663E] sm:h-10 sm:gap-2 sm:px-4 sm:text-[14px]"
             >
-              <RefreshCcw size={16} />
+              <RefreshCcw size={14} className="sm:size-4" />
               Scan Ulang
             </button>
           </div>
         )}
 
-        <div className="grid min-w-0 gap-4 sm:gap-5 lg:grid-cols-2 lg:gap-5 xl:grid-cols-[1.05fr_1.25fr]">
+        {/* Image + Nutrition grid */}
+        <div className="grid min-w-0 gap-3 sm:gap-4 lg:grid-cols-2 lg:gap-5 xl:grid-cols-[1.05fr_1.25fr]">
           <img
             src={imagePreview || healthyFoodImage}
             alt="Hasil scan makanan"
-            className="h-48 w-full min-w-0 rounded-xl object-cover sm:h-60 lg:h-72 xl:h-77"
+            className="h-44 w-full min-w-0 rounded-xl object-cover sm:h-56 lg:h-72 xl:h-77"
           />
 
           <div className="min-w-0">
-            <div className="mb-3 flex items-center gap-2">
-              <h3 className="text-sm font-bold text-[#1E1E1E] sm:text-[14px]">
+            <div className="mb-2.5 flex items-center gap-2 sm:mb-3">
+              <h3 className="text-[12px] font-bold text-[#1E1E1E] sm:text-[14px]">
                 Informasi Nutrisi (per 100g)
               </h3>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            <div className="grid grid-cols-2 gap-1.5 sm:gap-2.5">
               {dynamicNutritionItems.map((item) => (
                 <NutritionCard key={item.label} {...item} />
               ))}
@@ -176,14 +179,16 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
           </div>
         </div>
 
-        <div className="mt-5">
-          <ResultHeader 
-            foodName={best_prediction?.food_name} 
-            confidence={best_prediction?.confidence_score} 
+        {/* Result header */}
+        <div className="mt-3 sm:mt-5">
+          <ResultHeader
+            foodName={best_prediction?.food_name}
+            confidence={best_prediction?.confidence_score}
           />
         </div>
 
-        <div className="mt-5 grid min-w-0 grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2">
+        {/* Analysis + Recommendation — stack on mobile, 2-col on lg */}
+        <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 sm:mt-4 sm:gap-4 lg:mt-5 lg:grid-cols-2 lg:gap-5">
           <HealthAnalysisCard items={dynamicHealthItems} />
           <RecommendationCard items={dynamicRecommendationItems} />
         </div>
