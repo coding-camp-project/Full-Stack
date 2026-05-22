@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion"
 import LandingPage from "./features/LandingPage/LandingPage"
 import LoginPage from "./features/Auth/LoginPage"
 import RegisterPage from "./features/Auth/RegisterPage"
+import ForgotPasswordPage from "./features/Auth/ForgotPasswordPage"
 import DashboardLayout from "./layout/DashboardLayout"
 import DashboardPage from "./features/Dashboard/pages/DashboardPage"
 import ChatbotPage from "./features/Chatbot/pages/ChatbotPage";
@@ -22,6 +23,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/article/:id" element={<ArticlePage />} />
         
         {/* Dashboard Routes with Layout */}
