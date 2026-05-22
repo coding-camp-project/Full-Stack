@@ -6,7 +6,7 @@ function ManualInput({ value, onChange }) {
       </h3>
 
       <p className="mt-1 text-[12px] font-medium text-[#555]">
-        Tuliskan komposisi makanan untuk menganalisis nutrisinya.
+        Tuliskan komposisi makanan (bisa digunakan sendiri atau bersamaan dengan foto untuk mengoreksi hasil scan gambar).
       </p>
 
       <textarea

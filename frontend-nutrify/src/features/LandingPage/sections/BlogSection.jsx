@@ -88,11 +88,12 @@ function BlogSection() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: false, margin: "-50px" }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
+              className="h-full"
             >
-              <Link to={`/article/${item.id}`} className="block h-full bg-white border border-[#E5E7EB] rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
+              <Link to={`/article/${item.id}`} className="flex flex-col h-full bg-white border border-[#E5E7EB] rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
 
               {/* IMAGE */}
-              <div className="relative overflow-hidden h-[260px]">
+              <div className="relative overflow-hidden h-[260px] flex-shrink-0">
 
                 <img
                   src={item.image}
@@ -108,7 +109,7 @@ function BlogSection() {
               </div>
 
               {/* CONTENT */}
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-1 justify-between">
 
                 <h3 className="text-2xl font-semibold leading-snug text-[#111111]">
                   {item.title}

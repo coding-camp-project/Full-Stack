@@ -1,6 +1,7 @@
 import axios from "axios";
 import FormData from "form-data";
 import * as historyService from "../services/history.service.js";
+import { analyzeManualInput, analyzeCombinedInput } from "../services/manualScan.service.js";
 
 const toTitleCase = (value = "") =>
   value
@@ -30,12 +31,53 @@ const buildHealthAnalysis = (nutrition = {}, warning = "") => {
 };
 
 export const scanFood = async (req, res) => {
+  let userConditions = "";
   try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: "No image provided." });
+    const { disease, manualInput } = req.body;
+
+    if (!req.file && (!manualInput || !manualInput.trim())) {
+      return res.status(400).json({ success: false, message: "No image or manual input provided." });
     }
 
-    const { disease } = req.body;
+    userConditions = disease || "";
+    if (!userConditions && req.user) {
+      const conditions = [];
+      if (req.user.healthConditions && req.user.healthConditions.length > 0) {
+        conditions.push(...req.user.healthConditions);
+      }
+      if (req.user.otherConditions) {
+        conditions.push(req.user.otherConditions);
+      }
+      userConditions = conditions.join(", ");
+    }
+
+    if (manualInput && !req.file) {
+      const scanResult = await analyzeManualInput(manualInput, userConditions);
+      const nutrition = scanResult.nutrition;
+      const foodName = toTitleCase(scanResult.best_prediction.food_name);
+
+      const history = await historyService.createHistory({
+        userId: req.user._id,
+        foodName,
+        image: "",
+        calories: nutrition.calories || 0,
+        protein: nutrition.protein || 0,
+        carbs: nutrition.carbohydrates || nutrition.carbs || 0,
+        fat: nutrition.fat || 0,
+        fiber: nutrition.fiber || 0,
+        sugar: nutrition.sugar || 0,
+        sodium: nutrition.sodium || 0,
+        confidence: 1.0,
+        recommendation: scanResult.recommendation || "",
+        healthAnalysis: buildHealthAnalysis(nutrition, scanResult.warning),
+      });
+
+      return res.status(200).json({
+        success: true,
+        ...scanResult,
+        historyId: history._id,
+      });
+    }
 
     // Build form data
     const formData = new FormData();
@@ -44,8 +86,8 @@ export const scanFood = async (req, res) => {
       contentType: req.file.mimetype,
     });
 
-    if (disease) {
-      formData.append("disease", disease);
+    if (userConditions) {
+      formData.append("disease", userConditions);
     }
 
     // Call FastAPI
@@ -55,7 +97,50 @@ export const scanFood = async (req, res) => {
       },
     });
 
-    const scanResult = response.data;
+    let scanResult = response.data;
+
+    // Fallback if FastAPI succeeded but returned unknown/failure, and manualInput exists
+    if (!scanResult.success && manualInput && manualInput.trim()) {
+      console.log("FastAPI prediction not successful, falling back to manual input...");
+      const fallbackResult = await analyzeManualInput(manualInput, userConditions);
+      const nutrition = fallbackResult.nutrition;
+      const foodName = toTitleCase(fallbackResult.best_prediction.food_name);
+      const image = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+
+      const history = await historyService.createHistory({
+        userId: req.user._id,
+        foodName,
+        image,
+        calories: nutrition.calories || 0,
+        protein: nutrition.protein || 0,
+        carbs: nutrition.carbohydrates || nutrition.carbs || 0,
+        fat: nutrition.fat || 0,
+        fiber: nutrition.fiber || 0,
+        sugar: nutrition.sugar || 0,
+        sodium: nutrition.sodium || 0,
+        confidence: 1.0,
+        recommendation: fallbackResult.recommendation || "",
+        healthAnalysis: buildHealthAnalysis(nutrition, fallbackResult.warning),
+      });
+
+      return res.status(200).json({
+        success: true,
+        ...fallbackResult,
+        historyId: history._id,
+      });
+    }
+
+    // If both succeeded, combine their data
+    if (scanResult.success && manualInput && manualInput.trim()) {
+      console.log("FastAPI succeeded, combining with manual input context...");
+      const combinedResult = await analyzeCombinedInput(
+        scanResult.best_prediction?.food_name || "",
+        manualInput,
+        userConditions
+      );
+      scanResult = combinedResult;
+    }
+
     const nutrition = scanResult.nutrition || {};
     const foodName = toTitleCase(scanResult.best_prediction?.food_name || "Makanan");
     const image = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
@@ -71,7 +156,7 @@ export const scanFood = async (req, res) => {
       fiber: nutrition.fiber || 0,
       sugar: nutrition.sugar || 0,
       sodium: nutrition.sodium || 0,
-      confidence: scanResult.best_prediction?.confidence_score || 0,
+      confidence: scanResult.best_prediction?.confidence_score || 1.0,
       recommendation: scanResult.recommendation || "",
       healthAnalysis: buildHealthAnalysis(nutrition, scanResult.warning),
     });
@@ -83,6 +168,41 @@ export const scanFood = async (req, res) => {
   } catch (error) {
     console.error("Scan API Error:", error.response?.data || error.message);
     
+    // Fallback to manual input if image request failed completely but manual text was provided
+    if (req.file && req.body.manualInput && req.body.manualInput.trim()) {
+      try {
+        console.log("FastAPI connection/request failed, falling back to manual input...");
+        const fallbackResult = await analyzeManualInput(req.body.manualInput, userConditions);
+        const nutrition = fallbackResult.nutrition;
+        const foodName = toTitleCase(fallbackResult.best_prediction.food_name);
+        const image = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+
+        const history = await historyService.createHistory({
+          userId: req.user._id,
+          foodName,
+          image,
+          calories: nutrition.calories || 0,
+          protein: nutrition.protein || 0,
+          carbs: nutrition.carbohydrates || nutrition.carbs || 0,
+          fat: nutrition.fat || 0,
+          fiber: nutrition.fiber || 0,
+          sugar: nutrition.sugar || 0,
+          sodium: nutrition.sodium || 0,
+          confidence: 1.0,
+          recommendation: fallbackResult.recommendation || "",
+          healthAnalysis: buildHealthAnalysis(nutrition, fallbackResult.warning),
+        });
+
+        return res.status(200).json({
+          success: true,
+          ...fallbackResult,
+          historyId: history._id,
+        });
+      } catch (fallbackErr) {
+        console.error("Fallback to manual input also failed:", fallbackErr.message);
+      }
+    }
+
     let errorMessage = "Failed to process image.";
     if (error.response?.data?.detail) {
       if (Array.isArray(error.response.data.detail)) {
