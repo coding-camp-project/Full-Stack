@@ -15,7 +15,7 @@ function SummarySection({ calories = 0, carbs = 0, fat = 0 }) {
     <section className="grid grid-cols-1 md:grid-cols-3 gap-5">
       
       <SummaryCard
-        title="Kalori Hari Ini"
+        title="Kalori (24 Jam)"
         value={calories.toString()}
         unit="kkal"
         progress={calProgress}

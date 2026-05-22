@@ -63,6 +63,8 @@ const historySchema = new mongoose.Schema(
   }
 );
 
+historySchema.index({ createdAt: 1 }, { expireAfterSeconds: 86400 });
+
 const History = mongoose.model("History", historySchema);
 
 export default History;

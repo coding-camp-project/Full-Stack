@@ -19,11 +19,9 @@ export const ACTIVITY_LEVELS = [
 export const HEALTH_CONDITIONS = [
   "Diabetes",
   "Hipertensi",
-  "Kolesterol Tinggi",
+  "Obesitas",
   "Asam Urat",
-  "Alergi Makanan",
-  "Maag / GERD",
-  "Tidak Ada",
+  "Kolesterol",
 ];
 
 export const COMMON_ALLERGIES = [

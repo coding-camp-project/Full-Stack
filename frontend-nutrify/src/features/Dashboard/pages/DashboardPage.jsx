@@ -28,7 +28,14 @@ function DashboardPage() {
           const historyStr = localStorage.getItem(localHistoryKey);
           if (historyStr) {
             try {
-              setHistoryItems(JSON.parse(historyStr));
+              const allItems = JSON.parse(historyStr);
+              const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+              const filteredItems = allItems.filter(item => {
+                const itemTime = new Date(item.date || item.createdAt).getTime();
+                return itemTime >= twentyFourHoursAgo;
+              });
+              localStorage.setItem(localHistoryKey, JSON.stringify(filteredItems));
+              setHistoryItems(filteredItems);
             } catch (parseErr) {
               console.error("Gagal membaca riwayat lokal", parseErr);
             }
@@ -40,19 +47,22 @@ function DashboardPage() {
           setLoading(false);
         }
       });
-
+ 
     return () => {
       isMounted = false;
     };
   }, []);
-
-  const today = new Date().toDateString();
-  const todayItems = historyItems.filter(item => new Date(item.date).toDateString() === today);
+ 
+  const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+  const recentItems = historyItems.filter(item => {
+    const itemTime = new Date(item.date || item.createdAt).getTime();
+    return itemTime >= twentyFourHoursAgo;
+  });
   
-  const totalCalories = todayItems.reduce((sum, item) => sum + item.calories, 0);
-  const totalCarbs = todayItems.reduce((sum, item) => sum + item.carbs, 0);
-  const totalFat = todayItems.reduce((sum, item) => sum + item.fat, 0);
-  const totalProtein = todayItems.reduce((sum, item) => sum + item.protein, 0);
+  const totalCalories = Math.round(recentItems.reduce((sum, item) => sum + item.calories, 0));
+  const totalCarbs = Math.round(recentItems.reduce((sum, item) => sum + item.carbs, 0));
+  const totalFat = Math.round(recentItems.reduce((sum, item) => sum + item.fat, 0));
+  const totalProtein = Math.round(recentItems.reduce((sum, item) => sum + item.protein, 0));
 
   return (
     <div className="w-full min-w-0 max-w-full space-y-5 p-4 sm:space-y-6 sm:p-5 md:p-6 lg:max-w-[1360px] lg:mx-auto">

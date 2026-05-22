@@ -1,32 +1,42 @@
 import { useEffect, useMemo, useState } from "react";
 import { Droplets, Flame } from "lucide-react";
-
+ 
 import HistoryFilter from "../components/HistoryFilter";
 import HistoryList from "../components/HistoryList";
 import InsightCard from "../components/InsightCard";
 import NutritionSummaryCard from "../components/NutritionSummaryCard";
 import { getHistory } from "../services/historyService";
 import { mapHistoryRecordToCardItem } from "../utils/historyMappers";
-import {
-  DEFAULT_TIME_FILTER,
-  filterHistoryByTimeRange,
-} from "../utils/historyFilters";
-
+import { getUserData } from "@/utils/userSession";
+ 
 const ONE_MINUTE = 60 * 1000;
-
+ 
 function getStoredHistoryItems() {
   if (typeof window === "undefined") {
     return [];
   }
-
+ 
   try {
-    const historyStr = localStorage.getItem("scanHistory");
-
+    const userData = getUserData();
+    const userId = userData?.id || "guest";
+    const localHistoryKey = `scanHistory_${userId}`;
+    const historyStr = localStorage.getItem(localHistoryKey) || localStorage.getItem("scanHistory");
+ 
     if (!historyStr) {
       return [];
     }
-
-    return JSON.parse(historyStr).map(mapHistoryRecordToCardItem);
+ 
+    const allItems = JSON.parse(historyStr);
+    const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+    const filteredItems = allItems.filter(item => {
+      const itemTime = new Date(item.date || item.createdAt).getTime();
+      return itemTime >= twentyFourHoursAgo;
+    });
+ 
+    // Clean up local storage
+    localStorage.setItem(localHistoryKey, JSON.stringify(filteredItems));
+ 
+    return filteredItems.map(mapHistoryRecordToCardItem);
   } catch (err) {
     console.error("Gagal membaca riwayat", err);
     return [];
@@ -36,12 +46,12 @@ function getStoredHistoryItems() {
 function HistorySection() {
   const [historyItems, setHistoryItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTimeFilter, setSelectedTimeFilter] = useState(DEFAULT_TIME_FILTER);
+  const [timeRange, setTimeRange] = useState({ startHour: 0, endHour: 23 });
   const [currentDate, setCurrentDate] = useState(() => new Date());
-
+ 
   useEffect(() => {
     let isMounted = true;
-
+ 
     getHistory()
       .then((history) => {
         if (isMounted) {
@@ -50,7 +60,7 @@ function HistorySection() {
       })
       .catch((err) => {
         console.error("Gagal mengambil riwayat dari server", err);
-
+ 
         if (isMounted) {
           setHistoryItems(getStoredHistoryItems());
         }
@@ -60,66 +70,73 @@ function HistorySection() {
           setLoading(false);
         }
       });
-
+ 
     return () => {
       isMounted = false;
     };
   }, []);
-
+ 
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentDate(new Date());
     }, ONE_MINUTE);
-
+ 
     return () => clearInterval(intervalId);
   }, []);
-
-  const filteredHistoryItems = useMemo(
-    () =>
-      filterHistoryByTimeRange(
-        historyItems,
-        selectedTimeFilter,
-        currentDate
-      ),
-    [historyItems, selectedTimeFilter, currentDate]
+ 
+  const filteredHistoryItems = useMemo(() => {
+    return historyItems.filter((item) => {
+      const itemDate = new Date(item.date || item.createdAt);
+      const hour = itemDate.getHours();
+      return hour >= timeRange.startHour && hour <= timeRange.endHour;
+    });
+  }, [historyItems, timeRange]);
+ 
+  const totalCalories = Math.round(
+    filteredHistoryItems.reduce((sum, item) => sum + item.calories, 0)
   );
-
-  // Hitung total hari ini
-  const today = currentDate.toDateString();
-  const todayItems = historyItems.filter(item => new Date(item.date).toDateString() === today);
-  
-  const totalCalories = todayItems.reduce((sum, item) => sum + item.calories, 0);
-  const totalProtein = todayItems.reduce((sum, item) => sum + item.protein, 0);
-
+  const totalProtein = Math.round(
+    filteredHistoryItems.reduce((sum, item) => sum + item.protein, 0)
+  );
+ 
   // Default target
   const targetCalories = 2000;
   const targetProtein = 80;
-
+ 
   const calProgress = Math.min(Math.round((totalCalories / targetCalories) * 100), 100);
   const proProgress = Math.min(Math.round((totalProtein / targetProtein) * 100), 100);
-
+ 
+  const getCardTitle = (baseTitle) => {
+    if (timeRange.startHour === 0 && timeRange.endHour === 23) {
+      return `${baseTitle} (24 Jam)`;
+    }
+    const startStr = String(timeRange.startHour).padStart(2, "0") + ":00";
+    const endStr = String(timeRange.endHour).padStart(2, "0") + ":59";
+    return `${baseTitle} (${startStr} - ${endStr})`;
+  };
+ 
   return (
     <div className="w-full min-w-0 max-w-full px-4 py-5 sm:px-5 sm:py-7 lg:px-7 lg:max-w-[1360px] lg:mx-auto">
       <HistoryFilter
         currentDate={currentDate}
-        selectedTimeFilter={selectedTimeFilter}
-        onTimeFilterChange={setSelectedTimeFilter}
+        timeRange={timeRange}
+        onTimeRangeChange={setTimeRange}
       />
-
+ 
       <div className="mt-5 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-5">
         <NutritionSummaryCard
           icon={<Flame size={28} />}
-          title="Total Kalori Hari Ini"
+          title={getCardTitle("Total Kalori")}
           value={totalCalories.toString()}
           unit="kkal"
           targetText={`${calProgress}% dari target ${targetCalories} kkal`}
           progress={calProgress}
           tone="green"
         />
-
+ 
         <NutritionSummaryCard
           icon={<Droplets size={28} />}
-          title="Total Protein Hari Ini"
+          title={getCardTitle("Total Protein")}
           value={totalProtein.toString()}
           unit="g"
           targetText={`${proProgress}% dari target ${targetProtein} g`}
@@ -127,7 +144,7 @@ function HistorySection() {
           tone="blue"
         />
       </div>
-
+ 
       <div className="mt-6 grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-[1fr_minmax(0,16rem)]">
         <HistoryList items={filteredHistoryItems} loading={loading} />
         <InsightCard />

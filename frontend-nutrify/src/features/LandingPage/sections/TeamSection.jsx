@@ -147,7 +147,7 @@ function TeamSection() {
                   />
 
                   {/* OVERLAY */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#3e9d7d]/50 via-[#3e9d7d]/10 to-transparent" />
 
                   {/* TEXT */}
                   <div className="absolute bottom-6 left-6 z-10 text-white">
@@ -156,7 +156,7 @@ function TeamSection() {
                       {item.name}
                     </h3>
 
-                    <p className="text-xs text-green-200 mt-1">
+                    <p className="text-xs text-white mt-1">
                       {item.university}
                     </p>
 
