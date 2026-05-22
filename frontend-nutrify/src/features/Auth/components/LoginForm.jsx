@@ -169,9 +169,13 @@ export default function LoginForm() {
               Biarkan saya tetap masuk
             </label>
           </div>
-          <a href="#" className="text-sm font-semibold text-[#12B76A] hover:text-[#0FA968]">
+          <Link
+            to="/forgot-password"
+            className="text-sm font-semibold text-[#12B76A] hover:text-[#0FA968] cursor-pointer transition-colors duration-200"
+            style={{ pointerEvents: "auto", position: "relative", zIndex: 10 }}
+          >
             Lupa kata sandi?
-          </a>
+          </Link>
         </div>
 
         <Button 
