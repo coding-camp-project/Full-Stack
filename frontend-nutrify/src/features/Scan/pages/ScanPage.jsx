@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import ScanLoading from "../components/ScanLoading";
 import ScanResultSection from "../sections/ScanResultSection";
 import ScanUploadSection from "../sections/ScanUploadSection";
+import { getUserData } from "@/utils/userSession";
 
 function ScanPage() {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -70,7 +71,11 @@ function ScanPage() {
 
       // Simpan ke riwayat lokal
       try {
-        const historyStr = localStorage.getItem("scanHistory");
+        const userData = getUserData();
+        const userId = userData?.id || "guest";
+        const localHistoryKey = `scanHistory_${userId}`;
+
+        const historyStr = localStorage.getItem(localHistoryKey);
         const history = historyStr ? JSON.parse(historyStr) : [];
         const newHistoryItem = {
           id: data.historyId || Date.now(),
@@ -84,7 +89,7 @@ function ScanPage() {
           date: new Date().toISOString(),
         };
         history.unshift(newHistoryItem);
-        localStorage.setItem("scanHistory", JSON.stringify(history));
+        localStorage.setItem(localHistoryKey, JSON.stringify(history));
       } catch (err) {
         console.error("Gagal menyimpan ke riwayat lokal", err);
       }
