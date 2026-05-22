@@ -25,7 +25,7 @@ function ScanUploadSection({
             <ManualInput value={manualInput} onChange={onManualInputChange} />
             <div className="my-5 flex items-center gap-3 lg:hidden">
               <div className="h-px flex-1 bg-[#D8D8D8]" />
-              <span className="text-[12px] text-[#777]">atau</span>
+              <span className="text-[12px] text-[#777]">dan / atau</span>
               <div className="h-px flex-1 bg-[#D8D8D8]" />
             </div>
             <TipsCard onAnalyze={onAnalyze} disabled={!canAnalyze} />

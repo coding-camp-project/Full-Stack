@@ -24,7 +24,7 @@ const teams = [
 
   {
     image: team2,
-    name: "Iqbal Apriand Juartono",
+    name: "Danar Mas Saputra",
     university: "Universitas Gunadarma",
     role: "AI Engineer",
     icon: BrainCircuit,
@@ -33,7 +33,7 @@ const teams = [
 
   {
     image: team3,
-    name: "Iqbal Apriand Juartono",
+    name: "Vlaura",
     university: "Universitas Gunadarma",
     role: "Data Scientist",
     icon: Database,
@@ -42,7 +42,7 @@ const teams = [
 
   {
     image: team4,
-    name: "Iqbal Apriand Juartono",
+    name: "Faqih Ikhtibar",
     university: "Universitas Gunadarma",
     role: "Fullstack Developer",
     icon: BriefcaseBusiness,
@@ -51,7 +51,7 @@ const teams = [
 
   {
     image: team5,
-    name: "Iqbal Apriand Juartono",
+    name: "Raya Sesan",
     university: "Universitas Gunadarma",
     role: "AI Engineer",
     icon: BrainCircuit,
@@ -60,7 +60,7 @@ const teams = [
 
   {
     image: team6,
-    name: "Iqbal Apriand Juartono",
+    name: "Faiz Akhsan",
     university: "Universitas Gunadarma",
     role: "Data Scientist",
     icon: Database,

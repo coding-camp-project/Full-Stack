@@ -38,8 +38,8 @@ function ScanPage() {
   };
 
   const handleAnalyze = async () => {
-    if (!uploadedImage) {
-      alert("Harap unggah gambar terlebih dahulu.");
+    if (!uploadedImage && !manualInput.trim()) {
+      alert("Harap unggah gambar atau tulis komposisi makanan terlebih dahulu.");
       return;
     }
 
@@ -48,22 +48,37 @@ function ScanPage() {
     setScanResult(null);
 
     try {
-      const formData = new FormData();
-      formData.append("image", uploadedImage);
-
       const token = localStorage.getItem("userToken") || sessionStorage.getItem("userToken");
-
       const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const response = await fetch(`${API_URL}/api/scan`, {
-        method: "POST",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: formData,
-      });
+      
+      let response;
+      if (uploadedImage) {
+        const formData = new FormData();
+        formData.append("image", uploadedImage);
+        if (manualInput.trim()) {
+          formData.append("manualInput", manualInput.trim());
+        }
+        
+        response = await fetch(`${API_URL}/api/scan`, {
+          method: "POST",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          body: formData,
+        });
+      } else {
+        response = await fetch(`${API_URL}/api/scan`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ manualInput }),
+        });
+      }
 
       const data = await response.json();
       
       if (!response.ok || !data.success) {
-        throw new Error(data.message || data.error || "Gagal memproses gambar.");
+        throw new Error(data.message || data.error || "Gagal memproses analisis.");
       }
 
       setScanResult(data);
@@ -81,7 +96,7 @@ function ScanPage() {
           id: data.historyId || Date.now(),
           time: new Date().toLocaleString("id-ID", { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }),
           name: data.best_prediction?.food_name?.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
-          components: 1, // Default, can be dynamic later
+          components: data.details?.length || 1,
           calories: Math.round(data.nutrition?.calories || 0),
           protein: parseFloat((data.nutrition?.protein || 0).toFixed(1)),
           carbs: parseFloat((data.nutrition?.carbohydrates || 0).toFixed(1)),
