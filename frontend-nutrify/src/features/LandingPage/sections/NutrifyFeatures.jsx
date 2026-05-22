@@ -96,7 +96,7 @@ function NutrifyFeatures() {
               whileInView={{ opacity: 1 }}
               viewport={{ once: false, margin: "-50px" }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
-              className="flex flex-col items-center gap-5 rounded-[28px] border border-[#E8F3EE] bg-white p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:flex-row sm:items-center sm:gap-6 sm:p-8 sm:text-left"
+              className="flex flex-col items-center gap-5 rounded-[28px] border border-gray-200 bg-white p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:flex-row sm:items-center sm:gap-6 sm:p-8 sm:text-left"
             >
 
               {/* IMAGE */}

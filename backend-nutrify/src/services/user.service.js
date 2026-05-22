@@ -88,3 +88,35 @@ export const updateUser = async (id, userData) => {
 export const deleteUser = async (id) => {
   return await User.findByIdAndDelete(id);
 };
+
+export const googleLoginUser = async (googleData) => {
+  const { name, email, profilePicture } = googleData;
+
+  // Find user by email
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    // Generate a secure random password
+    const randomPassword = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+    user = await User.create({
+      name: name || "Google User",
+      email,
+      password: hashedPassword,
+      profilePicture: profilePicture || "",
+    });
+  }
+
+  const isPersonalized = Boolean(user.height && user.weight && user.birthDate);
+
+  return {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    profilePicture: user.profilePicture || "",
+    isPersonalized,
+    token: generateToken(user._id),
+  };
+};

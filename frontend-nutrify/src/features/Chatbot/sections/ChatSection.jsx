@@ -62,7 +62,7 @@ function ChatSection() {
               key="welcome-wrapper"
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex w-full min-h-0 flex-1 items-center justify-center overflow-y-auto px-1 py-4"
+              className="flex w-full min-h-0 flex-1 items-start sm:items-center justify-center overflow-y-auto px-1 py-4"
             >
               <WelcomeCard onPromptSelect={handleSendMessage} />
             </motion.div>

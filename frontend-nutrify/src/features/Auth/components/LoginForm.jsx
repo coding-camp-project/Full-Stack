@@ -70,15 +70,28 @@ export default function LoginForm() {
       const result = await signInWithPopup(auth, googleProvider);
       console.log("Berhasil masuk dengan Google!", result.user);
       
-      // Simpan info Google User
-      const userData = { name: result.user.displayName, email: result.user.email, profilePicture: result.user.photoURL, isPersonalized: false };
-      setUserSession("", userData, rememberMe);
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await axios.post(`${API_URL}/api/users/google-login`, {
+        name: result.user.displayName,
+        email: result.user.email,
+        profilePicture: result.user.photoURL,
+      });
+
+      const { token, name, email: userEmail, _id, profilePicture, isPersonalized } = response.data.data;
+      
+      setUserSession(
+        token, 
+        { id: _id, name, email: userEmail, profilePicture, isPersonalized }, 
+        rememberMe
+      );
       
       setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
-      setTimeout(() => navigate("/personalisasi"), 1500)
+      const destination = isPersonalized ? "/dashboard" : "/personalisasi";
+      setTimeout(() => navigate(destination), 1500)
     } catch (err) {
       console.error("Gagal masuk dengan Google:", err);
-      setError("Gagal masuk dengan Google. Pastikan konfigurasi Firebase sudah benar.");
+      const errorMessage = err.response?.data?.message || "Gagal masuk dengan Google. Pastikan konfigurasi Firebase sudah benar.";
+      setError(errorMessage);
     } finally {
       setLoading(false)
     }

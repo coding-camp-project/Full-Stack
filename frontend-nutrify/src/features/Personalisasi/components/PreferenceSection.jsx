@@ -3,6 +3,7 @@
 //  Tag-selector dengan search + custom input
 // ─────────────────────────────────────────────
 
+import { useRef, useEffect } from "react";
 import { X, ChevronDown, UtensilsCrossed } from "lucide-react";
 import { COMMON_ALLERGIES, COMMON_RESTRICTIONS } from "../data/options";
 
@@ -20,12 +21,31 @@ function TagSelector({
   suggestions,
   placeholder,
 }) {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (!showDropdown) return;
+
+    function handleOutsideClick(event) {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        onCloseDropdown();
+      }
+    }
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("touchstart", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+    };
+  }, [showDropdown, onCloseDropdown]);
+
   const filtered = suggestions.filter((item) =>
     item.toLowerCase().includes(searchValue.toLowerCase())
   );
 
   return (
-    <div className="space-y-1.5 relative">
+    <div ref={containerRef} className="space-y-1.5 relative">
       <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">
         {label}
       </label>
@@ -106,59 +126,54 @@ function TagSelector({
 
       {/* Floating dropdown */}
       {showDropdown && (
-        <>
-          {/* Backdrop */}
-          <div className="fixed inset-0 z-10" onClick={onCloseDropdown} />
+        <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 max-h-48 overflow-y-auto py-1.5">
+          <div className="px-3 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+            Pilihan Populer
+          </div>
 
-          <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 max-h-48 overflow-y-auto py-1.5">
-            <div className="px-3 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-              Pilihan Populer
-            </div>
-
-            {filtered.map((item) => {
-              const isSelected = tags.includes(item);
-              return (
-                <button
-                  type="button"
-                  key={item}
-                  disabled={isSelected}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!isSelected) onAddTag(item);
-                    onSearchChange("");
-                    onCloseDropdown();
-                  }}
-                  className={`w-full text-left px-4 py-2 text-xs transition-colors flex items-center justify-between ${
-                    isSelected
-                      ? "text-gray-300 bg-gray-50 cursor-not-allowed"
-                      : "text-gray-700 hover:bg-[#F1F8F5] hover:text-[#1E7F4E]"
-                  }`}
-                >
-                  <span>{item}</span>
-                  {isSelected && (
-                    <span className="text-[#1E7F4E] font-semibold">✓ Terpilih</span>
-                  )}
-                </button>
-              );
-            })}
-
-            {/* Custom entry option */}
-            {searchValue.trim() && !tags.includes(searchValue.trim()) && (
+          {filtered.map((item) => {
+            const isSelected = tags.includes(item);
+            return (
               <button
                 type="button"
+                key={item}
+                disabled={isSelected}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onAddTag(searchValue.trim());
+                  if (!isSelected) onAddTag(item);
                   onSearchChange("");
                   onCloseDropdown();
                 }}
-                className="w-full text-left px-4 py-2 text-xs text-[#1E7F4E] hover:bg-[#F1F8F5] font-semibold border-t border-gray-100 transition-colors"
+                className={`w-full text-left px-4 py-2 text-xs transition-colors flex items-center justify-between ${
+                  isSelected
+                    ? "text-gray-300 bg-gray-50 cursor-not-allowed"
+                    : "text-gray-700 hover:bg-[#F1F8F5] hover:text-[#1E7F4E]"
+                }`}
               >
-                Tambah &quot;{searchValue}&quot;
+                <span>{item}</span>
+                {isSelected && (
+                  <span className="text-[#1E7F4E] font-semibold">✓ Terpilih</span>
+                )}
               </button>
-            )}
-          </div>
-        </>
+            );
+          })}
+
+          {/* Custom entry option */}
+          {searchValue.trim() && !tags.includes(searchValue.trim()) && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddTag(searchValue.trim());
+                onSearchChange("");
+                onCloseDropdown();
+              }}
+              className="w-full text-left px-4 py-2 text-xs text-[#1E7F4E] hover:bg-[#F1F8F5] font-semibold border-t border-gray-100 transition-colors"
+            >
+              Tambah &quot;{searchValue}&quot;
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
@@ -181,7 +196,7 @@ export default function PreferenceSection({
   onRemoveRestriction,
 }) {
   return (
-    <div className="relative flex min-h-0 flex-col justify-between overflow-hidden rounded-3xl border border-[#E7E7E7] bg-white p-5 shadow-xs sm:p-6 md:min-h-[320px] md:p-8 lg:min-h-[360px]">
+    <div className="relative flex min-h-0 flex-col justify-between rounded-3xl border border-[#E7E7E7] bg-white p-5 shadow-xs sm:p-6 md:min-h-[320px] md:p-8 lg:min-h-[360px]">
       <div>
         {/* Section Header */}
         <div className="flex justify-between items-start">

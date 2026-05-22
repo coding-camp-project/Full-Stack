@@ -5,6 +5,7 @@
 //             dengan design system Nutrify.
 // ─────────────────────────────────────────────
 
+import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 
 const BASE_INPUT_CLASS =
@@ -44,44 +45,84 @@ export default function FormInput({
   max,
   rows = 3,
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  // Close on click outside
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleOutsideClick(event) {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("touchstart", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+    };
+  }, [isOpen]);
+
+  const selectedOption = options.find((opt) => opt.value === value) || options[0];
+
   return (
     <div className="space-y-1.5">
       <label className="text-xs font-bold text-gray-600 block">{label}</label>
 
       {/* ── SELECT ── */}
       {type === "select" && (
-        <div style={{ position: "relative" }}>
-          <select
-            name={name}
-            value={value}
-            onChange={onChange}
-            required={required}
-            className={BASE_INPUT_CLASS}
+        <div ref={containerRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className={`${BASE_INPUT_CLASS} text-left flex items-center justify-between cursor-pointer`}
             style={{
-              appearance: "none",
-              WebkitAppearance: "none",
-              MozAppearance: "none",
               paddingLeft: "16px",
               paddingRight: "40px",
             }}
           >
-            {options.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+            <span>{selectedOption ? selectedOption.label : placeholder || "Pilih..."}</span>
+          </button>
           <ChevronDown
-            className="text-gray-400"
+            className="text-gray-400 transition-transform duration-200"
             style={{
               position: "absolute",
               right: "14px",
               top: "50%",
-              transform: "translateY(-50%)",
+              transform: `translateY(-50%) ${isOpen ? "rotate(180deg)" : "rotate(0deg)"}`,
               pointerEvents: "none",
             }}
             size={18}
           />
+
+          {isOpen && (
+            <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 max-h-48 overflow-y-auto py-1.5">
+              {options.map((opt) => {
+                const isSelected = opt.value === value;
+                return (
+                  <button
+                    type="button"
+                    key={opt.value}
+                    onClick={() => {
+                      onChange({ target: { name, value: opt.value } });
+                      setIsOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2.5 text-xs transition-colors flex items-center justify-between ${
+                      isSelected
+                        ? "text-[#1E7F4E] bg-[#F1F8F5] font-semibold"
+                        : "text-gray-700 hover:bg-[#F1F8F5] hover:text-[#1E7F4E]"
+                    }`}
+                  >
+                    <span>{opt.label}</span>
+                    {isSelected && (
+                      <span className="text-[#1E7F4E] font-semibold text-[10px]">✓ Terpilih</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
