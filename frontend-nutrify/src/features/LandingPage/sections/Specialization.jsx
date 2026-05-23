@@ -19,17 +19,17 @@ const features = [
   {
     icon: ChartPie,
     title: "Analisis Nutrisi",
-    to: "/dashboard",
+    to: "/scan",
     description:
       "Dapatkan informasi lengkap seperti kalori, protein, karbohidrat, lemak, dan kandungan lainnya untuk setiap makanan.",
   },
 
   {
     icon: ShieldCheck,
-    title: "Rekomendasi",
+    title: "Chatbot",
     to: "/chatbot",
     description:
-      "Nutrify memberikan saran makanan berdasarkan kondisi kesehatanmu seperti diabetes, hipertensi, dan lainnya.",
+      "Tanyakan apa saja seputar nutrisi, kondisi kesehatan, atau rekomendasi makanan, dan dapatkan jawaban instan dari AI.",
   },
 
   {
