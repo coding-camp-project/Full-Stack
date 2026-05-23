@@ -12,6 +12,9 @@ import team4 from "@/assets/team-4.png"
 import team5 from "@/assets/team-5.png"
 import team6 from "@/assets/team-6.png"
 
+import logoCodingCamp from "@/assets/logo-coding-camp.png"
+import logoDbsDicoding from "@/assets/logo-dbs-dicoding.png"
+
 const teams = [
   {
     image: team1,
@@ -145,6 +148,13 @@ function TeamSection() {
 
                 {/* IMAGE */}
                 <div className="relative h-[400px] flex items-end justify-center overflow-hidden bg-gray-50">
+                  {/* LOGOS ON CORNERS */}
+                  <div className="absolute top-4 left-4 z-20 w-[95px] xs:w-[110px] sm:w-[120px] drop-shadow-sm select-none">
+                    <img src={logoCodingCamp} alt="Coding Camp" className="w-full h-auto object-contain" />
+                  </div>
+                  <div className="absolute top-4 right-4 z-20 w-[95px] xs:w-[110px] sm:w-[120px] drop-shadow-sm select-none">
+                    <img src={logoDbsDicoding} alt="DBS Dicoding" className="w-full h-auto object-contain" />
+                  </div>
 
                   <img
                     src={item.image}
