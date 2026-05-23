@@ -20,6 +20,7 @@ const teams = [
     role: "Fullstack Developer",
     icon: BriefcaseBusiness,
     color: "text-[#3e9d7d]",
+    mobileOrder: "order-1",
   },
 
   {
@@ -29,6 +30,7 @@ const teams = [
     role: "AI Engineer",
     icon: BrainCircuit,
     color: "text-pink-500",
+    mobileOrder: "order-3",
   },
 
   {
@@ -38,6 +40,7 @@ const teams = [
     role: "Data Scientist",
     icon: Database,
     color: "text-yellow-500",
+    mobileOrder: "order-5",
   },
 
   {
@@ -47,6 +50,7 @@ const teams = [
     role: "Fullstack Developer",
     icon: BriefcaseBusiness,
     color: "text-[#3e9d7d]",
+    mobileOrder: "order-2",
   },
 
   {
@@ -56,6 +60,7 @@ const teams = [
     role: "AI Engineer",
     icon: BrainCircuit,
     color: "text-pink-500",
+    mobileOrder: "order-4",
   },
 
   {
@@ -65,6 +70,7 @@ const teams = [
     role: "Data Scientist",
     icon: Database,
     color: "text-yellow-500",
+    mobileOrder: "order-6",
   },
 ]
 
@@ -102,7 +108,7 @@ function TeamSection() {
         <motion.div 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: false, margin: "-50px" }}
+          viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.4 }}
           className="text-center mt-6"
         >
@@ -132,9 +138,9 @@ function TeamSection() {
                 key={index}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                viewport={{ once: false, margin: "-50px" }}
+                viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="bg-white border border-[#D1F2E5] rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(73,174,132,0.15)] hover:border-[#49AE84] transition-all duration-300"
+                className={`bg-white border border-[#D1F2E5] rounded-[28px] overflow-hidden hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(73,174,132,0.15)] hover:border-[#49AE84] transition-all duration-300 ${item.mobileOrder} sm:order-none`}
               >
 
                 {/* IMAGE */}

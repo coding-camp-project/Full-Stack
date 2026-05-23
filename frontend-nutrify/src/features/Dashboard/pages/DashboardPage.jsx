@@ -29,10 +29,12 @@ function DashboardPage() {
           if (historyStr) {
             try {
               const allItems = JSON.parse(historyStr);
-              const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+              const startOfToday = new Date();
+              startOfToday.setHours(0, 0, 0, 0);
+              const startOfTodayTime = startOfToday.getTime();
               const filteredItems = allItems.filter(item => {
                 const itemTime = new Date(item.date || item.createdAt).getTime();
-                return itemTime >= twentyFourHoursAgo;
+                return itemTime >= startOfTodayTime;
               });
               localStorage.setItem(localHistoryKey, JSON.stringify(filteredItems));
               setHistoryItems(filteredItems);
@@ -53,10 +55,12 @@ function DashboardPage() {
     };
   }, []);
  
-  const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const startOfTodayTime = startOfToday.getTime();
   const recentItems = historyItems.filter(item => {
     const itemTime = new Date(item.date || item.createdAt).getTime();
-    return itemTime >= twentyFourHoursAgo;
+    return itemTime >= startOfTodayTime;
   });
   
   const totalCalories = Math.round(recentItems.reduce((sum, item) => sum + item.calories, 0));

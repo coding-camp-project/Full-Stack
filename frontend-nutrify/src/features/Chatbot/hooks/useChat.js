@@ -27,15 +27,25 @@ function useChat() {
   const [conversationId, setConversationId] = useState("");
   const messagesEndRef = useRef(null);
 
-  const scrollToLatest = useCallback(() => {
+  const lastScrollTimeRef = useRef(0);
+
+  const scrollToLatest = useCallback((behavior = "smooth", force = false) => {
+    const now = Date.now();
+    // Throttle automatic scroll during streaming to once every 150ms to prevent layout thrashing on mobile
+    if (!force && behavior === "auto" && now - lastScrollTimeRef.current < 150) {
+      return;
+    }
+    lastScrollTimeRef.current = now;
+
     messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
+      behavior,
       block: "end",
     });
   }, []);
 
   useEffect(() => {
-    scrollToLatest();
+    const isStreaming = messages.some((msg) => msg.streaming);
+    scrollToLatest(isStreaming ? "auto" : "smooth", !isStreaming);
   }, [messages, typing, scrollToLatest]);
 
   const sendMessage = useCallback(

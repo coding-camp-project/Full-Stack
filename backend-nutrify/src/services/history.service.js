@@ -5,10 +5,12 @@ export const createHistory = async (historyData) => {
 };
 
 export const getUserHistory = async (userId) => {
-  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
   return await History.find({ 
     userId,
-    createdAt: { $gte: twentyFourHoursAgo }
+    createdAt: { $gte: startOfToday }
   }).sort({ createdAt: -1 });
 };
 
