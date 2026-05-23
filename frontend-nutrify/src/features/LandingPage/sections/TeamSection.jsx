@@ -149,10 +149,10 @@ function TeamSection() {
                 {/* IMAGE */}
                 <div className="relative h-[400px] flex items-end justify-center overflow-hidden bg-gray-50">
                   {/* LOGOS ON CORNERS */}
-                  <div className="absolute top-4 left-4 z-20 w-[95px] xs:w-[105px] sm:w-[115px] drop-shadow-sm select-none">
+                  <div className="absolute top-6 left-6 z-20 w-[95px] xs:w-[105px] sm:w-[115px] drop-shadow-sm select-none">
                     <img src={logoDbs} alt="DBS Foundation" className="w-full h-auto object-contain" />
                   </div>
-                  <div className="absolute top-[24px] right-4 z-20 w-[55px] xs:w-[62px] sm:w-[70px] drop-shadow-sm select-none">
+                  <div className="absolute top-[32px] right-6 z-20 w-[55px] xs:w-[62px] sm:w-[70px] drop-shadow-sm select-none">
                     <img src={logoDicoding} alt="Dicoding" className="w-full h-auto object-contain" />
                   </div>
 
