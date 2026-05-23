@@ -41,7 +41,7 @@ function ChatSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.28 }}
-              className="flex w-full min-h-0 flex-1 flex-col gap-4 overflow-y-auto scroll-smooth px-1 py-3 pr-2 sm:gap-5 sm:px-2 sm:py-4 sm:pr-3"
+              className="flex w-full min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-3 pr-2 sm:gap-5 sm:px-2 sm:py-4 sm:pr-3"
             >
               {messages.map((message) => (
                 <ChatMessage

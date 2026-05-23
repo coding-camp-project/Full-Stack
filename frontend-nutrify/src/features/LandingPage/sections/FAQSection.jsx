@@ -69,7 +69,7 @@ function FAQSection() {
         <motion.div 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: false, margin: "-50px" }}
+          viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.3 }}
           className="text-center mt-6"
         >
@@ -95,7 +95,7 @@ function FAQSection() {
                 key={index}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                viewport={{ once: false, margin: "-50px" }}
+                viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
                 className={`transition-all duration-300 border rounded-2xl overflow-hidden ${
                   isOpen

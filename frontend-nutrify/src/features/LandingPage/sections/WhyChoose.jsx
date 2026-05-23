@@ -35,7 +35,7 @@ function WhyChoose() {
             <motion.div 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              viewport={{ once: false, margin: "-50px" }}
+              viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.4 }}
               className="max-w-2xl text-white text-center lg:text-left"
             >
@@ -84,7 +84,7 @@ function WhyChoose() {
             <motion.div 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              viewport={{ once: false, margin: "-50px" }}
+              viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.4 }}
               className="relative"
             >

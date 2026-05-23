@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react"
 import { Link } from "react-router-dom"
 import logoNutrify from "@/assets/Nutrify-Logo.png"
 import { useUserSession } from "@/hooks/useUserSession"
+import { AnimatePresence, motion } from "framer-motion"
 
 const navLinks = [
   { name: "Beranda", id: "beranda" },
@@ -49,7 +50,7 @@ function Navbar() {
   }, [])
 
   return (
-    <div className={`fixed left-0 top-0 z-50 flex w-full max-w-[100vw] justify-center px-3 transition-all duration-300 sm:px-4 ${isScrolled ? "pt-2 md:pt-3" : "pt-3 sm:pt-4 md:pt-6"}`}>
+    <div className={`fixed left-0 top-0 z-50 flex w-full max-w-[100vw] flex-col items-center px-3 transition-all duration-300 sm:px-4 ${isScrolled ? "pt-2 md:pt-3" : "pt-3 sm:pt-4 md:pt-6"}`}>
       <nav className={`relative w-full max-w-6xl rounded-full border border-white/50 bg-white/80 px-3 py-2.5 backdrop-blur-xl transition-all duration-300 sm:px-4 sm:py-3 md:w-[90%] md:px-6 lg:w-[80%] ${isScrolled ? "shadow-[0_8px_30px_rgb(0,0,0,0.12)]" : "shadow-[0_8px_30px_rgb(0,0,0,0.04)]"}`}>
         <div className="flex items-center justify-between w-full">
           
@@ -110,43 +111,52 @@ function Navbar() {
           </div>
 
         </div>
-
-        {/* MOBILE DROPDOWN MENU */}
-        {isMobileMenuOpen && (
-          <div className="absolute top-[calc(100%+0.5rem)] left-0 w-full bg-white/95 backdrop-blur-xl border border-white/50 rounded-3xl shadow-xl md:hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-            <div className="flex flex-col px-6 py-6 gap-2 text-center text-base font-semibold text-gray-700">
-              {navLinks.map((link) => (
-                <a
-                  key={link.id}
-                  href={`#${link.id}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`py-3 rounded-full transition-all duration-300 ${
-                    activeSection === link.id
-                      ? "bg-[#E7FFF5] text-[#12B76A] font-bold"
-                      : "hover:text-[#12B76A] hover:bg-green-50/50"
-                  }`}
-                >
-                  {link.name}
-                </a>
-              ))}
-              <div className="h-px bg-gray-200 my-2 w-full"></div>
-              {isLoggedIn ? (
-                <Link to={isPersonalized ? "/dashboard" : "/personalisasi"} className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button className="bg-[#12B76A] hover:bg-[#0FA968] rounded-full py-6 text-white font-semibold shadow-md w-full">
-                    Dashboard
-                  </Button>
-                </Link>
-              ) : (
-                <Link to="/login" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button className="bg-[#12B76A] hover:bg-[#0FA968] rounded-full py-6 text-white font-semibold shadow-md w-full">
-                    Masuk
-                  </Button>
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
       </nav>
+
+      {/* MOBILE DROPDOWN MENU */}
+      <div
+        className={`w-full bg-white border border-gray-200 rounded-[24px] shadow-xl md:hidden transition-all duration-200 ease-in-out overflow-hidden ${
+          isMobileMenuOpen
+            ? "mt-2 opacity-100 translate-y-0 max-h-[450px] p-4 visible"
+            : "opacity-0 -translate-y-2 max-h-0 p-0 border-none invisible pointer-events-none"
+        }`}
+      >
+        <div className="flex flex-col gap-1 text-base font-semibold text-gray-700">
+          {navLinks.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center justify-between px-5 py-2.5 rounded-full transition-colors duration-150 ${
+                activeSection === link.id
+                  ? "bg-[#E7FFF5] text-[#12B76A] font-extrabold"
+                  : "text-gray-600 active:bg-gray-50"
+              }`}
+            >
+              <span>{link.name}</span>
+              {activeSection === link.id && (
+                <span className="h-1.5 w-1.5 rounded-full bg-[#12B76A]" />
+              )}
+            </a>
+          ))}
+          
+          <div className="h-px bg-gray-200/60 my-2.5 w-full"></div>
+          
+          {isLoggedIn ? (
+            <Link to={isPersonalized ? "/dashboard" : "/personalisasi"} className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
+              <Button className="bg-[#12B76A] hover:bg-[#0FA968] active:scale-98 rounded-full py-5 text-white font-semibold shadow-md w-full transition-transform">
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/login" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
+              <Button className="bg-[#12B76A] hover:bg-[#0FA968] active:scale-98 rounded-full py-5 text-white font-semibold shadow-md w-full transition-transform">
+                Masuk
+              </Button>
+            </Link>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

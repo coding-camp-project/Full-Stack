@@ -27,10 +27,12 @@ function getStoredHistoryItems() {
     }
  
     const allItems = JSON.parse(historyStr);
-    const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const startOfTodayTime = startOfToday.getTime();
     const filteredItems = allItems.filter(item => {
       const itemTime = new Date(item.date || item.createdAt).getTime();
-      return itemTime >= twentyFourHoursAgo;
+      return itemTime >= startOfTodayTime;
     });
  
     // Clean up local storage
@@ -108,7 +110,7 @@ function HistorySection() {
  
   const getCardTitle = (baseTitle) => {
     if (timeRange.startHour === 0 && timeRange.endHour === 23) {
-      return `${baseTitle} (24 Jam)`;
+      return `${baseTitle} (Hari Ini)`;
     }
     const startStr = String(timeRange.startHour).padStart(2, "0") + ":00";
     const endStr = String(timeRange.endHour).padStart(2, "0") + ":59";
