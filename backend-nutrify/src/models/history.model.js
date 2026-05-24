@@ -57,6 +57,10 @@ const historySchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    healthScore: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

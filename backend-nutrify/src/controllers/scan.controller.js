@@ -1,221 +1,193 @@
 import axios from "axios";
 import FormData from "form-data";
 import * as historyService from "../services/history.service.js";
-import { analyzeManualInput, analyzeCombinedInput } from "../services/manualScan.service.js";
+import { runRuleEngine } from "../services/ruleEngine.service.js";
+import { parseInputLocally, estimateWeightLocally } from "../services/manualScan.service.js";
 
-const toTitleCase = (value = "") =>
-  value
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
-
-const buildHealthAnalysis = (nutrition = {}, warning = "") => {
-  const analysis = [];
-
-  if ((nutrition.sodium || 0) > 400) {
-    analysis.push("Kandungan sodium dalam makanan ini tergolong cukup tinggi.");
-  } else {
-    analysis.push("Kandungan sodium masih dalam batas aman.");
+// Map user diseases to FastAPI strict options
+const mapDiseaseForFastAPI = (user) => {
+  if (!user) return null;
+  const conditions = (user.healthConditions || []).concat(user.otherConditions ? [user.otherConditions] : []).map(c => c.toLowerCase().trim());
+  for (const cond of conditions) {
+    if (cond.includes("diabet") || cond.includes("gula") || cond.includes("manis")) return "diabetes";
+    if (cond.includes("hiper") || cond.includes("tensi") || cond.includes("darah tinggi")) return "hipertensi";
+    if (cond.includes("koles") || cond.includes("jantung")) return "kolesterol";
+    if (cond.includes("asam") || cond.includes("urat")) return "asam_urat";
+    if (cond.includes("obes") || cond.includes("gemuk") || cond.includes("berat")) return "obesitas";
   }
-
-  if ((nutrition.sugar || 0) > 10) {
-    analysis.push("Perhatikan asupan gula pada makanan ini.");
-  } else {
-    analysis.push("Kandungan gula dalam batas wajar.");
-  }
-
-  if (warning) {
-    analysis.push(warning);
-  }
-
-  return analysis;
+  return null;
 };
 
-export const scanFood = async (req, res) => {
-  let userConditions = "";
+/**
+ * Autocomplete / search-food suggestions controller
+ */
+export const suggestFood = async (req, res) => {
   try {
-    const { disease, manualInput } = req.body;
+    const { q } = req.query;
+    if (!q || !q.trim()) {
+      return res.status(200).json({ success: true, suggestions: [] });
+    }
+
+    const cleanQuery = q.trim();
+
+    // Call Deployed AI model Search API
+    const response = await axios.get(`https://damassdev-nutrify-ai-api.hf.space/search-food?q=${encodeURIComponent(cleanQuery)}&limit=15`);
+    const data = response.data;
+
+    // Map candidates to suggestions array
+    const suggestions = (data.candidates || []).map((c) => c.food_name);
+
+    return res.status(200).json({
+      success: true,
+      suggestions,
+    });
+  } catch (error) {
+    console.error("Autocomplete suggestFood error:", error.message);
+    return res.status(500).json({ success: false, message: "Error retrieving autocomplete suggestions." });
+  }
+};
+
+/**
+ * Scan food controller
+ */
+export const scanFood = async (req, res) => {
+  try {
+    const { manualInput } = req.body;
 
     if (!req.file && (!manualInput || !manualInput.trim())) {
       return res.status(400).json({ success: false, message: "No image or manual input provided." });
     }
 
-    userConditions = disease || "";
-    if (!userConditions && req.user) {
-      const conditions = [];
-      if (req.user.healthConditions && req.user.healthConditions.length > 0) {
-        conditions.push(...req.user.healthConditions);
-      }
-      if (req.user.otherConditions) {
-        conditions.push(req.user.otherConditions);
-      }
-      userConditions = conditions.join(", ");
-    }
-
-    if (manualInput && !req.file) {
-      const scanResult = await analyzeManualInput(manualInput, userConditions);
-      const nutrition = scanResult.nutrition;
-      const foodName = toTitleCase(scanResult.best_prediction.food_name);
-
-      const history = await historyService.createHistory({
-        userId: req.user._id,
-        foodName,
-        image: "",
-        calories: nutrition.calories || 0,
-        protein: nutrition.protein || 0,
-        carbs: nutrition.carbohydrates || nutrition.carbs || 0,
-        fat: nutrition.fat || 0,
-        fiber: nutrition.fiber || 0,
-        sugar: nutrition.sugar || 0,
-        sodium: nutrition.sodium || 0,
-        confidence: 1.0,
-        recommendation: scanResult.recommendation || "",
-        healthAnalysis: buildHealthAnalysis(nutrition, scanResult.warning),
-      });
-
-      return res.status(200).json({
-        success: true,
-        ...scanResult,
-        historyId: history._id,
-      });
-    }
-
-    // Build form data
     const formData = new FormData();
-    formData.append("image", req.file.buffer, {
-      filename: req.file.originalname,
-      contentType: req.file.mimetype,
-    });
 
-    if (userConditions) {
-      formData.append("disease", userConditions);
+    // 1. Add Image if available
+    if (req.file) {
+      formData.append("image", req.file.buffer, {
+        filename: req.file.originalname,
+        contentType: req.file.mimetype,
+      });
     }
 
-    // Call FastAPI
-    const response = await axios.post("http://127.0.0.1:8000/predict", formData, {
+    // 2. Add Disease mapped to FastAPI choices
+    const mappedDisease = mapDiseaseForFastAPI(req.user);
+    if (mappedDisease) {
+      formData.append("disease", mappedDisease);
+    }
+
+    // 3. Add Manual Items if available
+    if (manualInput && manualInput.trim()) {
+      const parsedItems = parseInputLocally(manualInput).map(item => {
+        const weight = estimateWeightLocally(item.food_name, item.unit, item.quantity);
+        return {
+          food_name: item.food_name,
+          quantity: item.quantity,
+          unit: item.unit,
+          estimated_weight_g: weight,
+          total_gram: weight
+        };
+      });
+      formData.append("manual_items", JSON.stringify(parsedItems));
+    }
+
+    // Call Hugging Face Deployed FastAPI Model
+    console.log("Calling Deployed AI Model at HF Space...");
+    const response = await axios.post("https://damassdev-nutrify-ai-api.hf.space/predict", formData, {
       headers: {
         ...formData.getHeaders(),
       },
     });
 
-    let scanResult = response.data;
+    const fastapiResult = response.data;
+    
+    // Support all spelling variants of success ("success", "sucess", "succes")
+    const isSuccess = fastapiResult.success || fastapiResult.sucess || fastapiResult.succes === true;
 
-    // Fallback if FastAPI succeeded but returned unknown/failure, and manualInput exists
-    if (!scanResult.success && manualInput && manualInput.trim()) {
-      console.log("FastAPI prediction not successful, falling back to manual input...");
-      const fallbackResult = await analyzeManualInput(manualInput, userConditions);
-      const nutrition = fallbackResult.nutrition;
-      const foodName = toTitleCase(fallbackResult.best_prediction.food_name);
-      const image = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
-
-      const history = await historyService.createHistory({
-        userId: req.user._id,
-        foodName,
-        image,
-        calories: nutrition.calories || 0,
-        protein: nutrition.protein || 0,
-        carbs: nutrition.carbohydrates || nutrition.carbs || 0,
-        fat: nutrition.fat || 0,
-        fiber: nutrition.fiber || 0,
-        sugar: nutrition.sugar || 0,
-        sodium: nutrition.sodium || 0,
-        confidence: 1.0,
-        recommendation: fallbackResult.recommendation || "",
-        healthAnalysis: buildHealthAnalysis(nutrition, fallbackResult.warning),
-      });
-
-      return res.status(200).json({
-        success: true,
-        ...fallbackResult,
-        historyId: history._id,
+    if (!isSuccess) {
+      const customMessage = "Gambar kurang jelas, tolong foto lebih detail atau lebih dekat. Jika masih tidak terdeteksi, silakan input manual menggunakan tulisan/ketik.";
+      return res.status(422).json({
+        success: false,
+        message: customMessage
       });
     }
 
-    // If both succeeded, combine their data
-    if (scanResult.success && manualInput && manualInput.trim()) {
-      console.log("FastAPI succeeded, combining with manual input context...");
-      const combinedResult = await analyzeCombinedInput(
-        scanResult.best_prediction?.food_name || "",
-        manualInput,
-        userConditions
-      );
-      scanResult = combinedResult;
+    // Extract nutrition
+    const nutrition = fastapiResult.grand_total_nutrition || fastapiResult.nutrition || {};
+
+    // Get food names by combining image prediction and manual items
+    let foodNamesList = [];
+    if (fastapiResult.image_result?.best_prediction?.food_name) {
+      foodNamesList.push(fastapiResult.image_result.best_prediction.food_name);
     }
+    if (fastapiResult.manual_items && fastapiResult.manual_items.length > 0) {
+      const manualNames = fastapiResult.manual_items.map((m) => m.food_name).filter(Boolean);
+      foodNamesList.push(...manualNames);
+    }
+    
+    const foodName = foodNamesList.join(", ") || "Makanan";
 
-    const nutrition = scanResult.nutrition || {};
-    const foodName = toTitleCase(scanResult.best_prediction?.food_name || "Makanan");
-    const image = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+    // Format food name to Title Case
+    const formattedFoodName = foodName
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (letter) => letter.toUpperCase());
 
-    const history = await historyService.createHistory({
-      userId: req.user._id,
-      foodName,
-      image,
+    // Run local Rule Engine to calculate health score, grade, and analysis comments
+    const meal = {
+      food_name: formattedFoodName,
       calories: nutrition.calories || 0,
       protein: nutrition.protein || 0,
-      carbs: nutrition.carbohydrates || nutrition.carbs || 0,
+      fat: nutrition.fat || 0,
+      carbohydrates: nutrition.carbohydrates || 0,
+      sugar: nutrition.sugar || 0,
+      sodium: nutrition.sodium || 0,
+      fiber: nutrition.fiber || 0,
+    };
+
+    const ruleResult = await runRuleEngine(meal, req.user);
+
+    // Save to Database Scan History
+    const imageBase64 = req.file ? `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}` : "";
+    const history = await historyService.createHistory({
+      userId: req.user._id,
+      foodName: formattedFoodName,
+      image: imageBase64,
+      calories: nutrition.calories || 0,
+      protein: nutrition.protein || 0,
+      carbs: nutrition.carbohydrates || 0,
       fat: nutrition.fat || 0,
       fiber: nutrition.fiber || 0,
       sugar: nutrition.sugar || 0,
       sodium: nutrition.sodium || 0,
-      confidence: scanResult.best_prediction?.confidence_score || 1.0,
-      recommendation: scanResult.recommendation || "",
-      healthAnalysis: buildHealthAnalysis(nutrition, scanResult.warning),
+      confidence: fastapiResult.image_result?.best_prediction?.confidence_score || 1.0,
+      recommendation: fastapiResult.recommendation || `Rekomendasi diet Anda: ${ruleResult.healthAnalysis.join(" ")}`,
+      healthAnalysis: ruleResult.healthAnalysis || [],
+      healthScore: ruleResult.healthScore || 0,
     });
 
+    // Return final enriched response to frontend
     return res.status(200).json({
-      ...scanResult,
+      success: true,
+      best_prediction: {
+        food_name: formattedFoodName,
+        confidence_score: fastapiResult.image_result?.best_prediction?.confidence_score || 1.0,
+      },
+      nutrition,
+      recommendation: fastapiResult.recommendation || `Rekomendasi diet Anda: ${ruleResult.healthAnalysis.join(" ")}`,
+      warning: ruleResult.healthAnalysis.find((a) => a.startsWith("⚠️"))?.replace("⚠️", "").trim() || "",
+      healthScore: ruleResult.healthScore,
+      healthGrade: ruleResult.healthGrade,
+      healthAnalysis: ruleResult.healthAnalysis,
+      alternatives: ruleResult.alternatives,
       historyId: history._id,
     });
+
   } catch (error) {
     console.error("Scan API Error:", error.response?.data || error.message);
-    
-    // Fallback to manual input if image request failed completely but manual text was provided
-    if (req.file && req.body.manualInput && req.body.manualInput.trim()) {
-      try {
-        console.log("FastAPI connection/request failed, falling back to manual input...");
-        const fallbackResult = await analyzeManualInput(req.body.manualInput, userConditions);
-        const nutrition = fallbackResult.nutrition;
-        const foodName = toTitleCase(fallbackResult.best_prediction.food_name);
-        const image = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
-
-        const history = await historyService.createHistory({
-          userId: req.user._id,
-          foodName,
-          image,
-          calories: nutrition.calories || 0,
-          protein: nutrition.protein || 0,
-          carbs: nutrition.carbohydrates || nutrition.carbs || 0,
-          fat: nutrition.fat || 0,
-          fiber: nutrition.fiber || 0,
-          sugar: nutrition.sugar || 0,
-          sodium: nutrition.sodium || 0,
-          confidence: 1.0,
-          recommendation: fallbackResult.recommendation || "",
-          healthAnalysis: buildHealthAnalysis(nutrition, fallbackResult.warning),
-        });
-
-        return res.status(200).json({
-          success: true,
-          ...fallbackResult,
-          historyId: history._id,
-        });
-      } catch (fallbackErr) {
-        console.error("Fallback to manual input also failed:", fallbackErr.message);
-      }
-    }
-
-    let errorMessage = "Failed to process image.";
+    let errorMessage = "Terjadi kesalahan pada AI model scanner.";
     if (error.response?.data?.detail) {
-      if (Array.isArray(error.response.data.detail)) {
-        errorMessage = error.response.data.detail.map(e => e.msg).join(", ");
-      } else if (typeof error.response.data.detail === "string") {
-        errorMessage = error.response.data.detail;
-      }
-    } else if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    } else if (error.code === 'ECONNREFUSED') {
-      errorMessage = "AI Service is not reachable (ECONNREFUSED).";
+      errorMessage = typeof error.response.data.detail === "string" 
+        ? error.response.data.detail 
+        : JSON.stringify(error.response.data.detail);
     }
-
     return res.status(500).json({
       success: false,
       message: errorMessage,

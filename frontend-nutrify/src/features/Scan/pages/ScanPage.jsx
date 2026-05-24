@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import ScanLoading from "../components/ScanLoading";
 import ScanResultSection from "../sections/ScanResultSection";
 import ScanUploadSection from "../sections/ScanUploadSection";
+import PortionGuideModal from "../components/PortionGuideModal";
 import { getUserData } from "@/utils/userSession";
 
 function ScanPage() {
@@ -12,7 +13,9 @@ function ScanPage() {
   const [loading, setLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
+  const [errorMsg, setErrorMsg] = useState("");
   const [scanResult, setScanResult] = useState(null);
+  const [isPortionModalOpen, setIsPortionModalOpen] = useState(false);
 
   const canAnalyze = Boolean(uploadedImage || manualInput.trim());
 
@@ -35,17 +38,19 @@ function ScanPage() {
     setImagePreview(URL.createObjectURL(file));
     setShowResult(false);
     setScanResult(null);
+    setErrorMsg("");
   };
 
   const handleAnalyze = async () => {
     if (!uploadedImage && !manualInput.trim()) {
-      alert("Harap unggah gambar atau tulis komposisi makanan terlebih dahulu.");
+      setErrorMsg("Harap unggah gambar atau tulis komposisi makanan terlebih dahulu.");
       return;
     }
 
     setLoading(true);
     setShowResult(false);
     setScanResult(null);
+    setErrorMsg("");
 
     try {
       const token = localStorage.getItem("userToken") || sessionStorage.getItem("userToken");
@@ -110,7 +115,7 @@ function ScanPage() {
       }
     } catch (error) {
       console.error("Scan error:", error);
-      alert(error.message);
+      setErrorMsg(error.message);
     } finally {
       setLoading(false);
     }
@@ -125,14 +130,45 @@ function ScanPage() {
   }
 
   return (
-    <ScanUploadSection
-      imagePreview={imagePreview}
-      manualInput={manualInput}
-      onImageChange={handleImageChange}
-      onManualInputChange={(event) => setManualInput(event.target.value)}
-      onAnalyze={handleAnalyze}
-      canAnalyze={canAnalyze}
-    />
+    <div className="w-full">
+      {errorMsg && (
+        <div className="mx-auto mt-5 w-full max-w-[1360px] px-3 sm:px-4 lg:px-6">
+          <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800 shadow-sm transition-all duration-200">
+            <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
+              <span className="text-[12px] font-bold">!</span>
+            </div>
+            <div className="flex-1">
+              <h5 className="text-[14px] font-bold text-red-900">Analisis Gagal</h5>
+              <p className="mt-1 text-[12px] leading-relaxed text-red-700">
+                {errorMsg}
+              </p>
+            </div>
+            <button
+              onClick={() => setErrorMsg("")}
+              className="text-red-500 hover:text-red-700 font-semibold text-[14px] px-1"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+      <ScanUploadSection
+        imagePreview={imagePreview}
+        manualInput={manualInput}
+        onImageChange={handleImageChange}
+        onManualInputChange={(event) => {
+          setManualInput(event.target.value);
+          setErrorMsg("");
+        }}
+        onAnalyze={handleAnalyze}
+        canAnalyze={canAnalyze}
+        onOpenPortionModal={() => setIsPortionModalOpen(true)}
+      />
+      <PortionGuideModal
+        isOpen={isPortionModalOpen}
+        onClose={() => setIsPortionModalOpen(false)}
+      />
+    </div>
   );
 }
 

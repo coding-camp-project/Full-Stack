@@ -17,3 +17,7 @@ export const getUserHistory = async (userId) => {
 export const getHistoryById = async (id, userId) => {
   return await History.findOne({ _id: id, userId });
 };
+
+export const deleteHistoryById = async (id, userId) => {
+  return await History.findOneAndDelete({ _id: id, userId });
+};

@@ -23,6 +23,7 @@ export function mapHistoryRecordToCardItem(record) {
     fat: parseFloat((record.fat || 0).toFixed(1)),
     image: record.image || foodImage,
     date: createdAt,
+    healthScore: record.healthScore || 0,
     raw: record,
   };
 }
@@ -44,5 +45,6 @@ export function mapHistoryRecordToScanResult(record) {
     },
     recommendation: record.recommendation || "Konsumsi dalam porsi seimbang.",
     healthAnalysis: record.healthAnalysis || [],
+    healthScore: record.healthScore,
   };
 }

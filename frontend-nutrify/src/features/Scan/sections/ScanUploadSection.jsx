@@ -12,6 +12,7 @@ function ScanUploadSection({
   onManualInputChange,
   onAnalyze,
   canAnalyze,
+  onOpenPortionModal,
 }) {
   return (
     <div className="w-full min-w-0 max-w-full space-y-5 px-3 py-5 sm:px-4 sm:py-8 lg:px-6 lg:max-w-[1360px] lg:mx-auto">
@@ -76,6 +77,7 @@ function ScanUploadSection({
 
         <button
           type="button"
+          onClick={onOpenPortionModal}
           className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[#49AE84] bg-white px-5 text-[12px] font-semibold text-[#49AE84] transition-all duration-200 hover:bg-[#F4FFF9]"
         >
           <BookOpen size={15} />

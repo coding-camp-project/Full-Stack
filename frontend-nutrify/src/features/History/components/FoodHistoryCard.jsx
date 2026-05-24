@@ -1,9 +1,9 @@
-import { ChevronRight, Droplet, Flame, Leaf, Wheat } from "lucide-react";
+import { ChevronRight, Droplet, Flame, Leaf, Wheat, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import FoodNutritionInfo from "./FoodNutritionInfo";
 
-function FoodHistoryCard({ item }) {
+function FoodHistoryCard({ item, onDelete }) {
   const navigate = useNavigate();
 
   const handleOpenDetail = () => {
@@ -47,9 +47,16 @@ function FoodHistoryCard({ item }) {
         <h3 className="mt-1 line-clamp-2 text-base font-bold text-[#1E1E1E] sm:line-clamp-1">
           {item.name}
         </h3>
-        <span className="mt-2 inline-flex rounded-full border border-[#B9EBD7] bg-[#EFFFF8] px-2.5 py-1 text-[10px] font-semibold text-[#49AE84]">
-          {item.components} komponen terdeteksi
-        </span>
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
+          <span className="inline-flex rounded-full border border-[#B9EBD7] bg-[#EFFFF8] px-2.5 py-0.5 text-[10px] font-semibold text-[#49AE84]">
+            {item.components} komponen terdeteksi
+          </span>
+          {item.healthScore > 0 && (
+            <span className="inline-flex rounded-full border border-[#FFD1D1] bg-[#FFEAEA] px-2.5 py-0.5 text-[10px] font-bold text-[#E74C3C]">
+              Score: {item.healthScore}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="flex min-w-0 items-center justify-between gap-2 sm:gap-4">
@@ -80,22 +87,45 @@ function FoodHistoryCard({ item }) {
           />
         </div>
 
-        <button
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            handleOpenDetail();
-          }}
-          aria-label={`Lihat detail ${item.name}`}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#1E1E1E] transition-all duration-200 group-hover:translate-x-1 group-hover:bg-[#EFFFF8] group-hover:text-[#49AE84]"
-        >
-          <ChevronRight size={25} />
-        </button>
+        <div className="flex items-center gap-1 sm:gap-2">
+          {onDelete && (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onDelete(item.id);
+              }}
+              aria-label={`Hapus ${item.name}`}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#E74C3C] hover:bg-[#FFEAEA] transition-all duration-200"
+            >
+              <Trash2 size={18} />
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              handleOpenDetail();
+            }}
+            aria-label={`Lihat detail ${item.name}`}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#1E1E1E] transition-all duration-200 group-hover:translate-x-1 group-hover:bg-[#EFFFF8] group-hover:text-[#49AE84]"
+          >
+            <ChevronRight size={25} />
+          </button>
+        </div>
       </div>
 
-      <span className="inline-flex w-fit rounded-full border border-[#B9EBD7] bg-[#EFFFF8] px-2.5 py-1 text-[10px] font-semibold text-[#49AE84] sm:hidden">
-        {item.components} komponen terdeteksi
-      </span>
+      <div className="flex flex-wrap gap-1.5 sm:hidden">
+        <span className="inline-flex w-fit rounded-full border border-[#B9EBD7] bg-[#EFFFF8] px-2.5 py-0.5 text-[10px] font-semibold text-[#49AE84]">
+          {item.components} komponen terdeteksi
+        </span>
+        {item.healthScore > 0 && (
+          <span className="inline-flex rounded-full border border-[#FFD1D1] bg-[#FFEAEA] px-2.5 py-0.5 text-[10px] font-bold text-[#E74C3C]">
+            Score: {item.healthScore}
+          </span>
+        )}
+      </div>
     </article>
   );
 }

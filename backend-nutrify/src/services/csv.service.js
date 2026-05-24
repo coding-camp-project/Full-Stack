@@ -86,17 +86,6 @@ const levenshtein = (a, b) => {
   return tmp[alen][blen];
 };
 
-export const getFoodNamesList = () => {
-  const foods = loadFoodsFromCSV();
-  return foods.map((f) => f.food_name);
-};
-
-export const getFoodByExactName = (name) => {
-  const foods = loadFoodsFromCSV();
-  const searchName = name.toLowerCase().trim();
-  return foods.find((f) => f.food_name.toLowerCase() === searchName) || null;
-};
-
 export const findBestFoodMatch = (queryName) => {
   const foods = loadFoodsFromCSV();
   const queryClean = queryName.toLowerCase().trim();
