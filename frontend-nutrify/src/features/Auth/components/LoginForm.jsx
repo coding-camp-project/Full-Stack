@@ -102,44 +102,41 @@ export default function LoginForm() {
     setError("")
     setSuccess("")
     try {
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
-      if (isMobile) {
-        console.log("Mendeteksi perangkat mobile, menggunakan signInWithRedirect...");
-        await signInWithRedirect(auth, googleProvider);
-      } else {
-        const result = await signInWithPopup(auth, googleProvider);
-        console.log("Berhasil masuk dengan Google!", result.user);
-        
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-        const response = await axios.post(`${API_URL}/api/users/google-login`, {
-          name: result.user.displayName,
-          email: result.user.email,
-          profilePicture: result.user.photoURL,
-        });
-
-        const { token, name, email: userEmail, _id, profilePicture, isPersonalized } = response.data.data;
-        
-        setUserSession(
-          token, 
-          { id: _id, name, email: userEmail, profilePicture, isPersonalized }, 
-          rememberMe
-        );
-        
-        setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
-        const destination = isPersonalized ? "/dashboard" : "/personalisasi";
-        setTimeout(() => navigate(destination), 1500)
+      // signInWithPopup works on all devices (desktop & mobile modern browsers)
+      // If popup is blocked, fallback to redirect
+      let result;
+      try {
+        result = await signInWithPopup(auth, googleProvider);
+      } catch (popupErr) {
+        // popup blocked or closed by browser — fallback to redirect
+        if (popupErr.code === "auth/popup-blocked" || popupErr.code === "auth/popup-closed-by-user") {
+          console.log("Popup diblok browser, beralih ke redirect...");
+          await signInWithRedirect(auth, googleProvider);
+          return; // redirect will reload page, result handled in useEffect below
+        }
+        throw popupErr;
       }
+
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const response = await axios.post(`${API_URL}/api/users/google-login`, {
+        name: result.user.displayName,
+        email: result.user.email,
+        profilePicture: result.user.photoURL,
+      });
+
+      const { token, name, email: userEmail, _id, profilePicture, isPersonalized } = response.data.data;
+      setUserSession(token, { id: _id, name, email: userEmail, profilePicture, isPersonalized }, rememberMe);
+
+      setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
+      const destination = isPersonalized ? "/dashboard" : "/personalisasi";
+      setTimeout(() => navigate(destination), 1500)
     } catch (err) {
       console.error("Gagal masuk dengan Google:", err);
-      const errorMessage = err.response?.data?.message || err.message || "Gagal masuk dengan Google. Pastikan konfigurasi Firebase dan domain IP HP Anda sudah benar.";
+      const errorMessage = err.response?.data?.message || err.message || "Gagal login Google. Coba gunakan login Email & Password.";
       setError(errorMessage);
+      setLoading(false);
     } finally {
-      // Hanya set loading false jika bukan redirect, karena redirect akan pindah halaman
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      if (!isMobile) {
-        setLoading(false)
-      }
+      setLoading(false);
     }
   }
 
