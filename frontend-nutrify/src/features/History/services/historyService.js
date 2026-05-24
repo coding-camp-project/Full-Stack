@@ -30,6 +30,13 @@ export const getHistoryById = async (id) => {
   return response.data.data ?? null;
 };
 
+export const deleteHistoryItem = async (id) => {
+  const response = await axios.delete(`${API_BASE_URL}/api/history/${id}`, {
+    headers: getAuthHeaders(),
+  });
+  return response.data;
+};
+
 export const saveLocalHistoryFallback = (historyItem) => {
   const historyStr = localStorage.getItem("scanHistory");
   const history = historyStr ? JSON.parse(historyStr) : [];

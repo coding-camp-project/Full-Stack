@@ -5,7 +5,7 @@ import HistoryFilter from "../components/HistoryFilter";
 import HistoryList from "../components/HistoryList";
 import InsightCard from "../components/InsightCard";
 import NutritionSummaryCard from "../components/NutritionSummaryCard";
-import { getHistory } from "../services/historyService";
+import { getHistory, deleteHistoryItem } from "../services/historyService";
 import { mapHistoryRecordToCardItem } from "../utils/historyMappers";
 import { getUserData } from "@/utils/userSession";
  
@@ -50,6 +50,30 @@ function HistorySection() {
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState({ startHour: 0, endHour: 23 });
   const [currentDate, setCurrentDate] = useState(() => new Date());
+
+  const handleDeleteHistoryItem = async (id) => {
+    if (!window.confirm("Apakah Anda yakin ingin menghapus riwayat makan ini?")) {
+      return;
+    }
+    try {
+      await deleteHistoryItem(id);
+      setHistoryItems((prev) => prev.filter((item) => item.id !== id));
+      
+      // Update local storage fallback
+      const userData = getUserData();
+      const userId = userData?.id || "guest";
+      const localHistoryKey = `scanHistory_${userId}`;
+      const historyStr = localStorage.getItem(localHistoryKey);
+      if (historyStr) {
+        const history = JSON.parse(historyStr);
+        const updated = history.filter((item) => (item.id || item._id) !== id);
+        localStorage.setItem(localHistoryKey, JSON.stringify(updated));
+      }
+    } catch (err) {
+      console.error("Gagal menghapus riwayat:", err);
+      alert(err.message || "Gagal menghapus riwayat.");
+    }
+  };
  
   useEffect(() => {
     let isMounted = true;
@@ -148,7 +172,7 @@ function HistorySection() {
       </div>
  
       <div className="mt-6 grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-[1fr_minmax(0,16rem)]">
-        <HistoryList items={filteredHistoryItems} loading={loading} />
+        <HistoryList items={filteredHistoryItems} loading={loading} onDelete={handleDeleteHistoryItem} />
         <InsightCard />
       </div>
     </div>

@@ -184,6 +184,8 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
           <ResultHeader
             foodName={best_prediction?.food_name}
             confidence={best_prediction?.confidence_score}
+            healthScore={result.healthScore}
+            healthGrade={result.healthGrade}
           />
         </div>
 
