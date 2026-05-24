@@ -1,8 +1,61 @@
-import { ImagePlus, Upload } from "lucide-react";
+import { useState, useRef } from "react";
+import { ImagePlus, Upload, Camera } from "lucide-react";
 
 function UploadBox({ imagePreview, onImageChange }) {
+  const cameraInputRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const [isDragActive, setIsDragActive] = useState(false);
+
+  const handleCameraClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    cameraInputRef.current?.click();
+  };
+
+  const handleFileClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    fileInputRef.current?.click();
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setIsDragActive(true);
+    } else if (e.type === "dragleave") {
+      setIsDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      const syntheticEvent = {
+        target: {
+          files: [file]
+        }
+      };
+      onImageChange(syntheticEvent);
+    }
+  };
+
   return (
-    <label className="flex min-h-56 w-full min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#9BDCC8] bg-white px-4 py-6 text-center transition-all duration-200 hover:border-[#18A873] hover:bg-[#F6FFFB] sm:min-h-75 sm:px-6 sm:py-8">
+    <div
+      onDragEnter={handleDrag}
+      onDragOver={handleDrag}
+      onDragLeave={handleDrag}
+      onDrop={handleDrop}
+      className={`flex min-h-56 w-full min-w-0 flex-col items-center justify-center rounded-2xl border-2 border-dashed px-4 py-6 text-center transition-all duration-200 sm:min-h-75 sm:px-6 sm:py-8 ${
+        isDragActive
+          ? "border-[#18A873] bg-[#E8FFF5]"
+          : "border-[#9BDCC8] bg-white hover:border-[#18A873] hover:bg-[#F6FFFB]"
+      }`}
+    >
       {imagePreview ? (
         <img
           src={imagePreview}
@@ -21,22 +74,48 @@ function UploadBox({ imagePreview, onImageChange }) {
         Format JPG, PNG, Maksimal 5MB
       </p>
 
-      <span className="mt-5 inline-flex h-10 items-center gap-2 rounded-lg bg-[#49AE84] px-8 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#118D62]">
-        <Upload size={15} />
-        Pilih Foto
-      </span>
+      {/* Buttons Container */}
+      <div className="mt-5 flex flex-col sm:flex-row gap-3 w-full justify-center px-4 sm:px-0">
+        <button
+          type="button"
+          onClick={handleCameraClick}
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-[#49AE84] px-6 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#118D62] cursor-pointer"
+        >
+          <Camera size={15} />
+          Ambil dari Kamera
+        </button>
 
-      <p className="mt-5 text-[13px] text-[#777]">
+        <button
+          type="button"
+          onClick={handleFileClick}
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[#49AE84] bg-white px-6 text-[13px] font-semibold text-[#49AE84] transition-all duration-200 hover:bg-[#F4FFF9] cursor-pointer"
+        >
+          <Upload size={15} />
+          Pilih dari Galeri
+        </button>
+      </div>
+
+      <p className="mt-5 text-[13px] text-[#777] hidden sm:block">
         atau drag & drop foto di sini
       </p>
 
+      {/* Hidden inputs */}
       <input
         type="file"
         accept="image/*"
+        capture="environment"
+        ref={cameraInputRef}
         className="hidden"
         onChange={onImageChange}
       />
-    </label>
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        className="hidden"
+        onChange={onImageChange}
+      />
+    </div>
   );
 }
 
