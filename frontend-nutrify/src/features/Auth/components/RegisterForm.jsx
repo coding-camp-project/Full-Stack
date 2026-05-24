@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Mail, Lock, Eye, EyeOff, ArrowRight, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link, useNavigate } from "react-router-dom"
-import { signInWithPopup } from "firebase/auth"
+import { signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth"
 import { auth, googleProvider } from "@/config/firebase"
 import axios from "axios"
 import { setUserSession } from "@/utils/userSession"
@@ -17,6 +17,41 @@ export default function RegisterForm() {
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+
+  // Handle redirect result from Google sign-in (especially for mobile devices)
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          setLoading(true);
+          console.log("Berhasil masuk dengan Google (Redirect/Register)!", result.user);
+          
+          const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+          const response = await axios.post(`${API_URL}/api/users/google-login`, {
+            name: result.user.displayName,
+            email: result.user.email,
+            profilePicture: result.user.photoURL,
+          });
+
+          const { token, name, email: userEmail, _id, profilePicture, isPersonalized } = response.data.data;
+          setUserSession(token, { id: _id, name, email: userEmail, profilePicture, isPersonalized }, false);
+          
+          setSuccess("Berhasil masuk dengan Google! Mengalihkan...");
+          const destination = isPersonalized ? "/dashboard" : "/personalisasi";
+          setTimeout(() => navigate(destination), 1500);
+        }
+      } catch (err) {
+        console.error("Gagal daftar dengan Google (Redirect):", err);
+        const errorMessage = err.response?.data?.message || err.message || "Gagal daftar dengan Google. Pastikan domain IP HP Anda sudah didaftarkan di Authorized Domains Firebase Console.";
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    handleRedirectResult();
+  }, [navigate]);
 
   const handleRegister = async (e) => {
     e.preventDefault()
@@ -55,33 +90,43 @@ export default function RegisterForm() {
     setError("")
     setSuccess("")
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      console.log("Berhasil daftar/masuk dengan Google!", result.user);
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const response = await axios.post(`${API_URL}/api/users/google-login`, {
-        name: result.user.displayName,
-        email: result.user.email,
-        profilePicture: result.user.photoURL,
-      });
+      if (isMobile) {
+        console.log("Mendeteksi perangkat mobile, menggunakan signInWithRedirect...");
+        await signInWithRedirect(auth, googleProvider);
+      } else {
+        const result = await signInWithPopup(auth, googleProvider);
+        console.log("Berhasil daftar/masuk dengan Google!", result.user);
+        
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        const response = await axios.post(`${API_URL}/api/users/google-login`, {
+          name: result.user.displayName,
+          email: result.user.email,
+          profilePicture: result.user.photoURL,
+        });
 
-      const { token, name, email: userEmail, _id, profilePicture, isPersonalized } = response.data.data;
-      
-      setUserSession(
-        token, 
-        { id: _id, name, email: userEmail, profilePicture, isPersonalized }, 
-        false
-      );
-      
-      setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
-      const destination = isPersonalized ? "/dashboard" : "/personalisasi";
-      setTimeout(() => navigate(destination), 1500)
+        const { token, name, email: userEmail, _id, profilePicture, isPersonalized } = response.data.data;
+        
+        setUserSession(
+          token, 
+          { id: _id, name, email: userEmail, profilePicture, isPersonalized }, 
+          false
+        );
+        
+        setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
+        const destination = isPersonalized ? "/dashboard" : "/personalisasi";
+        setTimeout(() => navigate(destination), 1500)
+      }
     } catch (err) {
       console.error("Gagal daftar dengan Google:", err);
-      const errorMessage = err.response?.data?.message || "Gagal daftar dengan Google. Pastikan konfigurasi Firebase sudah benar.";
+      const errorMessage = err.response?.data?.message || err.message || "Gagal daftar dengan Google. Pastikan konfigurasi Firebase dan domain IP HP Anda sudah benar.";
       setError(errorMessage);
     } finally {
-      setLoading(false)
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (!isMobile) {
+        setLoading(false)
+      }
     }
   }
 
