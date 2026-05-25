@@ -144,6 +144,13 @@ export const scanFood = async (req, res) => {
 
     const ruleResult = await runRuleEngine(meal, req.user);
 
+    // Determine recommendation: if the rule engine (local or LLM) flags any health warnings, 
+    // we bypass the FastAPI prediction recommendation to avoid displaying false "safe" advice.
+    const hasWarning = ruleResult.warning || ruleResult.healthAnalysis.some((a) => a.startsWith("⚠️"));
+    const finalRecommendation = hasWarning
+      ? (ruleResult.recommendation || `Rekomendasi diet Anda: ${ruleResult.healthAnalysis.join(" ")}`)
+      : (ruleResult.recommendation || fastapiResult.recommendation || `Rekomendasi diet Anda: ${ruleResult.healthAnalysis.join(" ")}`);
+
     // Save to Database Scan History
     const imageBase64 = req.file ? `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}` : "";
     const history = await historyService.createHistory({
@@ -158,7 +165,7 @@ export const scanFood = async (req, res) => {
       sugar: nutrition.sugar || 0,
       sodium: nutrition.sodium || 0,
       confidence: fastapiResult.image_result?.best_prediction?.confidence_score || 1.0,
-      recommendation: fastapiResult.recommendation || `Rekomendasi diet Anda: ${ruleResult.healthAnalysis.join(" ")}`,
+      recommendation: finalRecommendation,
       healthAnalysis: ruleResult.healthAnalysis || [],
       healthScore: ruleResult.healthScore || 0,
     });
@@ -171,8 +178,8 @@ export const scanFood = async (req, res) => {
         confidence_score: fastapiResult.image_result?.best_prediction?.confidence_score || 1.0,
       },
       nutrition,
-      recommendation: fastapiResult.recommendation || `Rekomendasi diet Anda: ${ruleResult.healthAnalysis.join(" ")}`,
-      warning: ruleResult.healthAnalysis.find((a) => a.startsWith("⚠️"))?.replace("⚠️", "").trim() || "",
+      recommendation: finalRecommendation,
+      warning: ruleResult.warning || ruleResult.healthAnalysis.find((a) => a.startsWith("⚠️"))?.replace("⚠️", "").trim() || "",
       healthScore: ruleResult.healthScore,
       healthGrade: ruleResult.healthGrade,
       healthAnalysis: ruleResult.healthAnalysis,

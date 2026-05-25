@@ -117,16 +117,18 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
     dynamicHealthItems.splice(
       0,
       dynamicHealthItems.length,
-      ...healthAnalysis.map((description, index) => ({
-        icon:
-          index === 0 ? (
+      ...healthAnalysis.map((description) => {
+        const isWarning = description.startsWith("⚠️") || description.toLowerCase().includes("peringatan") || description.toLowerCase().includes("catatan");
+        return {
+          icon: isWarning ? (
             <AlertTriangle size={16} className="text-[#F5A623]" />
           ) : (
             <ShieldCheck size={16} className="text-[#49AE84]" />
           ),
-        title: index === 0 ? "Analisis Nutrisi" : "Catatan Kesehatan",
-        description,
-      }))
+          title: isWarning ? "Catatan Kesehatan" : "Analisis Nutrisi",
+          description,
+        };
+      })
     );
   }
 
