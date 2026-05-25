@@ -61,7 +61,12 @@ function DashboardContentSection({
 
         {/* INSIGHT */}
         <div className="min-w-0 overflow-hidden rounded-[18px] bg-white p-4 shadow-sm sm:p-5">
-            <InsightCard />
+            <InsightCard 
+              totalCalories={totalCalories}
+              totalCarbs={totalCarbs}
+              totalFat={totalFat}
+              totalProtein={totalProtein}
+            />
         </div>
       </div>
 

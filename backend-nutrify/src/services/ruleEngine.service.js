@@ -1,4 +1,5 @@
 import Food from "../models/food.model.js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
  * Calculate age based on birthDate string
@@ -79,11 +80,107 @@ export const calculateDailyNeeds = (user) => {
   };
 };
 
+const MODELS = [
+  "gemini-2.5-flash-lite",
+  "gemini-2.0-flash-lite",
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash"
+];
+
+const getLLMRecommendation = async (foodName, user) => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.warn("GEMINI_API_KEY is not defined, skipping LLM recommendation.");
+    return null;
+  }
+
+  const conditions = user?.healthConditions || [];
+  const allergies = user?.allergies || [];
+  const goal = user?.primaryGoal || "";
+  const otherConditions = user?.otherConditions || "";
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+
+  const prompt = `
+Anda adalah pakar nutrisi dan gizi. Analisis makanan berikut untuk pengguna dengan profil kesehatan ini:
+- Nama Makanan: ${foodName}
+- Kondisi Kesehatan: ${conditions.join(", ")} ${otherConditions ? `(${otherConditions})` : ""}
+- Alergi: ${allergies.join(", ")}
+- Target/Goal: ${goal}
+
+Berikan analisis kesehatan yang akurat. Jika makanan tersebut berbahaya atau tidak dianjurkan (misalnya mengandung kolesterol tinggi seperti kepiting/udang/cumi untuk penderita kolesterol tinggi, atau tinggi purin untuk asam urat, atau mengandung alergen yang berbahaya), berikan skor kesehatan rendah, grade buruk, dan peringatan (warning) yang jelas.
+
+Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks \`\`\`json atau teks pembuka/penutup lainnya) dengan struktur:
+{
+  "healthScore": <number antara 10 - 100>,
+  "healthGrade": "<A/B/C/D/E>",
+  "healthAnalysis": ["<analisis detail poin 1>", "<analisis detail poin 2>"],
+  "warning": "<pesan peringatan singkat jika ada potensi bahaya, kosongkan jika aman>",
+  "recommendation": "Rekomendasi berdasarkan profil Anda yaitu ${conditions.join(", ") || "Umum"}: Anda sebaiknya membatasi atau menghindari konsumsi ${foodName} karena... (ATAU) Rekomendasi berdasarkan profil Anda yaitu ${conditions.join(", ") || "Umum"}: Anda boleh mengonsumsi ${foodName} ini karena...",
+  "alternatives": ["<rekomendasi alternatif makanan sehat 1>", "<rekomendasi alternatif makanan sehat 2>", "<rekomendasi alternatif makanan sehat 3>"]
+}
+`;
+
+  for (const modelName of MODELS) {
+    try {
+      console.log(`Mengirim request rekomendasi makanan ke Gemini menggunakan: ${modelName}`);
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text().trim();
+      
+      // Clean JSON formatting if Gemini wrapped it in markdown code blocks
+      const jsonStart = text.indexOf("{");
+      const jsonEnd = text.lastIndexOf("}");
+      if (jsonStart !== -1 && jsonEnd !== -1) {
+        const cleanJsonStr = text.substring(jsonStart, jsonEnd + 1);
+        const parsed = JSON.parse(cleanJsonStr);
+        return parsed;
+      }
+    } catch (error) {
+      console.warn(`Model LLM ${modelName} gagal:`, error.message || error);
+    }
+  }
+
+  return null;
+};
+
 /**
  * Local Rule Engine to evaluate food quality against user profile
  */
 export const runRuleEngine = async (food, user) => {
   const name = food.food_name || "Makanan";
+  
+  // Check if we have the food in our database (Food collection)
+  const cleanName = name.toLowerCase().trim();
+  const escapeRegex = (string) => string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  
+  let dbFood = null;
+  try {
+    dbFood = await Food.findOne({ 
+      food_name: { $regex: new RegExp("^" + escapeRegex(cleanName) + "$", "i") } 
+    }).lean();
+  } catch (error) {
+    console.error("Error looking up food in DB:", error);
+  }
+
+  // If NOT in DB, use LLM for recommendation to avoid wrong guidance
+  if (!dbFood) {
+    console.log(`Food "${name}" not found in local DB. Fetching recommendation from LLM...`);
+    const llmResult = await getLLMRecommendation(name, user);
+    if (llmResult) {
+      return {
+        healthScore: llmResult.healthScore || 50,
+        healthGrade: llmResult.healthGrade || "C",
+        healthAnalysis: llmResult.healthAnalysis || [],
+        warning: llmResult.warning || "",
+        recommendation: llmResult.recommendation || "",
+        alternatives: llmResult.alternatives || [],
+      };
+    }
+    console.log("LLM recommendation failed or returned null, falling back to local rule engine.");
+  }
+
   const calories = parseFloat(food.calories) || 0;
   const protein = parseFloat(food.protein) || 0;
   const fat = parseFloat(food.fat) || 0;
@@ -189,6 +286,10 @@ export const runRuleEngine = async (food, user) => {
         score -= 15;
         analysis.push(`⚠️ Catatan Kolesterol/Jantung: Hindari makanan digoreng/berlemak jenuh.`);
       }
+      if (name.toLowerCase().match(/kepiting|udang|cumi|kerang|seafood|jeroan|babat|usus|kuning telur|mentega|otak|bebek/i)) {
+        score -= 20;
+        analysis.push(`⚠️ Catatan Kolesterol/Jantung: Mengandung kolesterol tinggi, batasi konsumsinya.`);
+      }
     }
 
     if (conditions.includes("asam urat")) {
@@ -227,10 +328,54 @@ export const runRuleEngine = async (food, user) => {
   // Get Alternative Recommendations
   const alternatives = await getAlternativeRecommendations(name, conditions, goal);
 
+  // Generate customized recommendation statement based on the user's personalization profile and warnings
+  const displayConditions = (user?.healthConditions || []).length > 0
+    ? (user?.healthConditions || []).map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(", ")
+    : "Umum";
+
+  let recommendation = "";
+  if (isAllergenDetected) {
+    recommendation = `Rekomendasi berdasarkan profil Anda yaitu Alergi: Anda sebaiknya menghindari konsumsi ${name} karena terdeteksi mengandung bahan alergen (${detectedAllergen}) yang berbahaya bagi kesehatan Anda.`;
+  } else {
+    const recs = [];
+    if (conditions.includes("diabetes") || conditions.includes("kencing manis")) {
+      if (sugar > 5 || carbs > 30 || name.toLowerCase().match(/nasi putih|roti putih|bubur|manis|es|gula/i)) {
+        recs.push("mengandung kadar gula/karbohidrat tinggi yang kurang baik untuk penderita diabetes");
+      }
+    }
+    if (conditions.includes("hipertensi") || conditions.includes("tekanan darah tinggi")) {
+      if (sodium > 250 || name.toLowerCase().match(/asin|teri|sambal|abon|instant/i)) {
+        recs.push(`kandungan sodium tinggi (${sodium.toFixed(0)}mg) yang kurang baik untuk penderita tekanan darah tinggi`);
+      }
+    }
+    if (conditions.includes("kolesterol") || conditions.includes("jantung")) {
+      if (fat > 10 || name.toLowerCase().match(/goreng|crispy|kremes|jeroan|babat|usus|santan|kepiting|udang|cumi|kerang|seafood|jeroan|babat|usus|kuning telur|mentega|otak|bebek/i)) {
+        recs.push("terdeteksi tinggi kolesterol atau lemak jenuh");
+      }
+    }
+    if (conditions.includes("asam urat")) {
+      if (name.toLowerCase().match(/sapi|kambing|bebek|kepiting|udang|cumi|jeroan|babat|usus|ampela|hati/i)) {
+        recs.push("mengandung kadar purin tinggi yang dapat memicu kekambuhan asam urat");
+      }
+    }
+    if (conditions.includes("obesitas") || goal.includes("turun")) {
+      if (calories > 220) {
+        recs.push(`tergolong makanan padat kalori (${calories.toFixed(0)} kkal) yang kurang cocok untuk program penurunan berat badan`);
+      }
+    }
+
+    if (recs.length > 0) {
+      recommendation = `Rekomendasi berdasarkan profil Anda yaitu ${displayConditions}: Anda sebaiknya membatasi atau menghindari konsumsi ${name} karena ${recs.join(" serta ")}.`;
+    } else {
+      recommendation = `Rekomendasi berdasarkan profil Anda yaitu ${displayConditions}: Anda boleh mengonsumsi ${name} ini karena kandungannya terpantau aman dan seimbang untuk mendukung profil kesehatan Anda.`;
+    }
+  }
+
   return {
     healthScore: score,
     healthGrade: grade,
     healthAnalysis: analysis,
+    recommendation,
     alternatives,
   };
 };
