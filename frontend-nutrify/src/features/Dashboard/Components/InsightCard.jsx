@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Lightbulb, BookOpen } from "lucide-react";
 import PortionGuideModal from "../../Scan/components/PortionGuideModal";
 import { getUserData } from "@/utils/userSession";
+import { calculateDailyNeeds } from "../utils/targetCalculator";
 
 function InsightCard({
   totalCalories = 0,
@@ -13,53 +14,11 @@ function InsightCard({
 
   // Calculate target needs based on user personalization
   const user = getUserData();
-  const gender = (user?.gender || "pria").toLowerCase();
-  const weight = parseFloat(user?.weight) || 65;
-  const height = parseFloat(user?.height) || 170;
-  const birthDateStr = user?.birthDate;
-
-  let age = 25;
-  if (birthDateStr) {
-    const birthDate = new Date(birthDateStr);
-    if (!isNaN(birthDate.getTime())) {
-      const today = new Date();
-      let calculatedAge = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        calculatedAge--;
-      }
-      age = Math.max(1, calculatedAge);
-    }
-  }
-
-  // Mifflin-St Jeor Formula
-  let bmr = 10 * weight + 6.25 * height - 5 * age + (gender === "pria" ? 5 : -161);
-  const activityLevel = (user?.activityLevel || "moderate").toLowerCase();
-  let activityFactor = 1.55;
-  if (activityLevel === "sedentary" || activityLevel === "sangat jarang") {
-    activityFactor = 1.2;
-  } else if (activityLevel === "light" || activityLevel === "jarang") {
-    activityFactor = 1.375;
-  } else if (activityLevel === "active" || activityLevel === "sering") {
-    activityFactor = 1.725;
-  } else if (activityLevel === "very active" || activityLevel === "sangat sering") {
-    activityFactor = 1.9;
-  }
-
-  const tdee = bmr * activityFactor;
-  const goal = (user?.primaryGoal || "menjaga berat badan").toLowerCase();
-  let targetCalories = tdee;
-  
-  if (goal.includes("turun") || goal.includes("loss")) {
-    targetCalories = tdee - 500;
-  } else if (goal.includes("naik") || goal.includes("gain")) {
-    targetCalories = tdee + 500;
-  }
-  targetCalories = Math.max(targetCalories, 1200);
-
-  const targetProtein = Math.round((targetCalories * 0.20) / 4);
-  const targetCarbs = Math.round((targetCalories * 0.55) / 4);
-  const targetFat = Math.round((targetCalories * 0.25) / 9);
+  const targets = calculateDailyNeeds(user);
+  const targetCalories = targets.targetCalories;
+  const targetProtein = targets.targetProtein;
+  const targetCarbs = targets.targetCarbs;
+  const targetFat = targets.targetFat;
 
   // Generate dynamic nutritional insight message
   let insightText = "";

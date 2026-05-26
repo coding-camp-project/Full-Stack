@@ -56,7 +56,17 @@ export const saveUserProfile = async (formData) => {
     { headers: { Authorization: `Bearer ${token}` } }
   );
 
-  updateUserData({ name: formData.name, profilePicture: formData.profilePicture });
+  if (response.data?.data) {
+    updateUserData({
+      ...response.data.data,
+      isPersonalized: true,
+    });
+  } else {
+    updateUserData({
+      ...formData,
+      isPersonalized: true,
+    });
+  }
 
   return response.data;
 };

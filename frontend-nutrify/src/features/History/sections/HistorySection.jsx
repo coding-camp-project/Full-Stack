@@ -8,6 +8,7 @@ import NutritionSummaryCard from "../components/NutritionSummaryCard";
 import { getHistory, deleteHistoryItem } from "../services/historyService";
 import { mapHistoryRecordToCardItem } from "../utils/historyMappers";
 import { getUserData } from "@/utils/userSession";
+import { calculateDailyNeeds } from "../../Dashboard/utils/targetCalculator";
  
 const ONE_MINUTE = 60 * 1000;
  
@@ -44,13 +45,13 @@ function getStoredHistoryItems() {
     return [];
   }
 }
-
+ 
 function HistorySection() {
   const [historyItems, setHistoryItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState({ startHour: 0, endHour: 23 });
   const [currentDate, setCurrentDate] = useState(() => new Date());
-
+ 
   const handleDeleteHistoryItem = async (id) => {
     if (!window.confirm("Apakah Anda yakin ingin menghapus riwayat makan ini?")) {
       return;
@@ -125,9 +126,11 @@ function HistorySection() {
     filteredHistoryItems.reduce((sum, item) => sum + item.protein, 0)
   );
  
-  // Default target
-  const targetCalories = 2000;
-  const targetProtein = 80;
+  // Dynamic target from personalized calculator
+  const userData = getUserData();
+  const targets = calculateDailyNeeds(userData);
+  const targetCalories = targets.targetCalories || 2000;
+  const targetProtein = targets.targetProtein || 80;
  
   const calProgress = Math.min(Math.round((totalCalories / targetCalories) * 100), 100);
   const proProgress = Math.min(Math.round((totalProtein / targetProtein) * 100), 100);

@@ -106,10 +106,16 @@ function ScanPage() {
           protein: Math.round(data.nutrition?.protein || 0),
           carbs: Math.round(data.nutrition?.carbohydrates || 0),
           fat: Math.round(data.nutrition?.fat || 0),
+          sugar: Math.round(data.nutrition?.sugar || 0),
+          sodium: Math.round(data.nutrition?.sodium || 0),
+          fiber: Math.round(data.nutrition?.fiber || 0),
           date: new Date().toISOString(),
         };
         history.unshift(newHistoryItem);
         localStorage.setItem(localHistoryKey, JSON.stringify(history));
+        
+        // Dispatch storage event to immediately update dashboard totals
+        window.dispatchEvent(new Event("storage"));
       } catch (err) {
         console.error("Gagal menyimpan ke riwayat lokal", err);
       }

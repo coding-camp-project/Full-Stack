@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { Droplet } from "lucide-react";
+import { getUserData } from "@/utils/userSession";
 
 function WaterIntakeWidget() {
-  const target = 2000;
+  const userData = getUserData();
+  const conditions = (userData?.healthConditions || []).map(c => c.toLowerCase());
+  const target = conditions.includes("asam urat") ? 3000 : 2000;
   const mlPerGlass = 400;
   const [intake, setIntake] = useState(0);
 
@@ -30,7 +33,7 @@ function WaterIntakeWidget() {
     localStorage.setItem(`waterIntake_${today}`, newIntake.toString());
   };
 
-  const glassesCount = 5; 
+  const glassesCount = Math.ceil(target / mlPerGlass); 
   const currentGlasses = Math.floor(intake / mlPerGlass);
   const percentage = Math.min(Math.round((intake / target) * 100), 100);
 

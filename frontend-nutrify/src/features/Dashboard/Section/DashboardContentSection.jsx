@@ -11,7 +11,8 @@ function DashboardContentSection({
   totalCalories = 0, 
   totalCarbs = 0, 
   totalFat = 0, 
-  totalProtein = 0 
+  totalProtein = 0,
+  targets = {}
 }) {
   return (
     <section className="grid min-w-0 grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-12">
@@ -26,7 +27,7 @@ function DashboardContentSection({
             <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl">
               Ringkasan Nutrisi
             </h2>
-
+ 
             <div className="mt-4 min-w-0 sm:mt-5">
                 <NutritionPieChart 
                   calories={totalCalories}
@@ -36,14 +37,14 @@ function DashboardContentSection({
                 />
             </div>
           </div>
-
+ 
           <div className="min-w-0 overflow-hidden rounded-[18px] bg-white p-4 shadow-sm sm:p-5">
             <h2 className="text-lg font-bold text-[#1E1E1E] sm:text-xl">
               Tren Asupan Kalori
             </h2>
-
+ 
             <div className="mt-4 min-w-0 sm:mt-5">
-                <CaloriesLineChart historyItems={historyItems} />
+                <CaloriesLineChart historyItems={historyItems} targetCalories={targets.targetCalories || 2000} />
             </div>  
           </div>
         </div>
