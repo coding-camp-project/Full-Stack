@@ -101,7 +101,7 @@ function ScanPage() {
           id: data.historyId || Date.now(),
           time: new Date().toLocaleString("id-ID", { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }),
           name: data.best_prediction?.food_name?.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
-          components: data.details?.length || 1,
+          components: data.components || data.details?.length || 1,
           calories: Math.round(data.nutrition?.calories || 0),
           protein: Math.round(data.nutrition?.protein || 0),
           carbs: Math.round(data.nutrition?.carbohydrates || 0),
