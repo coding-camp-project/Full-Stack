@@ -1,7 +1,16 @@
 
 // --- LOCAL PARSING ENGINE ---
 export const parseInputLocally = (userInput) => {
-  const items = userInput.split(/[,;\n]+/).map(item => item.trim()).filter(Boolean);
+  if (!userInput) return [];
+  // Normalize bullets, newlines, and other separators
+  let normalizedInput = userInput;
+  // Replace bullets at the start of lines or start of the string
+  normalizedInput = normalizedInput.replace(/(?:^|\n)\s*[-*•+]\s+/g, "\n");
+  // Replace inline bullets or separators (like •, *, or a hyphen surrounded by spaces) with a comma
+  normalizedInput = normalizedInput.replace(/\s*[•*]\s*/g, ",");
+  normalizedInput = normalizedInput.replace(/\s+-\s+/g, ",");
+
+  const items = normalizedInput.split(/[,;\n]+/).map(item => item.trim()).filter(Boolean);
   const parsed = [];
 
   for (const item of items) {

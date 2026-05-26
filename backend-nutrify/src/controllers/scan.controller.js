@@ -151,6 +151,36 @@ export const scanFood = async (req, res) => {
       ? (ruleResult.recommendation || `Rekomendasi diet Anda: ${ruleResult.healthAnalysis.join(" ")}`)
       : (ruleResult.recommendation || fastapiResult.recommendation || `Rekomendasi diet Anda: ${ruleResult.healthAnalysis.join(" ")}`);
 
+    // Calculate unique components count (prevent duplicate counting, case-insensitive, trim space/empty, support AI + manual)
+    const uniqueComponents = new Set();
+    
+    // 1. Add AI prediction food name
+    if (fastapiResult.image_result?.best_prediction?.food_name) {
+      const norm = fastapiResult.image_result.best_prediction.food_name.toLowerCase().replace(/_/g, " ").trim();
+      if (norm) uniqueComponents.add(norm);
+    }
+    
+    // 2. Add manual items from FastAPI result
+    if (fastapiResult.manual_items && fastapiResult.manual_items.length > 0) {
+      fastapiResult.manual_items.forEach((m) => {
+        if (m.food_name) {
+          const norm = m.food_name.toLowerCase().replace(/_/g, " ").trim();
+          if (norm) uniqueComponents.add(norm);
+        }
+      });
+    } else if (manualInput && manualInput.trim()) {
+      // Fallback: parse manualInput locally if FastAPI result didn't include them
+      const parsedItems = parseInputLocally(manualInput);
+      parsedItems.forEach((m) => {
+        if (m.food_name) {
+          const norm = m.food_name.toLowerCase().replace(/_/g, " ").trim();
+          if (norm) uniqueComponents.add(norm);
+        }
+      });
+    }
+
+    const componentsCount = uniqueComponents.size || 1;
+
     // Save to Database Scan History
     const imageBase64 = req.file ? `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}` : "";
     const history = await historyService.createHistory({
@@ -168,6 +198,7 @@ export const scanFood = async (req, res) => {
       recommendation: finalRecommendation,
       healthAnalysis: ruleResult.healthAnalysis || [],
       healthScore: ruleResult.healthScore || 0,
+      components: componentsCount,
     });
 
     // Return final enriched response to frontend
@@ -185,6 +216,7 @@ export const scanFood = async (req, res) => {
       healthAnalysis: ruleResult.healthAnalysis,
       alternatives: ruleResult.alternatives,
       historyId: history._id,
+      components: componentsCount,
     });
 
   } catch (error) {

@@ -61,6 +61,10 @@ const historySchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    components: {
+      type: Number,
+      default: 1,
+    },
   },
   {
     timestamps: true,

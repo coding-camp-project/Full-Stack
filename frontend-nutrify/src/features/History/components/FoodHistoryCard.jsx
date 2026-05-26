@@ -49,7 +49,7 @@ function FoodHistoryCard({ item, onDelete }) {
         </h3>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
           <span className="inline-flex rounded-full border border-[#B9EBD7] bg-[#EFFFF8] px-2.5 py-0.5 text-[10px] font-semibold text-[#49AE84]">
-            {item.components} komponen terdeteksi
+            {item.components} komponen
           </span>
           {item.healthScore > 0 && (
             <span className="inline-flex rounded-full border border-[#FFD1D1] bg-[#FFEAEA] px-2.5 py-0.5 text-[10px] font-bold text-[#E74C3C]">
@@ -118,7 +118,7 @@ function FoodHistoryCard({ item, onDelete }) {
 
       <div className="flex flex-wrap gap-1.5 sm:hidden">
         <span className="inline-flex w-fit rounded-full border border-[#B9EBD7] bg-[#EFFFF8] px-2.5 py-0.5 text-[10px] font-semibold text-[#49AE84]">
-          {item.components} komponen terdeteksi
+          {item.components} komponen
         </span>
         {item.healthScore > 0 && (
           <span className="inline-flex rounded-full border border-[#FFD1D1] bg-[#FFEAEA] px-2.5 py-0.5 text-[10px] font-bold text-[#E74C3C]">
