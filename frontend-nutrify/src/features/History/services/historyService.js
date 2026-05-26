@@ -22,6 +22,13 @@ export const getHistory = async () => {
   return response.data.data ?? [];
 };
 
+export const getDashboardSummary = async () => {
+  const response = await axios.get(`${API_BASE_URL}/api/history/summary`, {
+    headers: getAuthHeaders(),
+  });
+  return response.data.data ?? null;
+};
+
 export const getHistoryById = async (id) => {
   const response = await axios.get(`${API_BASE_URL}/api/history/${id}`, {
     headers: getAuthHeaders(),

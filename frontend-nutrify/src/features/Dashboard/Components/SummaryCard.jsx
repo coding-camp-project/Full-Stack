@@ -5,6 +5,7 @@ function SummaryCard({
   progress,
   color,
   icon,
+  targetValue,
 }) {
   return (
     <div className="min-w-0 overflow-hidden rounded-[18px] border border-[#E7E7E7] bg-white p-4 shadow-sm sm:p-5">
@@ -43,7 +44,7 @@ function SummaryCard({
 
       {/* TARGET */}
       <p className="mt-5 text-[14px] text-[#444]">
-        {progress}% dari target 2.000 kkal
+        {progress}% dari target {targetValue?.toLocaleString("id-ID")} {unit}
       </p>
 
       {/* PROGRESS */}

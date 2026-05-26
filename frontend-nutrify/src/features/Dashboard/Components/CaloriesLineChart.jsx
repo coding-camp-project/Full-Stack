@@ -19,7 +19,7 @@ ChartJS.register(
   Legend
 );
 
-function CaloriesLineChart({ historyItems = [] }) {
+function CaloriesLineChart({ historyItems = [], targetCalories = 2000 }) {
   const labels = [];
   const dataPoints = [];
   
@@ -29,14 +29,18 @@ function CaloriesLineChart({ historyItems = [] }) {
     d.setDate(d.getDate() - i);
     labels.push(d.toLocaleDateString("id-ID", { day: 'numeric', month: 'short' }));
     
-    const dayItems = historyItems.filter(item => new Date(item.date).toDateString() === d.toDateString());
+    // Support either direct item.date or item.createdAt
+    const dayItems = historyItems.filter(item => {
+      const itemDateStr = new Date(item.date || item.createdAt).toDateString();
+      return itemDateStr === d.toDateString();
+    });
     const sum = dayItems.reduce((acc, curr) => acc + curr.calories, 0);
     dataPoints.push(sum);
   }
 
-  // Set target based on max daily data to keep the graph readable, minimum 2000
-  const maxCalories = Math.max(...dataPoints, 2000);
-  const targetData = labels.map(() => 2000);
+  // Set target based on max daily data to keep the graph readable, minimum targetCalories
+  const maxCalories = Math.max(...dataPoints, targetCalories);
+  const targetData = labels.map(() => targetCalories);
 
   const data = {
     labels: labels,
@@ -54,7 +58,7 @@ function CaloriesLineChart({ historyItems = [] }) {
         fill: false,
       },
       {
-        label: "Target (2.000 kkal)",
+        label: `Target (${targetCalories.toLocaleString("id-ID")} kkal)`,
         data: targetData,
         borderColor: "#16A34A",
         borderDash: [6, 6],
