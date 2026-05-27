@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUserSession } from "@/hooks/useUserSession";
+import NotificationDropdown from "./NotificationDropdown";
 
 import profileImage from "../../../assets/logo/Logo 2.png";
 
@@ -16,6 +17,8 @@ function DashboardNavbar({ toggleSidebar }) {
   const navigate = useNavigate();
   const { userData } = useUserSession();
   const [openDropdown, setOpenDropdown] = useState(false);
+  const [openNotifications, setOpenNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const user = {
     name: userData.name || "Pengguna",
     email: userData.email || "pengguna@email.com",
@@ -72,13 +75,31 @@ function DashboardNavbar({ toggleSidebar }) {
       <div className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-4 md:gap-6">
         
         {/* NOTIFICATION */}
-        <button
-          type="button"
-          className="shrink-0 text-[#4BAA7A] transition-all duration-200 hover:scale-105"
-          aria-label="Notifikasi"
-        >
-          <Bell size={22} strokeWidth={2.1} className="sm:h-[26px] sm:w-[26px]" />
-        </button>
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              setOpenNotifications(!openNotifications);
+              setOpenDropdown(false);
+            }}
+            className="relative shrink-0 text-[#4BAA7A] transition-all duration-200 hover:scale-105 cursor-pointer p-1 rounded-full hover:bg-gray-50"
+            aria-label="Notifikasi"
+          >
+            <Bell size={22} strokeWidth={2.1} className="sm:h-[26px] sm:w-[26px]" />
+            {unreadCount > 0 && (
+              <span className="absolute top-0.5 right-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white ring-2 ring-white animate-pulse">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+
+          {openNotifications && (
+            <NotificationDropdown
+              onClose={() => setOpenNotifications(false)}
+              onUnreadCountChange={setUnreadCount}
+            />
+          )}
+        </div>
 
         {/* PROFILE DROPDOWN */}
         <div className="relative min-w-0" ref={dropdownRef}>
@@ -86,7 +107,10 @@ function DashboardNavbar({ toggleSidebar }) {
           {/* BUTTON */}
           <button
             type="button"
-            onClick={() => setOpenDropdown(!openDropdown)}
+            onClick={() => {
+              setOpenDropdown(!openDropdown);
+              setOpenNotifications(false);
+            }}
             className="flex max-w-full min-w-0 items-center gap-2 transition-all duration-200 sm:gap-3 md:gap-4"
           >
             {/* AVATAR */}

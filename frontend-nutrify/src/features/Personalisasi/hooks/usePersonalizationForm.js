@@ -14,6 +14,8 @@ import {
   markPersonalizationIncomplete,
 } from "../../../utils/userSession";
 
+const normalizeArray = (value) => (Array.isArray(value) ? value : []);
+
 export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
   const navigate = useNavigate();
   // ── Core form state ──────────────────────────
@@ -44,18 +46,12 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
             height: userData.height || "",
             weight: userData.weight || "",
             activityLevel: userData.activityLevel || "Sedang",
-            healthConditions: userData.healthConditions || [],
+            healthConditions: normalizeArray(userData.healthConditions),
             otherConditions: userData.otherConditions || "",
-            allergies: userData.allergies?.length
-              ? userData.allergies
-              : ["Udang"],
-            foodRestrictions: userData.foodRestrictions?.length
-              ? userData.foodRestrictions
-              : ["Santan", "Gorengan"],
+            allergies: normalizeArray(userData.allergies),
+            foodRestrictions: normalizeArray(userData.foodRestrictions),
             primaryGoal: userData.primaryGoal || "Menjaga Berat Badan",
-            foodPreferences: userData.foodPreferences?.length
-              ? userData.foodPreferences
-              : ["Sayuran", "Buah", "Ikan", "Kacang-kacangan"],
+            foodPreferences: normalizeArray(userData.foodPreferences),
             additionalNotes: userData.additionalNotes || "",
           });
         }
@@ -158,7 +154,26 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
     setMessage({ type: "", text: "" });
 
     try {
-      await saveUserProfile(formData);
+      const payload = {
+        ...formData,
+        healthConditions: normalizeArray(formData.healthConditions),
+        allergies: normalizeArray(formData.allergies),
+        foodRestrictions: normalizeArray(formData.foodRestrictions),
+        foodPreferences: normalizeArray(formData.foodPreferences),
+      };
+      const result = await saveUserProfile(payload);
+      const savedData = result?.data;
+
+      if (savedData) {
+        setFormData((prev) => ({
+          ...prev,
+          ...savedData,
+          healthConditions: normalizeArray(savedData.healthConditions),
+          allergies: normalizeArray(savedData.allergies),
+          foodRestrictions: normalizeArray(savedData.foodRestrictions),
+          foodPreferences: normalizeArray(savedData.foodPreferences),
+        }));
+      }
 
       markPersonalizationCompleted({
         name: formData.name,

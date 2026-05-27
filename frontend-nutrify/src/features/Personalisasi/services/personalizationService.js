@@ -50,20 +50,32 @@ export const saveUserProfile = async (formData) => {
   }
 
   const { id, token } = credentials;
+  const payload = {
+    ...formData,
+    healthConditions: Array.isArray(formData.healthConditions) ? formData.healthConditions : [],
+    allergies: Array.isArray(formData.allergies) ? formData.allergies : [],
+    foodRestrictions: Array.isArray(formData.foodRestrictions) ? formData.foodRestrictions : [],
+    foodPreferences: Array.isArray(formData.foodPreferences) ? formData.foodPreferences : [],
+  };
+
   const response = await axios.put(
     `${API_BASE_URL}/api/users/${id}`,
-    formData,
+    payload,
     { headers: { Authorization: `Bearer ${token}` } }
   );
 
   if (response.data?.data) {
     updateUserData({
       ...response.data.data,
+      healthConditions: Array.isArray(response.data.data.healthConditions) ? response.data.data.healthConditions : [],
+      allergies: Array.isArray(response.data.data.allergies) ? response.data.data.allergies : [],
+      foodRestrictions: Array.isArray(response.data.data.foodRestrictions) ? response.data.data.foodRestrictions : [],
+      foodPreferences: Array.isArray(response.data.data.foodPreferences) ? response.data.data.foodPreferences : [],
       isPersonalized: true,
     });
   } else {
     updateUserData({
-      ...formData,
+      ...payload,
       isPersonalized: true,
     });
   }

@@ -73,13 +73,28 @@ export const getUserById = async (id) => {
 };
 
 export const updateUser = async (id, userData) => {
-  // If updating password, hash it first
-  if (userData.password) {
-    const salt = await bcrypt.genSalt(10);
-    userData.password = await bcrypt.hash(userData.password, salt);
+  const payload = { ...userData };
+
+  // Normalize multi-select fields so empty selections overwrite old values.
+  const arrayFields = [
+    "healthConditions",
+    "allergies",
+    "foodRestrictions",
+    "foodPreferences",
+  ];
+  for (const field of arrayFields) {
+    if (Object.prototype.hasOwnProperty.call(userData, field)) {
+      payload[field] = Array.isArray(userData[field]) ? userData[field] : [];
+    }
   }
 
-  return await User.findByIdAndUpdate(id, userData, {
+  // If updating password, hash it first
+  if (payload.password) {
+    const salt = await bcrypt.genSalt(10);
+    payload.password = await bcrypt.hash(payload.password, salt);
+  }
+
+  return await User.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
   }).select("-password");
