@@ -87,7 +87,7 @@ function Specialization() {
         </motion.div>
 
         {/* CARD */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16 items-stretch">
 
           {features.map((item, index) => {
             const Icon = item.icon
@@ -99,7 +99,7 @@ function Specialization() {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="relative z-10 bg-white border border-gray-100 rounded-3xl p-7 shadow-sm hover:shadow-xl transition-all duration-300"
+                className="relative z-10 flex h-full flex-col bg-white border border-gray-100 rounded-3xl p-7 shadow-sm hover:shadow-xl transition-all duration-300"
               >
 
                 {/* ICON */}
@@ -125,7 +125,7 @@ function Specialization() {
                 {/* LINK */}
                 <Link
                   to={item.to}
-                  className="relative z-20 mt-8 inline-flex cursor-pointer items-center text-sm font-medium text-[#3e9d7d] transition-all hover:translate-x-1 hover:text-[#2d8a6a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3e9d7d]/40 focus-visible:ring-offset-2 rounded-sm"
+                  className="relative z-20 mt-auto pt-8 inline-flex cursor-pointer items-center text-sm font-medium text-[#3e9d7d] transition-all hover:translate-x-1 hover:text-[#2d8a6a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3e9d7d]/40 focus-visible:ring-offset-2 rounded-sm"
                 >
                   Lihat Selengkapnya →
                 </Link>
