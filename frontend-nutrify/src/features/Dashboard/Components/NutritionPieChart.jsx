@@ -13,8 +13,18 @@ ChartJS.register(
   Legend
 );
 
-function NutritionPieChart({ calories = 0, carbs = 0, protein = 0, fat = 0 }) {
-  const total = carbs + protein + fat;
+function NutritionPieChart({ calories = 0, carbs = 0, protein = 0, fat = 0, nutrition = {} }) {
+  const excludeKeys = ["calories", "carbs", "fat", "protein"];
+  const lainnya = Object.keys(nutrition).reduce((sum, key) => {
+    if (excludeKeys.includes(key)) return sum;
+    const value = parseFloat(nutrition[key]) || 0;
+    if (key.toLowerCase() === "sodium" || key.toLowerCase() === "natrium") {
+      return sum + (value / 1000);
+    }
+    return sum + value;
+  }, 0);
+
+  const total = carbs + protein + fat + lainnya;
   const carbsPct = total > 0 ? Math.round((carbs / total) * 100) : 0;
   const proteinPct = total > 0 ? Math.round((protein / total) * 100) : 0;
   const fatPct = total > 0 ? Math.round((fat / total) * 100) : 0;
@@ -131,7 +141,7 @@ function NutritionPieChart({ calories = 0, carbs = 0, protein = 0, fat = 0 }) {
             </p>
 
             <span className="text-[13px] text-[#777]">
-              0 g ({otherPct}%)
+              {parseFloat(lainnya.toFixed(2))} g ({otherPct}%)
             </span>
           </div>
         </div>
