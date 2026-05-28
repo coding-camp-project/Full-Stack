@@ -26,6 +26,16 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
   const [fetching, setFetching] = useState(true);
   const [message, setMessage] = useState({ type: "", text: "" });
 
+  // Auto-dismiss all messages after 4 seconds
+  useEffect(() => {
+    if (message.text) {
+      const timer = setTimeout(() => {
+        setMessage({ type: "", text: "" });
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [message.text]);
+
   // ── Tag-selector dropdown states ─────────────
   const [allergySearch, setAllergySearch] = useState("");
   const [showAllergies, setShowAllergies] = useState(false);
@@ -89,8 +99,20 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  /** Health condition checkbox dengan logika "Tidak Ada" exclusive */
+  /** Health condition checkbox dengan logika "Tidak Ada" exclusive dan batas maksimal 2 */
   const handleConditionChange = (condition) => {
+    // Validasi batasan maksimal 2 penyakit di luar updater state (React pure best practice)
+    if (condition !== "Tidak Ada" && !formData.healthConditions.includes(condition)) {
+      const activeConditions = formData.healthConditions.filter((c) => c !== "Tidak Ada");
+      if (activeConditions.length >= 2) {
+        setMessage({
+          type: "error",
+          text: "Maksimal penyakit/kondisi kesehatan yang dapat dipilih adalah 2.",
+        });
+        return;
+      }
+    }
+
     setFormData((prev) => {
       if (condition === "Tidak Ada") {
         return { ...prev, healthConditions: ["Tidak Ada"] };
@@ -189,7 +211,6 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
         type: "success",
         text: "Personalisasi data kesehatan berhasil disimpan!",
       });
-      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error(err);
       const errMsg =
@@ -224,7 +245,6 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
         setMessage({ type: "error", text: "Gagal mereset data di server. Silakan coba lagi." });
       } finally {
         setLoading(false);
-        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
   };
@@ -235,6 +255,7 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
     loading,
     fetching,
     message,
+    setMessage,
     allergySearch,
     setAllergySearch,
     showAllergies,

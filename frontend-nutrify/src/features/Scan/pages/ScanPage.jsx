@@ -109,6 +109,8 @@ function ScanPage() {
           sugar: Math.round(data.nutrition?.sugar || 0),
           sodium: Math.round(data.nutrition?.sodium || 0),
           fiber: Math.round(data.nutrition?.fiber || 0),
+          serving_size_g: data.best_prediction?.serving_size_g,
+          serving_unit: data.best_prediction?.serving_unit,
           date: new Date().toISOString(),
         };
         history.unshift(newHistoryItem);

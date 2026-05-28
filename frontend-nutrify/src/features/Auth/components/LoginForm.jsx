@@ -53,7 +53,7 @@ export default function LoginForm() {
           
           setSuccess("Berhasil masuk dengan Google! Mengalihkan...");
           const destination = isPersonalized ? "/dashboard" : "/personalisasi";
-          setTimeout(() => navigate(destination), 1500);
+          setTimeout(() => navigate(destination), 300);
         }
       } catch (err) {
         console.error("Gagal masuk dengan Google (Redirect):", err);
@@ -87,7 +87,7 @@ export default function LoginForm() {
       console.log("Login manual berhasil!")
       setSuccess("Login berhasil! Mengalihkan...")
       const destination = isPersonalized ? "/dashboard" : "/personalisasi"
-      setTimeout(() => navigate(destination), 1500)
+      setTimeout(() => navigate(destination), 300)
     } catch (err) {
       console.error("Gagal login:", err)
       const errorMessage = err.response?.data?.message || "Email atau kata sandi salah."
@@ -129,7 +129,7 @@ export default function LoginForm() {
 
       setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
       const destination = isPersonalized ? "/dashboard" : "/personalisasi";
-      setTimeout(() => navigate(destination), 1500)
+      setTimeout(() => navigate(destination), 300)
     } catch (err) {
       console.error("Gagal masuk dengan Google:", err);
       const errorMessage = err.response?.data?.message || err.message || "Gagal login Google. Coba gunakan login Email & Password.";

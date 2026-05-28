@@ -65,6 +65,14 @@ const historySchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    serving_size_g: {
+      type: Number,
+      default: 100,
+    },
+    serving_unit: {
+      type: String,
+      default: "porsi",
+    },
   },
   {
     timestamps: true,

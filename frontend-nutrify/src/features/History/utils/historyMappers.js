@@ -36,6 +36,8 @@ export function mapHistoryRecordToScanResult(record) {
     best_prediction: {
       food_name: record.foodName || "Makanan",
       confidence_score: record.confidence || 0,
+      serving_size_g: record.serving_size_g,
+      serving_unit: record.serving_unit,
     },
     nutrition: {
       calories: record.calories || 0,

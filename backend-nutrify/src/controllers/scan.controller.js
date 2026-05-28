@@ -1,21 +1,38 @@
 import axios from "axios";
 import FormData from "form-data";
 import * as historyService from "../services/history.service.js";
-import { runRuleEngine } from "../services/ruleEngine.service.js";
+import { runRuleEngine, getUnifiedLLMRecommendation } from "../services/ruleEngine.service.js";
 import { parseInputLocally, estimateWeightLocally } from "../services/manualScan.service.js";
+import { findBestFoodMatch } from "../services/csv.service.js";
 
-// Map user diseases to FastAPI strict options
-const mapDiseaseForFastAPI = (user) => {
-  if (!user) return null;
+// Map food names to standard Indonesian portions/units
+const getServingUnit = (foodName) => {
+  const name = (foodName || "").toLowerCase();
+  if (name.includes("tomat")) return "iris";
+  if (name.includes("selada") || name.includes("roti")) return "lembar";
+  if (name.includes("ayam") || name.includes("daging") || name.includes("tempe") || name.includes("tahu") || name.includes("ikan") || name.includes("bebek")) return "potong";
+  if (name.includes("telur")) return "butir";
+  if (name.includes("pisang") || name.includes("apel") || name.includes("jeruk") || name.includes("mangga") || name.includes("alpukat") || name.includes("melon") || name.includes("semangka") || name.includes("buah")) return "buah";
+  if (name.includes("nasi") || name.includes("mie") || name.includes("bihun") || name.includes("kwetiau") || name.includes("bubur")) return "porsi";
+  if (name.includes("susu") || name.includes("jus") || name.includes("teh") || name.includes("kopi")) return "gelas";
+  if (name.includes("sambal") || name.includes("saus") || name.includes("kecap") || name.includes("gula") || name.includes("mentega") || name.includes("minyak") || name.includes("madu")) return "sendok makan";
+  if (name.includes("sayur") || name.includes("bayam") || name.includes("kangkung") || name.includes("buncis") || name.includes("sop") || name.includes("soto")) return "mangkuk";
+  return "porsi";
+};
+
+// Map user diseases to FastAPI strict options (returns all matching diseases)
+const mapDiseasesForFastAPI = (user) => {
+  if (!user) return [];
   const conditions = (user.healthConditions || []).concat(user.otherConditions ? [user.otherConditions] : []).map(c => c.toLowerCase().trim());
+  const mapped = new Set();
   for (const cond of conditions) {
-    if (cond.includes("diabet") || cond.includes("gula") || cond.includes("manis")) return "diabetes";
-    if (cond.includes("hiper") || cond.includes("tensi") || cond.includes("darah tinggi")) return "hipertensi";
-    if (cond.includes("koles") || cond.includes("jantung")) return "kolesterol";
-    if (cond.includes("asam") || cond.includes("urat")) return "asam_urat";
-    if (cond.includes("obes") || cond.includes("gemuk") || cond.includes("berat")) return "obesitas";
+    if (cond.includes("diabet") || cond.includes("gula") || cond.includes("manis")) mapped.add("diabetes");
+    if (cond.includes("hiper") || cond.includes("tensi") || cond.includes("darah tinggi")) mapped.add("hipertensi");
+    if (cond.includes("koles") || cond.includes("jantung")) mapped.add("kolesterol");
+    if (cond.includes("asam") || cond.includes("urat")) mapped.add("asam_urat");
+    if (cond.includes("obes") || cond.includes("gemuk") || cond.includes("berat")) mapped.add("obesitas");
   }
-  return null;
+  return Array.from(mapped);
 };
 
 /**
@@ -68,10 +85,10 @@ export const scanFood = async (req, res) => {
       });
     }
 
-    // 2. Add Disease mapped to FastAPI choices
-    const mappedDisease = mapDiseaseForFastAPI(req.user);
-    if (mappedDisease) {
-      formData.append("disease", mappedDisease);
+    // 2. Add Disease mapped to FastAPI choices (pass the first mapped disease in the main call)
+    const mappedDiseases = mapDiseasesForFastAPI(req.user);
+    if (mappedDiseases.length > 0) {
+      formData.append("disease", mappedDiseases[0]);
     }
 
     // 3. Add Manual Items if available
@@ -130,6 +147,11 @@ export const scanFood = async (req, res) => {
       .replace(/_/g, " ")
       .replace(/\b\w/g, (letter) => letter.toUpperCase());
 
+    // Find serving size from CSV dataset (or closest match)
+    const csvMatch = findBestFoodMatch(formattedFoodName);
+    const servingSizeG = csvMatch?.serving_size_g || 100;
+    const servingUnit = getServingUnit(formattedFoodName);
+
     // Run local Rule Engine to calculate health score, grade, and analysis comments
     const meal = {
       food_name: formattedFoodName,
@@ -142,14 +164,93 @@ export const scanFood = async (req, res) => {
       fiber: nutrition.fiber || 0,
     };
 
-    const ruleResult = await runRuleEngine(meal, req.user);
+    // Combine recommendations from FastAPI for all mapped diseases
+    const fastapiRecommendations = [];
+    if (fastapiResult.recommendation) {
+      fastapiRecommendations.push(fastapiResult.recommendation);
+    }
 
-    // Determine recommendation: if the rule engine (local or LLM) flags any health warnings, 
-    // we bypass the FastAPI prediction recommendation to avoid displaying false "safe" advice.
-    const hasWarning = ruleResult.warning || ruleResult.healthAnalysis.some((a) => a.startsWith("⚠️"));
-    const finalRecommendation = hasWarning
-      ? (ruleResult.recommendation || `Rekomendasi diet Anda: ${ruleResult.healthAnalysis.join(" ")}`)
-      : (ruleResult.recommendation || fastapiResult.recommendation || `Rekomendasi diet Anda: ${ruleResult.healthAnalysis.join(" ")}`);
+    if (mappedDiseases.length > 1) {
+      console.log(`User has multiple diseases (${mappedDiseases.join(", ")}). Fetching additional recommendations from damasdev API...`);
+      for (let i = 1; i < mappedDiseases.length; i++) {
+        const nextDisease = mappedDiseases[i];
+        try {
+          const additionalFormData = new FormData();
+          additionalFormData.append("disease", nextDisease);
+          additionalFormData.append("manual_items", JSON.stringify([{
+            food_name: formattedFoodName,
+            quantity: 1,
+            unit: "porsi",
+            estimated_weight_g: 100,
+            total_gram: 100
+          }]));
+
+          const additionalResponse = await axios.post("https://damassdev-nutrify-ai-api.hf.space/predict", additionalFormData, {
+            headers: {
+              ...additionalFormData.getHeaders(),
+            },
+          });
+          if (additionalResponse.data?.recommendation) {
+            fastapiRecommendations.push(additionalResponse.data.recommendation);
+          }
+        } catch (addError) {
+          console.error(`Failed to fetch additional recommendation for ${nextDisease} from damasdev API:`, addError.message);
+        }
+      }
+    }
+
+    const mergedFastapiRecommendation = fastapiRecommendations.join(" \n\n");
+
+    let analysisResult = {};
+    const hasFastapiRec = fastapiRecommendations.length > 0 && mergedFastapiRecommendation.trim().length > 0;
+
+    if (hasFastapiRec) {
+      console.log("FastAPI recommendation is available. Using it and running local rule engine for analysis...");
+      const ruleResult = await runRuleEngine(meal, req.user);
+      
+      // Clean FastAPI recommendations to avoid mentioning "diet"
+      const cleanRec = mergedFastapiRecommendation
+        .replace(/diet/gi, "pola makan")
+        .replace(/program pola makan/gi, "pola makan sehat");
+
+      analysisResult = {
+        healthScore: ruleResult.healthScore,
+        healthGrade: ruleResult.healthGrade,
+        healthAnalysis: ruleResult.healthAnalysis.map(a => a.replace(/diet/gi, "pola makan")),
+        warning: ruleResult.warning,
+        recommendation: cleanRec,
+        alternatives: ruleResult.alternatives,
+      };
+    } else {
+      console.log("FastAPI did not return a recommendation. Falling back to Gemini LLM for recommendation and analysis...");
+      const unifiedResult = await getUnifiedLLMRecommendation(formattedFoodName, nutrition, req.user, fastapiRecommendations);
+      if (unifiedResult) {
+        analysisResult = {
+          healthScore: unifiedResult.healthScore || 50,
+          healthGrade: unifiedResult.healthGrade || "C",
+          healthAnalysis: (unifiedResult.healthAnalysis || []).map(a => a.replace(/diet/gi, "pola makan")),
+          warning: unifiedResult.warning || "",
+          recommendation: (unifiedResult.recommendation || "").replace(/diet/gi, "pola makan"),
+          alternatives: unifiedResult.alternatives || [],
+        };
+      } else {
+        console.warn("Unified LLM recommendation failed, falling back to local rule engine...");
+        const ruleResult = await runRuleEngine(meal, req.user);
+        const isAllergenDetected = ruleResult.healthAnalysis.some(a => a.includes("alergen") || a.includes("PERINGATAN KERAS"));
+        const fallbackRec = isAllergenDetected
+          ? ruleResult.recommendation
+          : (ruleResult.recommendation || `Rekomendasi pola makan Anda: ${ruleResult.healthAnalysis.join(" ")}`);
+        
+        analysisResult = {
+          healthScore: ruleResult.healthScore,
+          healthGrade: ruleResult.healthGrade,
+          healthAnalysis: ruleResult.healthAnalysis.map(a => a.replace(/diet/gi, "pola makan")),
+          warning: ruleResult.warning,
+          recommendation: fallbackRec.replace(/diet/gi, "pola makan"),
+          alternatives: ruleResult.alternatives,
+        };
+      }
+    }
 
     // Calculate unique components count (prevent duplicate counting, case-insensitive, trim space/empty, support AI + manual)
     const uniqueComponents = new Set();
@@ -195,10 +296,12 @@ export const scanFood = async (req, res) => {
       sugar: nutrition.sugar || 0,
       sodium: nutrition.sodium || 0,
       confidence: fastapiResult.image_result?.best_prediction?.confidence_score || 1.0,
-      recommendation: finalRecommendation,
-      healthAnalysis: ruleResult.healthAnalysis || [],
-      healthScore: ruleResult.healthScore || 0,
+      recommendation: analysisResult.recommendation,
+      healthAnalysis: analysisResult.healthAnalysis || [],
+      healthScore: analysisResult.healthScore || 0,
       components: componentsCount,
+      serving_size_g: servingSizeG,
+      serving_unit: servingUnit,
     });
 
     // Return final enriched response to frontend
@@ -207,14 +310,16 @@ export const scanFood = async (req, res) => {
       best_prediction: {
         food_name: formattedFoodName,
         confidence_score: fastapiResult.image_result?.best_prediction?.confidence_score || 1.0,
+        serving_size_g: servingSizeG,
+        serving_unit: servingUnit,
       },
       nutrition,
-      recommendation: finalRecommendation,
-      warning: ruleResult.warning || ruleResult.healthAnalysis.find((a) => a.startsWith("⚠️"))?.replace("⚠️", "").trim() || "",
-      healthScore: ruleResult.healthScore,
-      healthGrade: ruleResult.healthGrade,
-      healthAnalysis: ruleResult.healthAnalysis,
-      alternatives: ruleResult.alternatives,
+      recommendation: analysisResult.recommendation,
+      warning: analysisResult.warning || analysisResult.healthAnalysis.find((a) => a.startsWith("⚠️"))?.replace("⚠️", "").trim() || "",
+      healthScore: analysisResult.healthScore,
+      healthGrade: analysisResult.healthGrade,
+      healthAnalysis: analysisResult.healthAnalysis,
+      alternatives: analysisResult.alternatives,
       historyId: history._id,
       components: componentsCount,
     });

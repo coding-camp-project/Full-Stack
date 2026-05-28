@@ -88,6 +88,11 @@ export const updateUser = async (id, userData) => {
     }
   }
 
+  // Enforce max 2 health conditions limit
+  if (payload.healthConditions && payload.healthConditions.length > 2) {
+    throw new Error("Maksimal penyakit/kondisi kesehatan yang dapat dipilih adalah 2.");
+  }
+
   // If updating password, hash it first
   if (payload.password) {
     const salt = await bcrypt.genSalt(10);
