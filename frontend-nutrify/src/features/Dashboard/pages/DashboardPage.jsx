@@ -155,6 +155,7 @@ function DashboardPage() {
         totalCarbs={aggregatedNutrition.carbs}
         totalFat={aggregatedNutrition.fat}
         totalProtein={aggregatedNutrition.protein}
+        aggregatedNutrition={aggregatedNutrition}
         targets={targets}
       />
     </div>

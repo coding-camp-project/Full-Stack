@@ -12,6 +12,7 @@ function DashboardContentSection({
   totalCarbs = 0, 
   totalFat = 0, 
   totalProtein = 0,
+  aggregatedNutrition = {},
   targets = {}
 }) {
   return (
@@ -34,6 +35,7 @@ function DashboardContentSection({
                   carbs={totalCarbs}
                   fat={totalFat}
                   protein={totalProtein}
+                  nutrition={aggregatedNutrition}
                 />
             </div>
           </div>
