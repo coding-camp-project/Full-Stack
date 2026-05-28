@@ -1,6 +1,6 @@
 import { CheckCircle2, Heart } from "lucide-react";
 
-function ResultHeader({ foodName = "Nasi Goreng", confidence = 0.92, healthScore = 75, healthGrade = "B" }) {
+function ResultHeader({ foodName = "Nasi Goreng", confidence = 0.92, healthScore = 75, healthGrade = "B", servingSizeG, servingUnit }) {
   const formattedName = foodName.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
   
   // Calculate display confidence score
@@ -33,14 +33,19 @@ function ResultHeader({ foodName = "Nasi Goreng", confidence = 0.92, healthScore
       <div className="flex min-w-0 items-start gap-2.5 sm:items-center sm:gap-3">
         <CheckCircle2 size={20} className="mt-0.5 shrink-0 text-[#49AE84] sm:mt-0 sm:size-[22px]" />
 
-        <div className="min-w-0">
+        <div className="min-w-0 text-left">
           <p className="text-[11px] font-medium text-[#777] sm:text-[12px]">
             Makanan terdeteksi:
           </p>
           <h2 className="break-words text-[15px] font-bold text-[#1E1E1E] sm:text-[18px]">
             {formattedName}
           </h2>
-          <p className="text-[10px] font-medium text-[#777] sm:text-[11px]">
+          {servingSizeG && servingUnit && (
+            <p className="text-[11px] font-bold text-[#1E7F4E] mt-0.5">
+              Takaran Saji: 1 {servingUnit} ({servingSizeG}g)
+            </p>
+          )}
+          <p className="text-[10px] font-medium text-[#777] sm:text-[11px] mt-0.5">
             Tingkat keyakinan: {displayConfidence}%
           </p>
         </div>

@@ -4,7 +4,8 @@
 //  
 // ─────────────────────────────────────────────
 
-import { RefreshCw, Shield, AlertCircle, Lock } from "lucide-react";
+import { RefreshCw, Shield, AlertCircle, Lock, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { usePersonalizationForm } from "../hooks/usePersonalizationForm";
 import { useUserSession } from "@/hooks/useUserSession";
 
@@ -41,6 +42,7 @@ export default function PersonalizationPage() {
     handleSubmit,
     handleReset,
     calculateAge,
+    setMessage,
   } = usePersonalizationForm({ isOnboardingMode });
 
   // ── Loading skeleton ──────────────────────
@@ -131,23 +133,47 @@ export default function PersonalizationPage() {
         </div>
       )}
 
-      {/* ── ALERT MESSAGE ── */}
-      {message.text && (
-        <div
-          className={`p-4 rounded-xl border flex items-center gap-3 ${
-            message.type === "success"
-              ? "bg-[#EBF7F0] border-[#D1F2DE] text-[#1E7F4E]"
-              : "bg-red-50 border-red-200 text-red-700"
-          }`}
-        >
-          {message.type === "success" ? (
-            <Shield className="h-5 w-5 shrink-0" />
-          ) : (
-            <AlertCircle className="h-5 w-5 shrink-0" />
-          )}
-          <span className="text-sm font-semibold">{message.text}</span>
-        </div>
-      )}
+      {/* ── FLOATING TOAST NOTIFICATION ── */}
+      <AnimatePresence>
+        {message.text && (
+          <motion.div
+            initial={{ opacity: 0, y: -30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 350, damping: 26 }}
+            className={`fixed top-6 left-4 right-4 md:left-auto md:right-6 z-[9999] flex max-w-md items-center gap-3.5 rounded-2xl border p-4 shadow-xl backdrop-blur-md transition-all ${
+              message.type === "success"
+                ? "bg-[#EBF7F0]/95 border-[#D1F2DE] text-[#1E7F4E]"
+                : "bg-[#FEF2F2]/95 border-[#FCA5A5] text-[#B91C1C]"
+            }`}
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white shadow-xs">
+              {message.type === "success" ? (
+                <Shield size={18} className="text-[#1E7F4E]" />
+              ) : (
+                <AlertCircle size={18} className="text-[#B91C1C]" />
+              )}
+            </div>
+            
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider opacity-75">
+                {message.type === "success" ? "Sukses" : "Pemberitahuan"}
+              </p>
+              <p className="mt-0.5 text-xs sm:text-sm font-semibold leading-snug break-words">
+                {message.text}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setMessage({ type: "", text: "" })}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg hover:bg-black/5 transition-all text-gray-500 cursor-pointer"
+            >
+              <X size={16} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── MAIN FORM ── */}
       <form onSubmit={handleSubmit} className="min-w-0 space-y-5 sm:space-y-6">

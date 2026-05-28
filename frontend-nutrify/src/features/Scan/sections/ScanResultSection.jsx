@@ -168,8 +168,8 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
 
           <div className="min-w-0">
             <div className="mb-2.5 flex items-center gap-2 sm:mb-3">
-              <h3 className="text-[12px] font-bold text-[#1E1E1E] sm:text-[14px]">
-                Informasi Nutrisi (per 100g)
+              <h3 className="text-[12px] font-bold text-[#1E1E1E] sm:text-[14px] text-left">
+                Informasi Nutrisi ({best_prediction?.serving_size_g ? `Takaran: 1 ${best_prediction.serving_unit || 'porsi'} - ${best_prediction.serving_size_g}g` : "per 100g"})
               </h3>
             </div>
 
@@ -188,6 +188,8 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
             confidence={best_prediction?.confidence_score}
             healthScore={result.healthScore}
             healthGrade={result.healthGrade}
+            servingSizeG={best_prediction?.serving_size_g}
+            servingUnit={best_prediction?.serving_unit}
           />
         </div>
 
