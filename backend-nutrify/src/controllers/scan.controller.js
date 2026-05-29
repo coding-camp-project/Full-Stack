@@ -46,9 +46,10 @@ export const suggestFood = async (req, res) => {
     }
 
     const cleanQuery = q.trim();
+    const mlApiUrl = (process.env.ML_API_URL || "https://damassdev-nutrify-ai-api.hf.space").replace(/\/$/, "");
 
     // Call Deployed AI model Search API
-    const response = await axios.get(`https://damassdev-nutrify-ai-api.hf.space/search-food?q=${encodeURIComponent(cleanQuery)}&limit=15`);
+    const response = await axios.get(`${mlApiUrl}/search-food?q=${encodeURIComponent(cleanQuery)}&limit=15`);
     const data = response.data;
 
     // Map candidates to suggestions array
@@ -76,6 +77,7 @@ export const scanFood = async (req, res) => {
     }
 
     const formData = new FormData();
+    const mlApiUrl = (process.env.ML_API_URL || "https://damassdev-nutrify-ai-api.hf.space").replace(/\/$/, "");
 
     // 1. Add Image if available
     if (req.file) {
@@ -108,7 +110,7 @@ export const scanFood = async (req, res) => {
 
     // Call Hugging Face Deployed FastAPI Model
     console.log("Calling Deployed AI Model at HF Space...");
-    const response = await axios.post("https://damassdev-nutrify-ai-api.hf.space/predict", formData, {
+    const response = await axios.post(`${mlApiUrl}/predict`, formData, {
       headers: {
         ...formData.getHeaders(),
       },
@@ -185,7 +187,7 @@ export const scanFood = async (req, res) => {
             total_gram: 100
           }]));
 
-          const additionalResponse = await axios.post("https://damassdev-nutrify-ai-api.hf.space/predict", additionalFormData, {
+          const additionalResponse = await axios.post(`${mlApiUrl}/predict`, additionalFormData, {
             headers: {
               ...additionalFormData.getHeaders(),
             },
@@ -199,30 +201,10 @@ export const scanFood = async (req, res) => {
       }
     }
 
-    const mergedFastapiRecommendation = fastapiRecommendations.join(" \n\n");
+    let analysisResult = null;
 
-    let analysisResult = {};
-    const hasFastapiRec = fastapiRecommendations.length > 0 && mergedFastapiRecommendation.trim().length > 0;
-
-    if (hasFastapiRec) {
-      console.log("FastAPI recommendation is available. Using it and running local rule engine for analysis...");
-      const ruleResult = await runRuleEngine(meal, req.user);
-      
-      // Clean FastAPI recommendations to avoid mentioning "diet"
-      const cleanRec = mergedFastapiRecommendation
-        .replace(/diet/gi, "pola makan")
-        .replace(/program pola makan/gi, "pola makan sehat");
-
-      analysisResult = {
-        healthScore: ruleResult.healthScore,
-        healthGrade: ruleResult.healthGrade,
-        healthAnalysis: ruleResult.healthAnalysis.map(a => a.replace(/diet/gi, "pola makan")),
-        warning: ruleResult.warning,
-        recommendation: cleanRec,
-        alternatives: ruleResult.alternatives,
-      };
-    } else {
-      console.log("FastAPI did not return a recommendation. Falling back to Gemini LLM for recommendation and analysis...");
+    console.log("Calling Gemini LLM for recommendation and analysis...");
+    try {
       const unifiedResult = await getUnifiedLLMRecommendation(formattedFoodName, nutrition, req.user, fastapiRecommendations);
       if (unifiedResult) {
         analysisResult = {
@@ -233,23 +215,27 @@ export const scanFood = async (req, res) => {
           recommendation: (unifiedResult.recommendation || "").replace(/diet/gi, "pola makan"),
           alternatives: unifiedResult.alternatives || [],
         };
-      } else {
-        console.warn("Unified LLM recommendation failed, falling back to local rule engine...");
-        const ruleResult = await runRuleEngine(meal, req.user);
-        const isAllergenDetected = ruleResult.healthAnalysis.some(a => a.includes("alergen") || a.includes("PERINGATAN KERAS"));
-        const fallbackRec = isAllergenDetected
-          ? ruleResult.recommendation
-          : (ruleResult.recommendation || `Rekomendasi pola makan Anda: ${ruleResult.healthAnalysis.join(" ")}`);
-        
-        analysisResult = {
-          healthScore: ruleResult.healthScore,
-          healthGrade: ruleResult.healthGrade,
-          healthAnalysis: ruleResult.healthAnalysis.map(a => a.replace(/diet/gi, "pola makan")),
-          warning: ruleResult.warning,
-          recommendation: fallbackRec.replace(/diet/gi, "pola makan"),
-          alternatives: ruleResult.alternatives,
-        };
       }
+    } catch (geminiError) {
+      console.error("Gemini call failed during scan:", geminiError);
+    }
+
+    if (!analysisResult) {
+      console.warn("Unified LLM recommendation failed or returned null, falling back to local rule engine...");
+      const ruleResult = await runRuleEngine(meal, req.user);
+      const isAllergenDetected = ruleResult.healthAnalysis.some(a => a.includes("alergen") || a.includes("PERINGATAN KERAS"));
+      const fallbackRec = isAllergenDetected
+        ? ruleResult.recommendation
+        : (ruleResult.recommendation || `Rekomendasi pola makan Anda: ${ruleResult.healthAnalysis.join(" ")}`);
+      
+      analysisResult = {
+        healthScore: ruleResult.healthScore,
+        healthGrade: ruleResult.healthGrade,
+        healthAnalysis: ruleResult.healthAnalysis.map(a => a.replace(/diet/gi, "pola makan")),
+        warning: ruleResult.warning || "",
+        recommendation: fallbackRec.replace(/diet/gi, "pola makan"),
+        alternatives: ruleResult.alternatives || [],
+      };
     }
 
     // Calculate unique components count (prevent duplicate counting, case-insensitive, trim space/empty, support AI + manual)

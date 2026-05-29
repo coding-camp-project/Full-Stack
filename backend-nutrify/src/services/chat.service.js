@@ -50,7 +50,8 @@ export const sendMessageToAI = async (message, history = []) => {
 
   for (const modelName of MODELS) {
     try {
-      console.log(`Mengirim pesan ke AI menggunakan model: ${modelName}`);
+      console.log("[Gemini] Request started");
+      console.log("[Gemini] Model:", modelName);
       const model = genAI.getGenerativeModel({
         model: modelName,
         systemInstruction,
@@ -62,12 +63,13 @@ export const sendMessageToAI = async (message, history = []) => {
 
       const result = await chat.sendMessage(message);
       const reply = result.response.text();
+      console.log("[Gemini] Response received");
 
       if (reply) {
         return reply;
       }
     } catch (error) {
-      console.warn(`Model ${modelName} gagal:`, error.message || error);
+      console.error("[Gemini] Error:", error);
       lastError = error;
     }
   }
