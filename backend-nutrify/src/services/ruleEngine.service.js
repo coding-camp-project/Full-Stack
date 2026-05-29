@@ -167,16 +167,20 @@ const getLLMRecommendation = async (foodName, user) => {
 
   const conditions = user?.healthConditions || [];
   const allergies = user?.allergies || [];
+  const restrictions = user?.foodRestrictions || [];
+  const preferences = user?.foodPreferences || [];
   const goal = user?.primaryGoal || "";
   const otherConditions = user?.otherConditions || "";
 
-  const genAI = new GoogleGenerativeAI(apiKey);
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
   const prompt = `
 Anda adalah pakar nutrisi dan gizi. Analisis makanan berikut untuk pengguna dengan profil kesehatan ini:
 - Nama Makanan: ${foodName}
 - Kondisi Kesehatan: ${conditions.join(", ")} ${otherConditions ? `(${otherConditions})` : ""}
 - Alergi: ${allergies.join(", ")}
+- Pantangan Makanan (Restrictions): ${restrictions.join(", ")}
+- Preferensi Makanan: ${preferences.join(", ")}
 - Target/Goal: ${goal}
 
 Berikan analisis kesehatan yang akurat. Jika makanan tersebut berbahaya atau tidak dianjurkan (misalnya mengandung kolesterol tinggi seperti kepiting/udang/cumi untuk penderita kolesterol tinggi, atau tinggi purin untuk asam urat, atau mengandung alergen yang berbahaya), berikan skor kesehatan rendah, grade buruk, dan peringatan (warning) yang jelas.
@@ -195,10 +199,12 @@ Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks \`\
 
   for (const modelName of MODELS) {
     try {
-      console.log(`Mengirim request rekomendasi makanan ke Gemini menggunakan: ${modelName}`);
+      console.log("[Gemini] Request started");
+      console.log("[Gemini] Model:", modelName);
       const model = genAI.getGenerativeModel({ model: modelName });
       const result = await model.generateContent(prompt);
       const text = result.response.text().trim();
+      console.log("[Gemini] Response received");
       
       // Clean JSON formatting if Gemini wrapped it in markdown code blocks
       const jsonStart = text.indexOf("{");
@@ -209,7 +215,7 @@ Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks \`\
         return parsed;
       }
     } catch (error) {
-      console.warn(`Model LLM ${modelName} gagal:`, error.message || error);
+      console.error("[Gemini] Error:", error);
     }
   }
 
@@ -225,10 +231,12 @@ export const getUnifiedLLMRecommendation = async (foodName, nutrition, user, fas
 
   const conditions = user?.healthConditions || [];
   const allergies = user?.allergies || [];
+  const restrictions = user?.foodRestrictions || [];
+  const preferences = user?.foodPreferences || [];
   const goal = user?.primaryGoal || "";
   const otherConditions = user?.otherConditions || "";
 
-  const genAI = new GoogleGenerativeAI(apiKey);
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
   const prompt = `
 Anda adalah pakar nutrisi dan gizi medis. Analisis makanan berikut secara detail dan konsisten dengan profil kesehatan pengguna.
@@ -246,6 +254,8 @@ Kandungan Nutrisi (per 100g):
 Profil Pengguna:
 - Kondisi Kesehatan: ${conditions.join(", ")} ${otherConditions ? `(${otherConditions})` : ""}
 - Alergi: ${allergies.join(", ")}
+- Pantangan Makanan (Restrictions): ${restrictions.join(", ")}
+- Preferensi Makanan: ${preferences.join(", ")}
 - Target/Goal: ${goal}
 
 Rujukan Rekomendasi Awal dari FastAPI (mungkin ada kontradiksi medis, harap diselaraskan secara profesional):
@@ -272,10 +282,12 @@ Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks ata
 
   for (const modelName of MODELS) {
     try {
-      console.log(`Mengirim request penyelarasan rekomendasi ke Gemini menggunakan: ${modelName}`);
+      console.log("[Gemini] Request started");
+      console.log("[Gemini] Model:", modelName);
       const model = genAI.getGenerativeModel({ model: modelName });
       const result = await model.generateContent(prompt);
       const text = result.response.text().trim();
+      console.log("[Gemini] Response received");
       
       const jsonStart = text.indexOf("{");
       const jsonEnd = text.lastIndexOf("}");
@@ -285,7 +297,7 @@ Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks ata
         return parsed;
       }
     } catch (error) {
-      console.warn(`Model LLM ${modelName} gagal:`, error.message || error);
+      console.error("[Gemini] Error:", error);
     }
   }
 
