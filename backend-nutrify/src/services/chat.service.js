@@ -15,8 +15,8 @@ const saveChatMessage = async ({ userId, conversationId, role, message }) => {
   });
 };
 
-export const getConversationHistory = async (conversationId) => {
-  return Chat.find({ conversationId }).sort({ timestamp: 1, createdAt: 1 });
+export const getConversationHistory = async (conversationId, userId) => {
+  return Chat.find({ conversationId, userId }).sort({ timestamp: 1, createdAt: 1 });
 };
 
 const MODELS = [
@@ -87,7 +87,7 @@ export const handleChatMessage = async ({ message, userId, conversationId }) => 
   // Fetch history for contextual conversations
   let history = [];
   if (conversationId) {
-    history = await getConversationHistory(activeConversationId);
+    history = await getConversationHistory(activeConversationId, userId);
   }
 
   // Save the user's new message

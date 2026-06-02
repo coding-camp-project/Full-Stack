@@ -41,22 +41,22 @@ export const loginUser = async (req, res) => {
 };
 
 export const getAllUsers = async (req, res) => {
-  try {
-    const users = await userService.getAllUsers();
-    return res.status(200).json({
-      success: true,
-      data: users,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
+  return res.status(403).json({
+    success: false,
+    message: "Akses ditolak. Endpoint ini dinonaktifkan demi keamanan data.",
+  });
 };
 
 export const getUserById = async (req, res) => {
   try {
+    // IDOR protection: Verify ownership
+    if (req.user._id.toString() !== req.params.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Akses ditolak. Anda hanya dapat melihat profil Anda sendiri.",
+      });
+    }
+
     const user = await userService.getUserById(req.params.id);
     if (!user) {
       return res.status(404).json({
@@ -78,6 +78,14 @@ export const getUserById = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
+    // IDOR protection: Verify ownership
+    if (req.user._id.toString() !== req.params.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Akses ditolak. Anda hanya dapat memperbarui profil Anda sendiri.",
+      });
+    }
+
     const user = await userService.updateUser(req.params.id, req.body);
     if (!user) {
       return res.status(404).json({
@@ -99,6 +107,14 @@ export const updateUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
+    // IDOR protection: Verify ownership
+    if (req.user._id.toString() !== req.params.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Akses ditolak. Anda hanya dapat menghapus akun Anda sendiri.",
+      });
+    }
+
     const user = await userService.deleteUser(req.params.id);
     if (!user) {
       return res.status(404).json({

@@ -6,19 +6,13 @@ const isValidString = (value) => typeof value === "string" && value.trim().lengt
 
 export const sendChatMessage = async (req, res) => {
   try {
-    const { message, userId, conversationId } = req.body;
+    const { message, conversationId } = req.body;
+    const userId = req.user._id; // Set securely from JWT token
 
     if (!isValidString(message)) {
       return res.status(400).json({
         success: false,
         message: "Message is required.",
-      });
-    }
-
-    if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid userId.",
       });
     }
 
@@ -46,6 +40,7 @@ export const sendChatMessage = async (req, res) => {
 export const getChatHistory = async (req, res) => {
   try {
     const { conversationId } = req.params;
+    const userId = req.user._id; // Securely verify ownership
 
     if (!isValidString(conversationId)) {
       return res.status(400).json({
@@ -54,7 +49,7 @@ export const getChatHistory = async (req, res) => {
       });
     }
 
-    const history = await chatService.getConversationHistory(conversationId);
+    const history = await chatService.getConversationHistory(conversationId, userId);
 
     return res.status(200).json({
       success: true,
