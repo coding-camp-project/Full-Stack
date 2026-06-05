@@ -39,7 +39,7 @@ export default function RegisterForm() {
           
           setSuccess("Berhasil masuk dengan Google! Mengalihkan...");
           const destination = isPersonalized ? "/dashboard" : "/personalisasi";
-          setTimeout(() => navigate(destination), 300);
+          navigate(destination);
         }
       } catch (err) {
         console.error("Gagal daftar dengan Google (Redirect):", err);
@@ -75,7 +75,7 @@ export default function RegisterForm() {
 
       console.log("Registrasi manual berhasil!")
       setSuccess("Registrasi berhasil! Mengalihkan ke halaman masuk...")
-      setTimeout(() => navigate("/login"), 300)
+      navigate("/login");
     } catch (err) {
       console.error("Gagal registrasi:", err)
       const errorMessage = err.response?.data?.message || "Terjadi kesalahan. Silakan coba lagi."
@@ -116,7 +116,7 @@ export default function RegisterForm() {
 
       setSuccess("Berhasil masuk dengan Google! Mengalihkan...")
       const destination = isPersonalized ? "/dashboard" : "/personalisasi";
-      setTimeout(() => navigate(destination), 300)
+      navigate(destination);
     } catch (err) {
       console.error("Gagal daftar dengan Google:", err);
       const errorMessage = err.response?.data?.message || err.message || "Gagal daftar Google. Coba gunakan daftar Email & Password.";

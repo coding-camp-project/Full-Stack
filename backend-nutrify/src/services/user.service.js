@@ -112,11 +112,11 @@ export const deleteUser = async (id) => {
 export const googleLoginUser = async (googleData) => {
   const { name, email, profilePicture } = googleData;
 
-  // Find user by email
-  let user = await User.findOne({ email });
+  // Find user by email - use lean() for faster read-only query
+  let user = await User.findOne({ email }).lean();
 
   if (!user) {
-    // Generate a secure random password
+    // Generate a secure random password for new Google users
     const randomPassword = Math.random().toString(36).substring(2) + Date.now().toString(36);
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(randomPassword, salt);
