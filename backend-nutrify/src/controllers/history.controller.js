@@ -71,8 +71,12 @@ export const getDashboardSummary = async (req, res) => {
     // 1. Calculate personalized target
     const targets = calculateDailyNeeds(user);
 
-    // 2. Aggregate today's consumed nutrients
-    const aggregatedNutrition = await historyService.getTodayNutritionTotals(userId);
+    // 2. Fetch all data in parallel
+    const [aggregatedNutrition, chartData, rawHistory] = await Promise.all([
+      historyService.getTodayNutritionTotals(userId),
+      historyService.getCaloriesTrend(userId),
+      historyService.getUserHistory(userId),
+    ]);
 
     // 3. Calculate percentages
     const percentages = {
@@ -84,12 +88,6 @@ export const getDashboardSummary = async (req, res) => {
       sodium: targets.targetSodium > 0 ? Math.round((aggregatedNutrition.sodium / targets.targetSodium) * 100) : 0,
       fiber: targets.targetFiber > 0 ? Math.round((aggregatedNutrition.fiber / targets.targetFiber) * 100) : 0,
     };
-
-    // 4. Get 6-day trend
-    const chartData = await historyService.getCaloriesTrend(userId);
-
-    // 5. Get raw history for rendering items
-    const rawHistory = await historyService.getUserHistory(userId);
 
     return res.status(200).json({
       success: true,

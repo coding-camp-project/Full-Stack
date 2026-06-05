@@ -20,6 +20,18 @@ const getServingUnit = (foodName) => {
   return "porsi";
 };
 
+const isGeminiQuotaError = (error) => {
+  if (!error) return false;
+  const message = String(error.message || error).toLowerCase();
+  return message.includes("429") || 
+         message.includes("quota") || 
+         message.includes("limit") || 
+         message.includes("exhausted") || 
+         message.includes("503") || 
+         message.includes("high demand") ||
+         message.includes("resource_exhausted");
+};
+
 // Map user diseases to FastAPI strict options (returns all matching diseases)
 const mapDiseasesForFastAPI = (user) => {
   if (!user) return [];
@@ -154,7 +166,6 @@ export const scanFood = async (req, res) => {
     const servingSizeG = csvMatch?.serving_size_g || 100;
     const servingUnit = getServingUnit(formattedFoodName);
 
-    // Run local Rule Engine to calculate health score, grade, and analysis comments
     const meal = {
       food_name: formattedFoodName,
       calories: nutrition.calories || 0,
@@ -166,6 +177,9 @@ export const scanFood = async (req, res) => {
       fiber: nutrition.fiber || 0,
     };
 
+    // Run local Rule Engine immediately to calculate base health metrics
+    const ruleResult = await runRuleEngine(meal, req.user);
+
     // Combine recommendations from FastAPI for all mapped diseases
     const fastapiRecommendations = [];
     if (fastapiResult.recommendation) {
@@ -173,67 +187,84 @@ export const scanFood = async (req, res) => {
     }
 
     if (mappedDiseases.length > 1) {
-      console.log(`User has multiple diseases (${mappedDiseases.join(", ")}). Fetching additional recommendations from damasdev API...`);
+      console.log(`User has multiple diseases (${mappedDiseases.join(", ")}). Fetching additional recommendations from damasdev API in parallel...`);
+      const additionalRequests = [];
       for (let i = 1; i < mappedDiseases.length; i++) {
         const nextDisease = mappedDiseases[i];
-        try {
-          const additionalFormData = new FormData();
-          additionalFormData.append("disease", nextDisease);
-          additionalFormData.append("manual_items", JSON.stringify([{
-            food_name: formattedFoodName,
-            quantity: 1,
-            unit: "porsi",
-            estimated_weight_g: 100,
-            total_gram: 100
-          }]));
+        const additionalFormData = new FormData();
+        additionalFormData.append("disease", nextDisease);
+        additionalFormData.append("manual_items", JSON.stringify([{
+          food_name: formattedFoodName,
+          quantity: 1,
+          unit: "porsi",
+          estimated_weight_g: 100,
+          total_gram: 100
+        }]));
 
-          const additionalResponse = await axios.post(`${mlApiUrl}/predict`, additionalFormData, {
+        additionalRequests.push(
+          axios.post(`${mlApiUrl}/predict`, additionalFormData, {
             headers: {
               ...additionalFormData.getHeaders(),
             },
-          });
-          if (additionalResponse.data?.recommendation) {
-            fastapiRecommendations.push(additionalResponse.data.recommendation);
-          }
-        } catch (addError) {
-          console.error(`Failed to fetch additional recommendation for ${nextDisease} from damasdev API:`, addError.message);
-        }
+            timeout: 4000
+          })
+          .then(res => res.data?.recommendation)
+          .catch(addError => {
+            console.error(`Failed to fetch additional recommendation for ${nextDisease} from damasdev API:`, addError.message);
+            return null;
+          })
+        );
       }
+
+      const extraRecs = await Promise.all(additionalRequests);
+      extraRecs.forEach(rec => {
+        if (rec) fastapiRecommendations.push(rec);
+      });
     }
 
     let analysisResult = null;
+    let isQuotaExhausted = false;
 
-    console.log("Calling Gemini LLM for recommendation and analysis...");
+    console.log("Calling Gemini LLM to refine texts...");
     try {
-      const unifiedResult = await getUnifiedLLMRecommendation(formattedFoodName, nutrition, req.user, fastapiRecommendations);
+      const unifiedResult = await getUnifiedLLMRecommendation(formattedFoodName, nutrition, req.user, fastapiRecommendations, ruleResult);
       if (unifiedResult) {
+        // Merge Gemini refined text with local ruleEngine score, grade, and alternatives
         analysisResult = {
-          healthScore: unifiedResult.healthScore || 50,
-          healthGrade: unifiedResult.healthGrade || "C",
+          healthScore: ruleResult.healthScore || 50,
+          healthGrade: ruleResult.healthGrade || "C",
           healthAnalysis: (unifiedResult.healthAnalysis || []).map(a => a.replace(/diet/gi, "pola makan")),
           warning: unifiedResult.warning || "",
           recommendation: (unifiedResult.recommendation || "").replace(/diet/gi, "pola makan"),
-          alternatives: unifiedResult.alternatives || [],
+          alternatives: ruleResult.alternatives || [],
         };
       }
     } catch (geminiError) {
-      console.error("Gemini call failed during scan:", geminiError);
+      console.error("Gemini call failed during scan refinement:", geminiError);
+      isQuotaExhausted = isGeminiQuotaError(geminiError);
     }
 
     if (!analysisResult) {
-      console.warn("Unified LLM recommendation failed or returned null, falling back to local rule engine...");
-      const ruleResult = await runRuleEngine(meal, req.user);
+      console.warn("Unified LLM refinement failed, falling back entirely to local rule engine...");
       const isAllergenDetected = ruleResult.healthAnalysis.some(a => a.includes("alergen") || a.includes("PERINGATAN KERAS"));
       const fallbackRec = isAllergenDetected
         ? ruleResult.recommendation
         : (ruleResult.recommendation || `Rekomendasi pola makan Anda: ${ruleResult.healthAnalysis.join(" ")}`);
       
+      const customWarning = isQuotaExhausted
+        ? ("⚠️ Kuota AI utama habis. Hasil menggunakan analisis cadangan lokal." + (ruleResult.warning ? ` ${ruleResult.warning}` : ""))
+        : (ruleResult.warning || "");
+
+      const customRec = isQuotaExhausted
+        ? (fallbackRec + " [Catatan: Hasil analisis menggunakan sistem cadangan lokal karena kuota AI utama sedang penuh]")
+        : fallbackRec;
+
       analysisResult = {
         healthScore: ruleResult.healthScore,
         healthGrade: ruleResult.healthGrade,
         healthAnalysis: ruleResult.healthAnalysis.map(a => a.replace(/diet/gi, "pola makan")),
-        warning: ruleResult.warning || "",
-        recommendation: fallbackRec.replace(/diet/gi, "pola makan"),
+        warning: customWarning,
+        recommendation: customRec.replace(/diet/gi, "pola makan"),
         alternatives: ruleResult.alternatives || [],
       };
     }

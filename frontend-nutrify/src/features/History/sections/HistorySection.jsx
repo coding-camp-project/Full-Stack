@@ -78,17 +78,30 @@ function HistorySection() {
  
   useEffect(() => {
     let isMounted = true;
- 
+
+    // 1. Instantly load from localStorage cache to show data immediately
+    const cachedItems = getStoredHistoryItems();
+    if (cachedItems && cachedItems.length > 0) {
+      setHistoryItems(cachedItems);
+      setLoading(false);
+    }
+
+    // 2. Fetch fresh history from server in the background
     getHistory()
       .then((history) => {
         if (isMounted) {
           setHistoryItems(history.map(mapHistoryRecordToCardItem));
+          // Store fresh history to cache
+          const userData = getUserData();
+          const userId = userData?.id || "guest";
+          const localHistoryKey = `scanHistory_${userId}`;
+          localStorage.setItem(localHistoryKey, JSON.stringify(history));
         }
       })
       .catch((err) => {
         console.error("Gagal mengambil riwayat dari server", err);
- 
-        if (isMounted) {
+        // Only fallback to localStorage if we haven't already displayed cached data
+        if (isMounted && (!cachedItems || cachedItems.length === 0)) {
           setHistoryItems(getStoredHistoryItems());
         }
       })
@@ -97,7 +110,7 @@ function HistorySection() {
           setLoading(false);
         }
       });
- 
+
     return () => {
       isMounted = false;
     };

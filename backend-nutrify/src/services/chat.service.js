@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 import Chat from "../models/chat.model.js";
+import { executeWithRotatedKey } from "./apiKeyRotator.js";
 
 const createConversationId = () => crypto.randomUUID();
 
@@ -21,14 +22,29 @@ export const getConversationHistory = async (conversationId, userId) => {
 
 const MODELS = [
   "gemini-2.5-flash-lite",
-  "gemini-2.0-flash-lite",
+  "gemini-3.1-flash-lite",
+  "gemini-flash-lite-latest",
+  "gemini-3-flash",
+  "gemini-3.5-flash",
+  "gemini-1.5-flash-8b",
   "gemini-2.5-flash",
   "gemini-2.0-flash",
   "gemini-1.5-flash"
 ];
 
+const isGeminiQuotaError = (error) => {
+  if (!error) return false;
+  const message = String(error.message || error).toLowerCase();
+  return message.includes("429") || 
+         message.includes("quota") || 
+         message.includes("limit") || 
+         message.includes("exhausted") || 
+         message.includes("503") || 
+         message.includes("high demand") ||
+         message.includes("resource_exhausted");
+};
+
 export const sendMessageToAI = async (message, history = []) => {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const systemInstruction = 
     "Anda adalah Nutrify AI, asisten chatbot khusus kesehatan, makanan, gizi, dan nutrisi. " +
     "Tugas utama Anda adalah menjawab pertanyaan pengguna yang berkaitan dengan kesehatan, pola makan, " +
@@ -46,41 +62,37 @@ export const sendMessageToAI = async (message, history = []) => {
     parts: [{ text: msg.message }],
   }));
 
-  let lastError = null;
+  return executeWithRotatedKey("chat", async (genAI) => {
+    let lastError = null;
 
-  for (const modelName of MODELS) {
-    try {
-      console.log("[Gemini] Request started");
-      console.log("[Gemini] Model:", modelName);
-      const model = genAI.getGenerativeModel({
-        model: modelName,
-        systemInstruction,
-      });
+    for (const modelName of MODELS) {
+      try {
+        console.log("[Gemini] Request started");
+        console.log("[Gemini] Model:", modelName);
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          systemInstruction,
+        });
 
-      const chat = model.startChat({
-        history: formattedHistory,
-      });
+        const chat = model.startChat({
+          history: formattedHistory,
+        });
 
-      const result = await chat.sendMessage(message);
-      const reply = result.response.text();
-      console.log("[Gemini] Response received");
+        const result = await chat.sendMessage(message);
+        const reply = result.response.text();
+        console.log("[Gemini] Response received");
 
-      if (reply) {
-        return reply;
+        if (reply) {
+          return reply;
+        }
+      } catch (error) {
+        console.error(`[Gemini] Model ${modelName} failed on current key:`, error.message || error);
+        lastError = error;
       }
-    } catch (error) {
-      console.error("[Gemini] Error:", error);
-      lastError = error;
     }
-  }
 
-  // Jika semua model gagal
-  console.error("Semua model Gemini gagal digunakan.");
-  const backendError = new Error(
-    lastError?.message || "Gagal menghubungi API Gemini setelah mencoba semua model cadangan."
-  );
-  backendError.statusCode = 500;
-  throw backendError;
+    throw lastError || new Error("All models failed on the selected API key.");
+  });
 };
 
 export const handleChatMessage = async ({ message, userId, conversationId }) => {
@@ -101,7 +113,17 @@ export const handleChatMessage = async ({ message, userId, conversationId }) => 
   });
 
   // Get AI response
-  const reply = await sendMessageToAI(message, history);
+  let reply;
+  try {
+    reply = await sendMessageToAI(message, history);
+  } catch (err) {
+    console.error("Chatbot sendMessageToAI failed:", err);
+    if (isGeminiQuotaError(err)) {
+      reply = "⚠️ Maaf, asisten Nutrify AI sedang beristirahat karena kuota API harian telah habis. Silakan hubungi admin atau coba lagi beberapa saat lagi!";
+    } else {
+      reply = "⚠️ Terjadi masalah koneksi dengan asisten AI. Silakan coba beberapa saat lagi.";
+    }
+  }
 
   // Save the AI's response
   await saveChatMessage({

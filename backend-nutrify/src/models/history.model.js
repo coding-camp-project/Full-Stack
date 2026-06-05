@@ -79,6 +79,7 @@ const historySchema = new mongoose.Schema(
   }
 );
 
+historySchema.index({ userId: 1, createdAt: -1 });
 historySchema.index({ createdAt: 1 }, { expireAfterSeconds: 86400 });
 
 const History = mongoose.model("History", historySchema);

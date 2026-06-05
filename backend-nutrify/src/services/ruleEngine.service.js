@@ -1,5 +1,6 @@
 import Food from "../models/food.model.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { executeWithRotatedKey } from "./apiKeyRotator.js";
 
 /**
  * Calculate age based on birthDate string
@@ -152,7 +153,11 @@ export const calculateDailyNeeds = (user) => {
 
 const MODELS = [
   "gemini-2.5-flash-lite",
-  "gemini-2.0-flash-lite",
+  "gemini-3.1-flash-lite",
+  "gemini-flash-lite-latest",
+  "gemini-3-flash",
+  "gemini-3.5-flash",
+  "gemini-1.5-flash-8b",
   "gemini-2.5-flash",
   "gemini-2.0-flash",
   "gemini-1.5-flash"
@@ -185,15 +190,16 @@ Anda adalah pakar nutrisi dan gizi. Analisis makanan berikut untuk pengguna deng
 
 Berikan analisis kesehatan yang akurat. Jika makanan tersebut berbahaya atau tidak dianjurkan (misalnya mengandung kolesterol tinggi seperti kepiting/udang/cumi untuk penderita kolesterol tinggi, atau tinggi purin untuk asam urat, atau mengandung alergen yang berbahaya), berikan skor kesehatan rendah, grade buruk, dan peringatan (warning) yang jelas.
 PENTING: Jangan sekali-kali menggunakan kata "diet" dalam respon Anda. Gunakan kata "pola makan", "kebiasaan makan", atau "nutrisi".
+PENTING: Buatlah analisis kesehatan (healthAnalysis) dan rekomendasi (recommendation) sesingkat, sepadat, dan semininmal mungkin namun mencakup semuanya secara ringkas. Batasi "healthAnalysis" maksimal 2 poin pendek (masing-masing 1 kalimat singkat), dan "recommendation" maksimal 1-2 kalimat pendek saja. "warning" harus maksimal 5-7 kata.
 
 Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks \`\`\`json atau teks pembuka/penutup lainnya) dengan struktur:
 {
   "healthScore": <number antara 10 - 100>,
   "healthGrade": "<A/B/C/D/E>",
-  "healthAnalysis": ["<analisis detail poin 1>", "<analisis detail poin 2>"],
-  "warning": "<pesan peringatan singkat jika ada potensi bahaya, kosongkan jika aman>",
-  "recommendation": "Rekomendasi berdasarkan profil Anda yaitu ${conditions.join(", ") || "Umum"}: Anda sebaiknya membatasi atau menghindari konsumsi ${foodName} karena... (ATAU) Rekomendasi berdasarkan profil Anda yaitu ${conditions.join(", ") || "Umum"}: Anda boleh mengonsumsi ${foodName} ini karena...",
-  "alternatives": ["<rekomendasi alternatif makanan sehat 1>", "<rekomendasi alternatif makanan sehat 2>", "<rekomendasi alternatif makanan sehat 3>"]
+  "healthAnalysis": ["<analisis singkat 1>", "<analisis singkat 2>"],
+  "warning": "<pesan peringatan sangat singkat, kosongkan jika aman>",
+  "recommendation": "Rekomendasi berdasarkan profil Anda yaitu ${conditions.join(", ") || "Umum"}: <rekomendasi sangat singkat, 1-2 kalimat>",
+  "alternatives": ["<alternatif 1>", "<alternatif 2>", "<alternatif 3>"]
 }
 `;
 
@@ -222,13 +228,7 @@ Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks \`\
   return null;
 };
 
-export const getUnifiedLLMRecommendation = async (foodName, nutrition, user, fastapiRecommendations = []) => {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    console.warn("GEMINI_API_KEY is not defined, skipping unified LLM recommendation.");
-    return null;
-  }
-
+export const getUnifiedLLMRecommendation = async (foodName, nutrition, user, fastapiRecommendations = [], ruleResult = null) => {
   const conditions = user?.healthConditions || [];
   const allergies = user?.allergies || [];
   const restrictions = user?.foodRestrictions || [];
@@ -236,72 +236,64 @@ export const getUnifiedLLMRecommendation = async (foodName, nutrition, user, fas
   const goal = user?.primaryGoal || "";
   const otherConditions = user?.otherConditions || "";
 
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const draftAnalysis = ruleResult?.healthAnalysis || [];
+  const draftRec = ruleResult?.recommendation || "";
 
   const prompt = `
-Anda adalah pakar nutrisi dan gizi medis. Analisis makanan berikut secara detail dan konsisten dengan profil kesehatan pengguna.
+Anda adalah asisten gizi profesional. Tugas Anda adalah merapikan analisis kesehatan dan rekomendasi makanan agar bahasanya santun, profesional, mudah dipahami, dan padat dalam bahasa Indonesia.
 
 Makanan: ${foodName}
-Kandungan Nutrisi (per 100g):
-- Kalori: ${nutrition.calories || 0} kkal
-- Protein: ${nutrition.protein || 0} g
-- Lemak: ${nutrition.fat || 0} g
-- Karbohidrat: ${nutrition.carbohydrates || 0} g
-- Gula: ${nutrition.sugar || 0} g
-- Sodium: ${nutrition.sodium || 0} mg
-- Serat: ${nutrition.fiber || 0} g
+Kondisi Kesehatan Pengguna: ${conditions.join(", ")} ${otherConditions ? `(${otherConditions})` : ""}
 
-Profil Pengguna:
-- Kondisi Kesehatan: ${conditions.join(", ")} ${otherConditions ? `(${otherConditions})` : ""}
-- Alergi: ${allergies.join(", ")}
-- Pantangan Makanan (Restrictions): ${restrictions.join(", ")}
-- Preferensi Makanan: ${preferences.join(", ")}
-- Target/Goal: ${goal}
+Draft Analisis Kesehatan:
+${draftAnalysis.map(a => `- ${a}`).join("\n") || "- Kandungan nutrisi terpantau seimbang."}
 
-Rujukan Rekomendasi Awal dari FastAPI (mungkin ada kontradiksi medis, harap diselaraskan secara profesional):
-${fastapiRecommendations.map((r, i) => `Rujukan ${i+1}: "${r}"`).join("\n") || "Tidak ada rujukan"}
+Draft Rekomendasi:
+"${draftRec}"
 
- Tugas Anda:
-1. Analisis kesesuaian makanan ini untuk profil kesehatan pengguna (perhatikan semua penyakit/kondisi mereka secara adil dan terpadu).
-2. Jika ada rujukan rekomendasi awal yang kontradiktif (misalnya satu rujukan bilang aman tetapi kandungan kolesterol/sodium tinggi, atau bahan tidak cocok untuk kondisi mereka lainnya), selaraskan dan berikan kesimpulan yang akurat berdasarkan kaidah medis nutrisi yang konsisten.
-3. Tentukan skor kesehatan (healthScore) 10-100 dan grade kesehatan (healthGrade) A/B/C/D/E yang logis berdasarkan kandungan nutrisi dan profil kesehatan pengguna.
-4. Buat list analisis kesehatan (healthAnalysis) yang berisi poin-poin alasan medis yang jelas dan konsisten.
-5. Buat satu pesan rekomendasi (recommendation) paragraf singkat yang padat, ramah, logis, dan konsisten (tidak boleh ada kalimat kontradiktif seperti "relatif aman namun sebaiknya dihindari").
-PENTING: Jangan sekali-kali menggunakan kata "diet" dalam respon Anda. Gunakan kata "pola makan", "kebiasaan makan", atau "nutrisi".
+Rujukan Tambahan dari FastAPI:
+${fastapiRecommendations.map(r => `- ${r}`).join("\n") || "- Tidak ada rujukan tambahan"}
+
+Tugas Penulisan:
+1. Ringkas analisis kesehatan menjadi maksimal 2 poin pendek (masing-masing 1 kalimat singkat) yang mencakup kecocokan makanan dengan kondisi kesehatan pengguna.
+2. Rekomendasi HARUS diawali secara eksplisit dengan menyebutkan penyakit/kondisi kesehatan yang dimiliki pengguna (jika ada). Contoh format: "Berdasarkan kondisi Diabetes dan Hipertensi Anda, ..." atau "Berdasarkan kondisi Kolesterol Anda, ...". Jika pengguna tidak memiliki penyakit (kondisi Umum), gunakan format: "Berdasarkan profil kesehatan Anda, ...". Batasi rekomendasi maksimal 1-2 kalimat pendek saja.
+3. Tentukan warning berupa pesan peringatan singkat (maksimal 5 kata) jika makanan terdeteksi bahaya atau mengandung alergen, jika aman kosongkan.
+4. PENTING: Jangan sekali-kali menggunakan kata "diet", gunakan "pola makan".
 
 Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks atau teks pembuka/penutup lainnya) dengan struktur:
 {
-  "healthScore": <number antara 10 - 100>,
-  "healthGrade": "<A/B/C/D/E>",
-  "healthAnalysis": ["<analisis detail poin 1>", "<analisis detail poin 2>"],
-  "warning": "<pesan peringatan singkat jika ada potensi bahaya besar/alergi/pantangan medis, kosongkan jika aman>",
-  "recommendation": "<rekomendasi pola makan terpadu, singkat dan padat>",
-  "alternatives": ["<rekomendasi alternatif makanan sehat 1>", "<rekomendasi alternatif makanan sehat 2>", "<rekomendasi alternatif makanan sehat 3>"]
+  "healthAnalysis": ["<analisis singkat 1>", "<analisis singkat 2>"],
+  "warning": "<peringatan sangat singkat atau kosong>",
+  "recommendation": "<rekomendasi singkat, 1-2 kalimat>"
 }
 `;
 
-  for (const modelName of MODELS) {
-    try {
-      console.log("[Gemini] Request started");
-      console.log("[Gemini] Model:", modelName);
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      const text = result.response.text().trim();
-      console.log("[Gemini] Response received");
-      
-      const jsonStart = text.indexOf("{");
-      const jsonEnd = text.lastIndexOf("}");
-      if (jsonStart !== -1 && jsonEnd !== -1) {
-        const cleanJsonStr = text.substring(jsonStart, jsonEnd + 1);
-        const parsed = JSON.parse(cleanJsonStr);
-        return parsed;
+  return executeWithRotatedKey("scan", async (genAI) => {
+    let lastError = null;
+    for (const modelName of MODELS) {
+      try {
+        console.log("[Gemini] Request started (Refinement)");
+        console.log("[Gemini] Model:", modelName);
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt);
+        const text = result.response.text().trim();
+        console.log("[Gemini] Response received");
+        
+        const jsonStart = text.indexOf("{");
+        const jsonEnd = text.lastIndexOf("}");
+        if (jsonStart !== -1 && jsonEnd !== -1) {
+          const cleanJsonStr = text.substring(jsonStart, jsonEnd + 1);
+          const parsed = JSON.parse(cleanJsonStr);
+          return parsed;
+        }
+      } catch (error) {
+        console.error(`[Gemini] Model ${modelName} failed on current key:`, error.message || error);
+        lastError = error;
       }
-    } catch (error) {
-      console.error("[Gemini] Error:", error);
     }
-  }
 
-  return null;
+    throw lastError || new Error("All models failed on the selected API key.");
+  });
 };
 
 /**

@@ -37,48 +37,23 @@ function DashboardPage() {
     const localTargets = calculateDailyNeeds(userData);
     setTargets(localTargets);
 
-    getDashboardSummary()
-      .then((data) => {
-        if (data) {
-          setTargets(data.targets || localTargets);
-          setAggregatedNutrition(data.aggregatedNutrition || {
-            calories: 0,
-            carbs: 0,
-            fat: 0,
-            protein: 0,
-            sugar: 0,
-            sodium: 0,
-            fiber: 0,
-          });
-          setChartData(data.chartData || []);
-          if (data.history) {
-            setHistoryItems(data.history.map(mapHistoryRecordToCardItem));
-          }
-        }
-      })
-      .catch((err) => {
-        console.error("Gagal mengambil ringkasan dashboard dari server, menggunakan fallback lokal:", err);
+    // 1. Instantly load from local storage cache to show data immediately
+    const localHistoryKey = `scanHistory_${userId}`;
+    const historyStr = localStorage.getItem(localHistoryKey);
+    if (historyStr) {
+      try {
+        const allItems = JSON.parse(historyStr);
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const startOfTodayTime = startOfToday.getTime();
         
-        const localHistoryKey = `scanHistory_${userId}`;
-        const historyStr = localStorage.getItem(localHistoryKey);
-        let localHistory = [];
-        if (historyStr) {
-          try {
-            const allItems = JSON.parse(historyStr);
-            const startOfToday = new Date();
-            startOfToday.setHours(0, 0, 0, 0);
-            const startOfTodayTime = startOfToday.getTime();
-            localHistory = allItems.filter(item => {
-              const itemTime = new Date(item.date || item.createdAt).getTime();
-              return itemTime >= startOfTodayTime;
-            });
-            localStorage.setItem(localHistoryKey, JSON.stringify(localHistory));
-          } catch (parseErr) {
-            console.error("Gagal membaca riwayat lokal", parseErr);
-          }
-        }
+        // Filter items that are from today for the active history list
+        const localTodayHistory = allItems.filter(item => {
+          const itemTime = new Date(item.date || item.createdAt).getTime();
+          return itemTime >= startOfTodayTime;
+        });
 
-        const mappedItems = localHistory.map(mapHistoryRecordToCardItem);
+        const mappedItems = localTodayHistory.map(mapHistoryRecordToCardItem);
         setHistoryItems(mappedItems);
 
         // Aggregate local history for today
@@ -105,7 +80,7 @@ function DashboardPage() {
         for (let i = 5; i >= 0; i--) {
           const d = new Date();
           d.setDate(d.getDate() - i);
-          const dayItems = mappedItems.filter(item => new Date(item.date || item.createdAt).toDateString() === d.toDateString());
+          const dayItems = allItems.filter(item => new Date(item.date || item.createdAt).toDateString() === d.toDateString());
           const sum = dayItems.reduce((acc, curr) => acc + (curr.calories || 0), 0);
           localTrend.push({
             date: d.toISOString(),
@@ -114,6 +89,35 @@ function DashboardPage() {
           });
         }
         setChartData(localTrend);
+      } catch (parseErr) {
+        console.error("Gagal membaca riwayat lokal untuk dashboard:", parseErr);
+      }
+    }
+
+    // 2. Fetch fresh data from server in the background
+    getDashboardSummary()
+      .then((data) => {
+        if (data) {
+          setTargets(data.targets || localTargets);
+          setAggregatedNutrition(data.aggregatedNutrition || {
+            calories: 0,
+            carbs: 0,
+            fat: 0,
+            protein: 0,
+            sugar: 0,
+            sodium: 0,
+            fiber: 0,
+          });
+          setChartData(data.chartData || []);
+          if (data.history) {
+            setHistoryItems(data.history.map(mapHistoryRecordToCardItem));
+            // Cache the fresh history in local storage
+            localStorage.setItem(localHistoryKey, JSON.stringify(data.history));
+          }
+        }
+      })
+      .catch((err) => {
+        console.error("Gagal mengambil ringkasan dashboard dari server:", err);
       })
       .finally(() => {
         setLoading(false);
