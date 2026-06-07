@@ -26,10 +26,12 @@ export const registerUser = async (userData) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationTokenExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
 
     userExists.name = name;
     userExists.password = hashedPassword;
     userExists.verificationToken = verificationToken;
+    userExists.verificationTokenExpiresAt = verificationTokenExpiresAt;
     await userExists.save();
 
     try {
@@ -56,6 +58,7 @@ export const registerUser = async (userData) => {
 
   // Generate verification token
   const verificationToken = crypto.randomBytes(32).toString("hex");
+  const verificationTokenExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
 
   // Create user in DB with isVerified: false
   const user = await User.create({
@@ -64,6 +67,7 @@ export const registerUser = async (userData) => {
     password: hashedPassword,
     isVerified: false,
     verificationToken,
+    verificationTokenExpiresAt,
   });
 
   // Send verification email and await it for Serverless compatibility (like Vercel)
@@ -201,11 +205,17 @@ export const googleLoginUser = async (googleData) => {
 export const verifyEmail = async (token) => {
   const user = await User.findOne({ verificationToken: token });
   if (!user) {
-    throw new Error("Token verifikasi tidak valid atau sudah kedaluwarsa.");
+    throw new Error("Token verifikasi tidak valid.");
+  }
+
+  // Enforce 5-minute expiration time
+  if (user.verificationTokenExpiresAt && user.verificationTokenExpiresAt < new Date()) {
+    throw new Error("Token verifikasi sudah kedaluwarsa (hanya berlaku 5 menit). Silakan lakukan registrasi ulang.");
   }
 
   user.isVerified = true;
   user.verificationToken = "";
+  user.verificationTokenExpiresAt = null;
   await user.save();
 
   return user;

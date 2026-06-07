@@ -152,8 +152,13 @@ export default function RegisterForm() {
             Kami telah mengirimkan tautan verifikasi ke email:
           </p>
           <p className="text-sm font-semibold text-gray-800 mb-8 break-all">{email}</p>
+          
+          <div className="mb-6 w-full p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-sm font-medium text-center">
+            ⚠️ <strong>PENTING:</strong> Jika email verifikasi tidak masuk ke Kotak Masuk (Inbox) utama Anda, mohon periksa folder <strong>Spam</strong> email Anda.
+          </div>
+
           <p className="text-xs text-gray-400 mb-8">
-            Silakan periksa kotak masuk (inbox) atau folder spam email Anda untuk mengaktifkan akun sebelum masuk.
+            Tautan verifikasi ini hanya berlaku selama <strong>5 menit</strong>.
           </p>
           <Link to="/login" className="w-full">
             <Button

@@ -4,6 +4,7 @@ import { CheckCircle, XCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import AuthLayout from "./sections/AuthLayout"
 import axios from "axios"
+import { clearUserSession } from "@/utils/userSession"
 
 function VerifyEmailForm() {
   const [searchParams] = useSearchParams()
@@ -12,6 +13,11 @@ function VerifyEmailForm() {
   const [errorMessage, setErrorMessage] = useState("")
   
   const token = searchParams.get("token")
+
+  useEffect(() => {
+    // Clear any previous active login session immediately to prevent auto-login bug
+    clearUserSession()
+  }, [])
 
   useEffect(() => {
     const performVerification = async () => {
@@ -62,7 +68,7 @@ function VerifyEmailForm() {
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Verifikasi Berhasil!</h2>
           <p className="text-gray-500 text-sm mb-8">
-            Akun Anda telah berhasil diaktifkan. Anda sekarang dapat masuk menggunakan email dan kata sandi Anda.
+            Akun Anda telah berhasil diaktifkan. Silakan masuk secara manual dengan mengetik ulang alamat email dan kata sandi Anda.
           </p>
           <Link to="/login" className="w-full">
             <Button
