@@ -3,6 +3,7 @@ import {
   registerUser,
   loginUser,
   googleLoginUser,
+  verifyEmail,
   getAllUsers,
   getUserById,
   updateUser,
@@ -29,6 +30,7 @@ const authLimiter = rateLimit({
 router.post("/register", authLimiter, registerUser);
 router.post("/login", authLimiter, loginUser);
 router.post("/google-login", authLimiter, googleLoginUser);
+router.get("/verify-email", verifyEmail);
 
 // Protected routes (require valid JWT)
 router.get("/", protect, getAllUsers);

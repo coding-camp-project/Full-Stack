@@ -1,6 +1,8 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import { sendVerificationEmail } from "./email.service.js";
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -15,18 +17,55 @@ export const registerUser = async (userData) => {
   // Check if email already exists
   const userExists = await User.findOne({ email });
   if (userExists) {
-    throw new Error("Email already registered");
+    if (userExists.isVerified) {
+      throw new Error("Email already registered");
+    }
+
+    // If the email exists but is NOT verified, we update the existing record
+    // and resend the verification email (allows user to try registering again or fix typo)
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
+    userExists.name = name;
+    userExists.password = hashedPassword;
+    userExists.verificationToken = verificationToken;
+    await userExists.save();
+
+    sendVerificationEmail(userExists.email, verificationToken).catch((error) => {
+      console.error("Failed to send verification email during re-registration:", error);
+    });
+
+    return {
+      _id: userExists._id,
+      name: userExists.name,
+      email: userExists.email,
+      profilePicture: userExists.profilePicture || "",
+      isPersonalized: false,
+      isVerified: false,
+      message: "Registrasi ulang berhasil! Silakan verifikasi email Anda untuk mengaktifkan akun.",
+    };
   }
 
-  // Hash password
+  // Hash password for new registration
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  // Create user in DB
+  // Generate verification token
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+
+  // Create user in DB with isVerified: false
   const user = await User.create({
     name,
     email,
     password: hashedPassword,
+    isVerified: false,
+    verificationToken,
+  });
+
+  // Asynchronously send verification email so it doesn't block response
+  sendVerificationEmail(user.email, verificationToken).catch((error) => {
+    console.error("Failed to send verification email:", error);
   });
 
   return {
@@ -35,7 +74,8 @@ export const registerUser = async (userData) => {
     email: user.email,
     profilePicture: user.profilePicture || "",
     isPersonalized: false,
-    token: generateToken(user._id),
+    isVerified: false,
+    message: "Registrasi berhasil! Silakan verifikasi email Anda untuk mengaktifkan akun.",
   };
 };
 
@@ -44,6 +84,11 @@ export const loginUser = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw new Error("Invalid email or password");
+  }
+
+  // Check if email is verified
+  if (!user.isVerified) {
+    throw new Error("Email Anda belum diverifikasi. Silakan periksa inbox/spam email Anda.");
   }
 
   // Compare password
@@ -112,8 +157,8 @@ export const deleteUser = async (id) => {
 export const googleLoginUser = async (googleData) => {
   const { name, email, profilePicture } = googleData;
 
-  // Find user by email - use lean() for faster read-only query
-  let user = await User.findOne({ email }).lean();
+  // Find user by email (don't use lean() because we might need to call save())
+  let user = await User.findOne({ email });
 
   if (!user) {
     // Generate a secure random password for new Google users
@@ -126,7 +171,13 @@ export const googleLoginUser = async (googleData) => {
       email,
       password: hashedPassword,
       profilePicture: profilePicture || "",
+      isVerified: true, // Google login verified email automatically
     });
+  } else if (!user.isVerified) {
+    // If user registered manually but never verified, mark them verified since they verified ownership via Google
+    user.isVerified = true;
+    user.verificationToken = "";
+    await user.save();
   }
 
   const isPersonalized = Boolean(user.height && user.weight && user.birthDate);
@@ -139,4 +190,17 @@ export const googleLoginUser = async (googleData) => {
     isPersonalized,
     token: generateToken(user._id),
   };
+};
+
+export const verifyEmail = async (token) => {
+  const user = await User.findOne({ verificationToken: token });
+  if (!user) {
+    throw new Error("Token verifikasi tidak valid atau sudah kedaluwarsa.");
+  }
+
+  user.isVerified = true;
+  user.verificationToken = "";
+  await user.save();
+
+  return user;
 };

@@ -16,6 +16,7 @@ export default function RegisterForm() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
+  const [registrationSuccess, setRegistrationSuccess] = useState(false)
   const navigate = useNavigate()
 
   // Handle redirect result from Google sign-in (especially for mobile devices)
@@ -74,8 +75,7 @@ export default function RegisterForm() {
       })
 
       console.log("Registrasi manual berhasil!")
-      setSuccess("Registrasi berhasil! Mengalihkan ke halaman masuk...")
-      navigate("/login");
+      setRegistrationSuccess(true)
     } catch (err) {
       console.error("Gagal registrasi:", err)
       const errorMessage = err.response?.data?.message || "Terjadi kesalahan. Silakan coba lagi."
@@ -125,6 +125,34 @@ export default function RegisterForm() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (registrationSuccess) {
+    return (
+      <div className="w-full">
+        <div className="flex flex-col items-center text-center py-4">
+          <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#EBF7F0]">
+            <Mail className="h-8 w-8 text-[#12B76A]" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Verifikasi Email</h2>
+          <p className="text-gray-500 text-sm mb-4">
+            Kami telah mengirimkan tautan verifikasi ke email:
+          </p>
+          <p className="text-sm font-semibold text-gray-800 mb-8 break-all">{email}</p>
+          <p className="text-xs text-gray-400 mb-8">
+            Silakan periksa kotak masuk (inbox) atau folder spam email Anda untuk mengaktifkan akun sebelum masuk.
+          </p>
+          <Link to="/login" className="w-full">
+            <Button
+              type="button"
+              className="w-full bg-[#469C7B] hover:bg-[#388668] text-white py-6 rounded-xl text-base font-semibold transition-all shadow-md"
+            >
+              Kembali ke Login
+            </Button>
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (

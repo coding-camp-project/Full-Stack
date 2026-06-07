@@ -98,6 +98,25 @@ export const sendMessageToAI = async (message, history = []) => {
 export const handleChatMessage = async ({ message, userId, conversationId }) => {
   const activeConversationId = conversationId || createConversationId();
 
+  // Check daily limit (20 questions per day per user)
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const userQuestionCount = await Chat.countDocuments({
+    userId,
+    role: "user",
+    timestamp: { $gte: startOfDay, $lte: endOfDay },
+  });
+
+  if (userQuestionCount >= 20) {
+    return {
+      reply: "⚠️ Batas Harian Tercapai: Maaf, Anda telah mencapai batas maksimal 20 pertanyaan hari ini karena keterbatasan kuota API kami. Silakan coba lagi besok! Terima kasih atas pengertian Anda.",
+      conversationId: activeConversationId,
+    };
+  }
+
   // Fetch history for contextual conversations
   let history = [];
   if (conversationId) {

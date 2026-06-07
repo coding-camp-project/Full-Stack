@@ -158,3 +158,27 @@ export const googleLoginUser = async (req, res) => {
     });
   }
 };
+
+export const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.query;
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "Token verifikasi tidak ditemukan.",
+      });
+    }
+
+    await userService.verifyEmail(token);
+
+    return res.status(200).json({
+      success: true,
+      message: "Email berhasil diverifikasi! Anda sekarang dapat masuk.",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
