@@ -1,8 +1,9 @@
-import app from "./app.js";
 import dotenv from "dotenv";
+dotenv.config();
+
+import app from "./app.js";
 import connectDB from "./src/config/db.js";
 
-dotenv.config();
 
 if (!process.env.GEMINI_API_KEYS && !process.env.GEMINI_API_KEY) {
   throw new Error("GEMINI_API_KEYS or GEMINI_API_KEY is missing");
