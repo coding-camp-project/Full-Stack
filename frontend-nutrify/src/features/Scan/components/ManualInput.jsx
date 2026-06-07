@@ -63,9 +63,9 @@ function ManualInput({ value, onChange }) {
     setQuery(lastPart.trim());
   }, [value, cursorPos]);
 
-  // Fetch suggestions with 200ms debounce
+  // Fetch suggestions with 50ms debounce for near-instant responsiveness
   useEffect(() => {
-    if (query.length < 2) {
+    if (query.length < 1) {
       setSuggestions([]);
       return;
     }
@@ -84,7 +84,7 @@ function ManualInput({ value, onChange }) {
       } catch (error) {
         console.error("Autocomplete fetch failed:", error);
       }
-    }, 200);
+    }, 50);
 
     return () => clearTimeout(delayDebounce);
   }, [query, API_URL]);

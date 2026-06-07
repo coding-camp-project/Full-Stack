@@ -174,7 +174,7 @@ function NotificationDropdown({ onClose, onUnreadCountChange }) {
   return (
     <div 
       ref={dropdownRef}
-      className="absolute right-0 top-[calc(100%+0.5rem)] z-50 flex w-[calc(100vw-1.5rem)] sm:w-[28rem] flex-col overflow-hidden rounded-[22px] border border-[#E5E7EB] bg-white shadow-[0_12px_40px_rgba(0,0,0,0.12)] transition-all duration-300 animate-in fade-in slide-in-from-top-3"
+      className="fixed left-3 right-3 top-16 sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+0.5rem)] z-50 flex sm:w-[28rem] flex-col overflow-hidden rounded-[22px] border border-[#E5E7EB] bg-white shadow-[0_12px_40px_rgba(0,0,0,0.12)] transition-all duration-300 animate-in fade-in slide-in-from-top-3"
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[#F1F1F1] px-5 py-4">

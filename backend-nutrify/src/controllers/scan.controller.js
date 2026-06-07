@@ -3,7 +3,7 @@ import FormData from "form-data";
 import * as historyService from "../services/history.service.js";
 import { runRuleEngine, getUnifiedLLMRecommendation } from "../services/ruleEngine.service.js";
 import { parseInputLocally, estimateWeightLocally } from "../services/manualScan.service.js";
-import { findBestFoodMatch } from "../services/csv.service.js";
+import { findBestFoodMatch, loadFoodsFromCSV } from "../services/csv.service.js";
 
 // Map food names to standard Indonesian portions/units
 const getServingUnit = (foodName) => {
@@ -58,18 +58,48 @@ export const suggestFood = async (req, res) => {
     }
 
     const cleanQuery = q.trim();
+    const cleanQueryLower = cleanQuery.toLowerCase();
     const mlApiUrl = (process.env.ML_API_URL || "https://damassdev-nutrify-ai-api.hf.space").replace(/\/$/, "");
 
-    // Call Deployed AI model Search API
-    const response = await axios.get(`${mlApiUrl}/search-food?q=${encodeURIComponent(cleanQuery)}&limit=15`);
-    const data = response.data;
+    // 1. Search locally in Indonesian food CSV dataset first (instant)
+    const foods = loadFoodsFromCSV();
+    const localMatches = foods
+      .filter((f) => f.food_name && f.food_name.toLowerCase().includes(cleanQueryLower))
+      .map((f) => f.food_name);
 
-    // Map candidates to suggestions array
-    const suggestions = (data.candidates || []).map((c) => c.food_name);
+    // Sort matches: startsWith gets higher priority than includes, then shorter length first
+    localMatches.sort((a, b) => {
+      const aLower = a.toLowerCase();
+      const bLower = b.toLowerCase();
+      const aStarts = aLower.startsWith(cleanQueryLower);
+      const bStarts = bLower.startsWith(cleanQueryLower);
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+      return a.length - b.length;
+    });
 
+    let suggestions = [...localMatches];
+
+    // 2. Fetch from remote Hugging Face API with short timeout fallback
+    try {
+      const response = await axios.get(
+        `${mlApiUrl}/search-food?q=${encodeURIComponent(cleanQuery)}&limit=15`,
+        { timeout: 400 } // Fail fast to keep autocomplete responsive
+      );
+      const data = response.data;
+      const hfSuggestions = (data.candidates || []).map((c) => c.food_name);
+
+      // Merge and remove duplicates
+      const merged = new Set([...localMatches, ...hfSuggestions]);
+      suggestions = Array.from(merged);
+    } catch (error) {
+      console.warn("HF Space search-food failed or timed out, falling back to local CSV matches:", error.message);
+    }
+
+    // Return top 15 suggestions
     return res.status(200).json({
       success: true,
-      suggestions,
+      suggestions: suggestions.slice(0, 15),
     });
   } catch (error) {
     console.error("Autocomplete suggestFood error:", error.message);

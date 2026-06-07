@@ -74,7 +74,7 @@ function WaterIntakeWidget() {
         </div>
 
         {/* Glasses */}
-        <div className="flex gap-1">
+        <div className="flex flex-wrap gap-1 justify-end">
           {Array.from({ length: glassesCount }).map((_, i) => {
             const isFilled = i < currentGlasses;
             return (
