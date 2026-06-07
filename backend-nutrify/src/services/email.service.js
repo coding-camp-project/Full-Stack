@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 
 export const sendVerificationEmail = async (email, token) => {
-  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+  const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
   const verificationUrl = `${frontendUrl}/verify-email?token=${token}`;
 
   // Log to console for local testing and debugging convenience
