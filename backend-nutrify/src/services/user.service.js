@@ -86,8 +86,8 @@ export const registerUser = async (userData) => {
 };
 
 export const loginUser = async (email, password) => {
-  // Find user by email
-  const user = await User.findOne({ email });
+  // Find user by email (using lean() for faster read-only performance)
+  const user = await User.findOne({ email }).lean();
   if (!user) {
     throw new Error("Invalid email or password");
   }
@@ -120,7 +120,7 @@ export const getAllUsers = async () => {
 };
 
 export const getUserById = async (id) => {
-  return await User.findById(id).select("-password");
+  return await User.findById(id).select("-password").lean();
 };
 
 export const updateUser = async (id, userData) => {

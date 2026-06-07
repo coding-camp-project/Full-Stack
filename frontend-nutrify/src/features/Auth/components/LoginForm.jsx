@@ -32,6 +32,19 @@ export default function LoginForm() {
     }
   }, [navigate]);
 
+  // Warm up the backend serverless function (prevent cold start delay)
+  useEffect(() => {
+    const warmupBackend = () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        axios.get(API_URL).catch(() => {});
+      } catch (e) {
+        // Fail silently
+      }
+    };
+    warmupBackend();
+  }, []);
+
   // Handle redirect result from Google sign-in (especially for mobile devices)
   useEffect(() => {
     const handleRedirectResult = async () => {
