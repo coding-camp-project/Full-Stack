@@ -54,6 +54,19 @@ export default function RegisterForm() {
     handleRedirectResult();
   }, [navigate]);
 
+  // Warm up the backend serverless function (prevent cold start delay)
+  useEffect(() => {
+    const warmupBackend = () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+        axios.get(API_URL).catch(() => {});
+      } catch (e) {
+        // Fail silently
+      }
+    };
+    warmupBackend();
+  }, []);
+
   const handleRegister = async (e) => {
     e.preventDefault()
     
