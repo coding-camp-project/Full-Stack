@@ -32,9 +32,11 @@ export const registerUser = async (userData) => {
     userExists.verificationToken = verificationToken;
     await userExists.save();
 
-    sendVerificationEmail(userExists.email, verificationToken).catch((error) => {
+    try {
+      await sendVerificationEmail(userExists.email, verificationToken);
+    } catch (error) {
       console.error("Failed to send verification email during re-registration:", error);
-    });
+    }
 
     return {
       _id: userExists._id,
@@ -63,10 +65,12 @@ export const registerUser = async (userData) => {
     verificationToken,
   });
 
-  // Asynchronously send verification email so it doesn't block response
-  sendVerificationEmail(user.email, verificationToken).catch((error) => {
+  // Send verification email and await it for Serverless compatibility (like Vercel)
+  try {
+    await sendVerificationEmail(user.email, verificationToken);
+  } catch (error) {
     console.error("Failed to send verification email:", error);
-  });
+  }
 
   return {
     _id: user._id,
