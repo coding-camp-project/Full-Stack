@@ -36,7 +36,7 @@ export const sendVerificationEmail = async (email, token) => {
   });
 
   const mailOptions = {
-    from: `"Nutrify Support" <${user}>`,
+    from: `"Nutrify Support" <${process.env.EMAIL_FROM || user}>`,
     to: email,
     subject: "Verifikasi Akun Nutrify Anda",
     html: `
