@@ -36,6 +36,7 @@ export const registerUser = async (userData) => {
       await sendVerificationEmail(userExists.email, verificationToken);
     } catch (error) {
       console.error("Failed to send verification email during re-registration:", error);
+      throw new Error(`Gagal mengirim email verifikasi: ${error.message}`);
     }
 
     return {
@@ -70,6 +71,7 @@ export const registerUser = async (userData) => {
     await sendVerificationEmail(user.email, verificationToken);
   } catch (error) {
     console.error("Failed to send verification email:", error);
+    throw new Error(`Gagal mengirim email verifikasi: ${error.message}`);
   }
 
   return {

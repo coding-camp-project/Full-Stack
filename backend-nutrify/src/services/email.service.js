@@ -16,8 +16,11 @@ export const sendVerificationEmail = async (email, token) => {
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASS;
 
-  // If email configuration is missing, just skip SMTP sending (safe fallback for development)
+  // If email configuration is missing, throw an error in production/Vercel, or skip in development
   if (!host || !user || !pass) {
+    if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
+      throw new Error("Konfigurasi email SMTP (EMAIL_HOST, EMAIL_USER, atau EMAIL_PASS) belum lengkap di environment server Vercel.");
+    }
     console.log("ℹ️ Skipping SMTP email delivery: EMAIL_HOST, EMAIL_USER, or EMAIL_PASS is not configured in .env.");
     return;
   }
@@ -52,5 +55,10 @@ export const sendVerificationEmail = async (email, token) => {
     `,
   };
 
-  await transporter.sendMail(mailOptions);
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("SMTP sendMail error:", error);
+    throw new Error(`Gagal mengirim email: ${error.message}`);
+  }
 };
