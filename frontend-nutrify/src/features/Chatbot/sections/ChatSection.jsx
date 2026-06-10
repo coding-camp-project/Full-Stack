@@ -78,7 +78,7 @@ function ChatSection() {
       )}
 
       {/* INPUT – sticky at bottom */}
-      <div className="sticky bottom-0 z-10 shrink-0 bg-gray-100/95 pb-1 pt-3 backdrop-blur-sm sm:pb-2 sm:pt-4">
+      <div className="sticky bottom-0 z-10 shrink-0 bg-white/95 pb-1 pt-3 backdrop-blur-sm sm:pb-2 sm:pt-4">
         <ChatInput
           onSendMessage={handleSendMessage}
           loading={loading}

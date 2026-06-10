@@ -29,9 +29,12 @@ function DashboardPage() {
   });
   const [chartData, setChartData] = useState([]);
 
+  const [userName, setUserName] = useState("Pengguna");
+
   const loadData = () => {
     const userData = getUserData();
     const userId = userData?.id || "guest";
+    setUserName(userData?.name || "Pengguna");
 
     // Pre-calculate local targets immediately for snappy UI
     const localTargets = calculateDailyNeeds(userData);
@@ -140,10 +143,13 @@ function DashboardPage() {
   return (
     <div className="w-full min-w-0 max-w-full space-y-5 p-4 sm:space-y-6 sm:p-5 md:p-6 lg:max-w-[1360px] lg:mx-auto">
       
-      <div className="min-w-0">
-        <h1 className="text-2xl font-bold text-[#1E1E1E] sm:text-3xl">
-          Dashboard Page
+      <div className="min-w-0 flex flex-col gap-1 sm:gap-1.5">
+        <h1 className="text-2xl font-extrabold tracking-tight text-slate-800 sm:text-3xl">
+          Halo, {userName}! 👋
         </h1>
+        <p className="text-sm font-medium text-slate-500 sm:text-base">
+          Pantau status gizi, kalori, dan pola makan sehat harian Anda.
+        </p>
       </div>
 
       <SummarySection 

@@ -153,14 +153,8 @@ export const calculateDailyNeeds = (user) => {
 
 const MODELS = [
   "gemini-2.5-flash-lite",
-  "gemini-3.1-flash-lite",
-  "gemini-flash-lite-latest",
-  "gemini-3-flash",
-  "gemini-3.5-flash",
-  "gemini-1.5-flash-8b",
   "gemini-2.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash"
+  "gemini-2.0-flash"
 ];
 
 const getLLMRecommendation = async (foodName, user) => {
@@ -190,15 +184,15 @@ Anda adalah pakar nutrisi dan gizi. Analisis makanan berikut untuk pengguna deng
 
 Berikan analisis kesehatan yang akurat. Jika makanan tersebut berbahaya atau tidak dianjurkan (misalnya mengandung kolesterol tinggi seperti kepiting/udang/cumi untuk penderita kolesterol tinggi, atau tinggi purin untuk asam urat, atau mengandung alergen yang berbahaya), berikan skor kesehatan rendah, grade buruk, dan peringatan (warning) yang jelas.
 PENTING: Jangan sekali-kali menggunakan kata "diet" dalam respon Anda. Gunakan kata "pola makan", "kebiasaan makan", atau "nutrisi".
-PENTING: Buatlah analisis kesehatan (healthAnalysis) dan rekomendasi (recommendation) sesingkat, sepadat, dan semininmal mungkin namun mencakup semuanya secara ringkas. Batasi "healthAnalysis" maksimal 2 poin pendek (masing-masing 1 kalimat singkat), dan "recommendation" maksimal 1-2 kalimat pendek saja. "warning" harus maksimal 5-7 kata.
+PENTING: Buatlah analisis kesehatan (healthAnalysis) dan rekomendasi (recommendation) secara deskriptif, ramah, dan profesional. "healthAnalysis" berupa array berisi 2-3 penjelasan/poin deskriptif yang detail tentang dampak makanan terhadap kesehatan pengguna. "recommendation" harus berupa saran praktis dan hangat (2-3 kalimat lengkap, sekitar 30-50 kata) yang mengedukasi pengguna tentang porsi, alternatif penyajian, atau panduan pola makan. "warning" berupa pesan peringatan singkat (maksimal 7 kata) jika ada bahan berbahaya/alergen, kosongkan jika aman.
 
 Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks \`\`\`json atau teks pembuka/penutup lainnya) dengan struktur:
 {
   "healthScore": <number antara 10 - 100>,
   "healthGrade": "<A/B/C/D/E>",
-  "healthAnalysis": ["<analisis singkat 1>", "<analisis singkat 2>"],
-  "warning": "<pesan peringatan sangat singkat, kosongkan jika aman>",
-  "recommendation": "Rekomendasi berdasarkan profil Anda yaitu ${conditions.join(", ") || "Umum"}: <rekomendasi sangat singkat, 1-2 kalimat>",
+  "healthAnalysis": ["<analisis deskriptif 1>", "<analisis deskriptif 2>", "<analisis deskriptif 3>"],
+  "warning": "<pesan peringatan singkat, kosongkan jika aman>",
+  "recommendation": "Rekomendasi berdasarkan profil Anda yaitu ${conditions.join(", ") || "Umum"}: <rekomendasi lengkap, ramah dan aplikatif sekitar 30-50 kata>",
   "alternatives": ["<alternatif 1>", "<alternatif 2>", "<alternatif 3>"]
 }
 `;
@@ -207,7 +201,14 @@ Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks \`\
     try {
       console.log("[Gemini] Request started");
       console.log("[Gemini] Model:", modelName);
-      const model = genAI.getGenerativeModel({ model: modelName });
+      const model = genAI.getGenerativeModel({ 
+        model: modelName,
+        generationConfig: {
+          responseMimeType: "application/json",
+          temperature: 0.2,
+          maxOutputTokens: 500
+        }
+      });
       const result = await model.generateContent(prompt);
       const text = result.response.text().trim();
       console.log("[Gemini] Response received");
@@ -274,7 +275,14 @@ Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks ata
       try {
         console.log("[Gemini] Request started (Refinement)");
         console.log("[Gemini] Model:", modelName);
-        const model = genAI.getGenerativeModel({ model: modelName });
+        const model = genAI.getGenerativeModel({ 
+          model: modelName,
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.2,
+            maxOutputTokens: 500
+          }
+        });
         const result = await model.generateContent(prompt);
         const text = result.response.text().trim();
         console.log("[Gemini] Response received");
@@ -301,35 +309,32 @@ Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks ata
  */
 export const runRuleEngine = async (food, user) => {
   const name = food.food_name || "Makanan";
-  
-  // Check if we have the food in our database (Food collection)
+  const conditions = (user?.healthConditions || []).map(c => c.toLowerCase());
+  const allergies = (user?.allergies || []).map(a => a.toLowerCase().trim());
+  const goal = (user?.primaryGoal || "").toLowerCase();
+
+  // Run database lookups in parallel for better performance
   const cleanName = name.toLowerCase().trim();
   const escapeRegex = (string) => string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
   
-  let dbFood = null;
-  try {
-    dbFood = await Food.findOne({ 
-      food_name: { $regex: new RegExp("^" + escapeRegex(cleanName) + "$", "i") } 
-    }).lean();
-  } catch (error) {
-    console.error("Error looking up food in DB:", error);
-  }
+  console.log(`[RuleEngine] Processing local rules for: ${name}`);
+  const startTime = Date.now();
 
-  // If NOT in DB, use LLM for recommendation to avoid wrong guidance
-  if (!dbFood) {
-    console.log(`Food "${name}" not found in local DB. Fetching recommendation from LLM...`);
-    const llmResult = await getLLMRecommendation(name, user);
-    if (llmResult) {
-      return {
-        healthScore: llmResult.healthScore || 50,
-        healthGrade: llmResult.healthGrade || "C",
-        healthAnalysis: llmResult.healthAnalysis || [],
-        warning: llmResult.warning || "",
-        recommendation: llmResult.recommendation || "",
-        alternatives: llmResult.alternatives || [],
-      };
-    }
-    console.log("LLM recommendation failed or returned null, falling back to local rule engine.");
+  let dbFood = null;
+  let alternatives = [];
+
+  try {
+    const [foundFood, foundAlternatives] = await Promise.all([
+      Food.findOne({ 
+        food_name: { $regex: new RegExp("^" + escapeRegex(cleanName) + "$", "i") } 
+      }).lean(),
+      getAlternativeRecommendations(name, conditions, goal)
+    ]);
+    dbFood = foundFood;
+    alternatives = foundAlternatives;
+    console.log(`[RuleEngine] DB lookups completed in ${Date.now() - startTime}ms`);
+  } catch (error) {
+    console.error("Error during RuleEngine parallel lookups:", error);
   }
 
   const calories = parseFloat(food.calories) || 0;
@@ -339,10 +344,6 @@ export const runRuleEngine = async (food, user) => {
   const sugar = parseFloat(food.sugar) || 0;
   const sodium = parseFloat(food.sodium) || 0;
   const fiber = parseFloat(food.fiber) || 0;
-  
-  const conditions = (user?.healthConditions || []).map(c => c.toLowerCase());
-  const allergies = (user?.allergies || []).map(a => a.toLowerCase().trim());
-  const goal = (user?.primaryGoal || "").toLowerCase();
 
   let score = 100;
   const analysis = [];
@@ -476,9 +477,6 @@ export const runRuleEngine = async (food, user) => {
   else if (score >= 40) grade = "D";
   else grade = "E";
 
-  // Get Alternative Recommendations
-  const alternatives = await getAlternativeRecommendations(name, conditions, goal);
-
   // Generate customized recommendation statement based on the user's personalization profile and warnings
   const displayConditions = (user?.healthConditions || []).length > 0
     ? (user?.healthConditions || []).map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(", ")
@@ -577,3 +575,155 @@ const getAlternativeRecommendations = async (foodName, healthConditions = [], go
   // Fallbacks
   return ["nasi merah", "apel washington", "pepes tahu"];
 };
+
+export const scanFoodWithGeminiDirectly = async (imageBuffer, mimeType, manualInput, user) => {
+  const conditions = user?.healthConditions || [];
+  const allergies = user?.allergies || [];
+  const restrictions = user?.foodRestrictions || [];
+  const preferences = user?.foodPreferences || [];
+  const goal = user?.primaryGoal || "";
+  const otherConditions = user?.otherConditions || "";
+
+  let inputDetails = "";
+  if (manualInput && manualInput.trim()) {
+    inputDetails = `\n- Tambahan informasi/komposisi dari pengguna: "${manualInput}"`;
+  }
+
+  const prompt = `
+Anda adalah pakar nutrisi, gizi, dan asisten kuliner AI. Analisis ${imageBuffer ? "gambar makanan" : "input makanan"} berikut secara sangat ringkas dan akurat untuk pengguna dengan profil kesehatan ini:
+- Kondisi Kesehatan: ${conditions.join(", ")} ${otherConditions ? `(${otherConditions})` : ""}
+- Alergi: ${allergies.join(", ")}
+- Pantangan Makanan: ${restrictions.join(", ")}
+- Preferensi Makanan: ${preferences.join(", ")}
+- Target/Goal: ${goal}${inputDetails}
+
+Langkah Analisis Anda:
+1. Identifikasi nama makanan yang ada di ${imageBuffer ? "gambar" : "input"} (gunakan nama dalam Bahasa Indonesia yang umum dan ringkas, contoh: "Nasi Goreng Ayam", "Sate Madura", "Pecel Lele").
+2. Estimasikan berat porsi standard (dalam gram) dan satuan porsinya (contoh: "porsi", "butir", "potong", "mangkuk", "gelas").
+3. Estimasikan nilai nutrisi per porsi tersebut (Kalori dalam kkal, Protein dalam gram, Lemak dalam gram, Karbohidrat dalam gram, Gula dalam gram, Sodium dalam mg, Serat dalam gram).
+4. Hitung skor kesehatan (healthScore) antara 10 - 100 berdasarkan kecocokan nutrisi dengan kondisi kesehatan pengguna, berikan grade (healthGrade) A/B/C/D/E.
+5. Berikan analisis kesehatan (healthAnalysis) berupa array berisi 2-3 penjelasan/poin deskriptif yang ramah dan mendalam dalam bahasa Indonesia, menjelaskan dampak nutrisi makanan ini terhadap tubuh dan kondisi kesehatan pengguna secara informatif.
+6. Tentukan warning berupa pesan peringatan singkat (maksimal 7 kata) jika makanan mengandung bahan alergen atau perlu dibatasi untuk kondisi kesehatan pengguna. Jika aman, kosongkan "".
+7. Berikan rekomendasi (recommendation) berupa penjelasan/saran praktis yang ramah, mendalam, dan aplikatif (2-3 kalimat lengkap, sekitar 30-50 kata) yang diawali dengan menyebutkan kondisi kesehatannya (Contoh: "Berdasarkan kondisi Diabetes Anda..."). Jangan gunakan kata "diet", gunakan "pola makan". Berikan saran porsi, cara penyajian yang lebih sehat, atau tips tambahan.
+8. Berikan 3 alternatif makanan sehat lainnya yang cocok untuk kondisi kesehatannya.
+
+Format respon HARUS berupa JSON valid dengan struktur persis seperti ini:
+{
+  "food_name": "<nama makanan>",
+  "serving_size_g": <angka berat dalam gram>,
+  "serving_unit": "<satuan porsi>",
+  "nutrition": {
+    "calories": <angka kkal>,
+    "protein": <angka gram>,
+    "fat": <angka gram>,
+    "carbohydrates": <angka gram>,
+    "sugar": <angka gram>,
+    "sodium": <angka mg>,
+    "fiber": <angka gram>
+  },
+  "healthScore": <angka 10 - 100>,
+  "healthGrade": "<A/B/C/D/E>",
+  "healthAnalysis": ["<analisis deskriptif 1>", "<analisis deskriptif 2>", "<analisis deskriptif 3>"],
+  "warning": "<peringatan singkat atau kosong>",
+  "recommendation": "<rekomendasi lengkap, ramah dan aplikatif sekitar 30-50 kata>",
+  "alternatives": ["<alternatif 1>", "<alternatif 2>", "<alternatif 3>"]
+}
+`;
+
+  const parts = [prompt];
+  if (imageBuffer) {
+    parts.push({
+      inlineData: {
+        data: imageBuffer.toString("base64"),
+        mimeType,
+      },
+    });
+  }
+
+  return executeWithRotatedKey("scan", async (genAI) => {
+    let lastError = null;
+    const visionModels = ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.0-flash"];
+    for (const modelName of visionModels) {
+      try {
+        console.log(`[Gemini Direct Scan] Request started using model: ${modelName}`);
+        console.time(`[Gemini Direct API Call - ${modelName}]`);
+        const model = genAI.getGenerativeModel({ 
+          model: modelName,
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.2,
+            maxOutputTokens: 500
+          }
+        });
+        const result = await model.generateContent(parts);
+        const text = result.response.text().trim();
+        console.timeEnd(`[Gemini Direct API Call - ${modelName}]`);
+
+        const parsed = JSON.parse(text);
+        return parsed;
+      } catch (error) {
+        console.error(`[Gemini Direct Scan] Model ${modelName} failed on current key:`, error.message || error);
+        lastError = error;
+      }
+    }
+    throw lastError || new Error("All models failed during direct Gemini scan.");
+  });
+};
+
+/**
+ * Fallback: Analyze food image using Gemini Vision if FastAPI fails
+ */
+export const analyzeImageWithGemini = async (imageBuffer, mimeType) => {
+  const prompt = `
+Identifikasi makanan dalam gambar ini dan berikan estimasi nutrisi per 100g.
+Gunakan bahasa Indonesia untuk nama makanan.
+Format respon HARUS dalam JSON valid:
+{
+  "food_name": "nama makanan",
+  "nutrition": {
+    "calories": <number>,
+    "protein": <number>,
+    "fat": <number>,
+    "carbohydrates": <number>,
+    "sugar": <number>,
+    "sodium": <number>,
+    "fiber": <number>
+  }
+}
+`;
+
+  return executeWithRotatedKey("scan", async (genAI) => {
+    // Both flash models support vision
+    const modelName = MODELS[0] || "gemini-2.0-flash";
+    console.log(`[Gemini Vision] Request started using ${modelName}`);
+    const model = genAI.getGenerativeModel({ 
+      model: modelName,
+      generationConfig: {
+        responseMimeType: "application/json",
+        temperature: 0.2,
+        maxOutputTokens: 500
+      }
+    });
+    
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          data: imageBuffer.toString("base64"),
+          mimeType: mimeType
+        }
+      }
+    ]);
+    
+    const text = result.response.text().trim();
+    console.log("[Gemini Vision] Response received");
+    
+    const jsonStart = text.indexOf("{");
+    const jsonEnd = text.lastIndexOf("}");
+    if (jsonStart !== -1 && jsonEnd !== -1) {
+      return JSON.parse(text.substring(jsonStart, jsonEnd + 1));
+    }
+    throw new Error("Failed to parse Gemini Vision response");
+  });
+};
+

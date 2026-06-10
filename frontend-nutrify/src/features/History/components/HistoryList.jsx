@@ -5,15 +5,15 @@ import FoodHistoryCard from "./FoodHistoryCard";
 
 function HistoryList({ items, loading = false, onDelete }) {
   return (
-    <section className="rounded-xl border border-[#D8D8D8] bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)]">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-[20px] font-extrabold text-[#1E1E1E]">
+        <h2 className="text-[20px] font-extrabold text-slate-800">
           Riwayat Makanan
         </h2>
 
         <button
           type="button"
-          className="flex h-9 items-center gap-2 rounded-lg border border-[#D8D8D8] bg-white px-4 text-[13px] font-semibold text-[#1E1E1E] transition-all duration-200 hover:border-[#49AE84]"
+          className="flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-[13px] font-semibold text-slate-700 transition-all duration-200 hover:border-[#49AE84]"
         >
           Terbaru
           <ChevronDown size={16} />

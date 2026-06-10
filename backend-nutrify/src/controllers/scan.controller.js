@@ -1,7 +1,8 @@
+import mongoose from "mongoose";
 import axios from "axios";
 import FormData from "form-data";
 import * as historyService from "../services/history.service.js";
-import { runRuleEngine, getUnifiedLLMRecommendation } from "../services/ruleEngine.service.js";
+import { runRuleEngine, getUnifiedLLMRecommendation, analyzeImageWithGemini, scanFoodWithGeminiDirectly } from "../services/ruleEngine.service.js";
 import { parseInputLocally, estimateWeightLocally } from "../services/manualScan.service.js";
 import { findBestFoodMatch, loadFoodsFromCSV } from "../services/csv.service.js";
 
@@ -118,257 +119,245 @@ export const scanFood = async (req, res) => {
       return res.status(400).json({ success: false, message: "No image or manual input provided." });
     }
 
-    const formData = new FormData();
-    const mlApiUrl = (process.env.ML_API_URL || "https://damassdev-nutrify-ai-api.hf.space").replace(/\/$/, "");
+    console.log("Processing scan using Gemini Direct Scan...");
+    console.time("Gemini Direct Scan");
 
-    // 1. Add Image if available
-    if (req.file) {
-      formData.append("image", req.file.buffer, {
-        filename: req.file.originalname,
-        contentType: req.file.mimetype,
-      });
+    let geminiResult = null;
+    try {
+      geminiResult = await scanFoodWithGeminiDirectly(
+        req.file ? req.file.buffer : null,
+        req.file ? req.file.mimetype : null,
+        manualInput,
+        req.user
+      );
+    } catch (geminiError) {
+      console.error("Direct Gemini scan failed, falling back to HuggingFace space:", geminiError.message || geminiError);
     }
+    console.timeEnd("Gemini Direct Scan");
 
-    // 2. Add Disease mapped to FastAPI choices (pass the first mapped disease in the main call)
-    const mappedDiseases = mapDiseasesForFastAPI(req.user);
-    if (mappedDiseases.length > 0) {
-      formData.append("disease", mappedDiseases[0]);
-    }
+    let finalResult = null;
 
-    // 3. Add Manual Items if available
-    if (manualInput && manualInput.trim()) {
-      const parsedItems = parseInputLocally(manualInput).map(item => {
-        const weight = estimateWeightLocally(item.food_name, item.unit, item.quantity);
-        return {
-          food_name: item.food_name,
-          quantity: item.quantity,
-          unit: item.unit,
-          estimated_weight_g: weight,
-          total_gram: weight
-        };
-      });
-      formData.append("manual_items", JSON.stringify(parsedItems));
-    }
+    if (geminiResult) {
+      finalResult = {
+        food_name: geminiResult.food_name,
+        serving_size_g: geminiResult.serving_size_g || 100,
+        serving_unit: geminiResult.serving_unit || "porsi",
+        nutrition: geminiResult.nutrition || {},
+        healthScore: geminiResult.healthScore || 50,
+        healthGrade: geminiResult.healthGrade || "C",
+        healthAnalysis: geminiResult.healthAnalysis || [],
+        warning: geminiResult.warning || "",
+        recommendation: geminiResult.recommendation || "",
+        alternatives: geminiResult.alternatives || [],
+      };
+    } else {
+      // FALLBACK PATH: Hugging Face space + local rule engine + single refinement Gemini call
+      console.log("Executing fallback Hugging Face Space path...");
+      const formData = new FormData();
+      const mlApiUrl = (process.env.ML_API_URL || "https://damassdev-nutrify-ai-api.hf.space").replace(/\/$/, "");
 
-    // Call Hugging Face Deployed FastAPI Model
-    console.log("Calling Deployed AI Model at HF Space...");
-    const response = await axios.post(`${mlApiUrl}/predict`, formData, {
-      headers: {
-        ...formData.getHeaders(),
-      },
-    });
-
-    const fastapiResult = response.data;
-    
-    // Support all spelling variants of success ("success", "sucess", "succes")
-    const isSuccess = fastapiResult.success || fastapiResult.sucess || fastapiResult.succes === true;
-
-    if (!isSuccess) {
-      const customMessage = "Gambar kurang jelas, tolong foto lebih detail atau lebih dekat. Jika masih tidak terdeteksi, silakan input manual menggunakan tulisan/ketik.";
-      return res.status(422).json({
-        success: false,
-        message: customMessage
-      });
-    }
-
-    // Extract nutrition
-    const nutrition = fastapiResult.grand_total_nutrition || fastapiResult.nutrition || {};
-
-    // Get food names by combining image prediction and manual items
-    let foodNamesList = [];
-    if (fastapiResult.image_result?.best_prediction?.food_name) {
-      foodNamesList.push(fastapiResult.image_result.best_prediction.food_name);
-    }
-    if (fastapiResult.manual_items && fastapiResult.manual_items.length > 0) {
-      const manualNames = fastapiResult.manual_items.map((m) => m.food_name).filter(Boolean);
-      foodNamesList.push(...manualNames);
-    }
-    
-    const foodName = foodNamesList.join(", ") || "Makanan";
-
-    // Format food name to Title Case
-    const formattedFoodName = foodName
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (letter) => letter.toUpperCase());
-
-    // Find serving size from CSV dataset (or closest match)
-    const csvMatch = findBestFoodMatch(formattedFoodName);
-    const servingSizeG = csvMatch?.serving_size_g || 100;
-    const servingUnit = getServingUnit(formattedFoodName);
-
-    const meal = {
-      food_name: formattedFoodName,
-      calories: nutrition.calories || 0,
-      protein: nutrition.protein || 0,
-      fat: nutrition.fat || 0,
-      carbohydrates: nutrition.carbohydrates || 0,
-      sugar: nutrition.sugar || 0,
-      sodium: nutrition.sodium || 0,
-      fiber: nutrition.fiber || 0,
-    };
-
-    // Run local Rule Engine immediately to calculate base health metrics
-    const ruleResult = await runRuleEngine(meal, req.user);
-
-    // Combine recommendations from FastAPI for all mapped diseases
-    const fastapiRecommendations = [];
-    if (fastapiResult.recommendation) {
-      fastapiRecommendations.push(fastapiResult.recommendation);
-    }
-
-    if (mappedDiseases.length > 1) {
-      console.log(`User has multiple diseases (${mappedDiseases.join(", ")}). Fetching additional recommendations from damasdev API in parallel...`);
-      const additionalRequests = [];
-      for (let i = 1; i < mappedDiseases.length; i++) {
-        const nextDisease = mappedDiseases[i];
-        const additionalFormData = new FormData();
-        additionalFormData.append("disease", nextDisease);
-        additionalFormData.append("manual_items", JSON.stringify([{
-          food_name: formattedFoodName,
-          quantity: 1,
-          unit: "porsi",
-          estimated_weight_g: 100,
-          total_gram: 100
-        }]));
-
-        additionalRequests.push(
-          axios.post(`${mlApiUrl}/predict`, additionalFormData, {
-            headers: {
-              ...additionalFormData.getHeaders(),
-            },
-            timeout: 4000
-          })
-          .then(res => res.data?.recommendation)
-          .catch(addError => {
-            console.error(`Failed to fetch additional recommendation for ${nextDisease} from damasdev API:`, addError.message);
-            return null;
-          })
-        );
+      if (req.file) {
+        formData.append("image", req.file.buffer, {
+          filename: req.file.originalname,
+          contentType: req.file.mimetype,
+        });
       }
 
-      const extraRecs = await Promise.all(additionalRequests);
-      extraRecs.forEach(rec => {
-        if (rec) fastapiRecommendations.push(rec);
+      const mappedDiseases = mapDiseasesForFastAPI(req.user);
+      if (mappedDiseases.length > 0) {
+        formData.append("disease", mappedDiseases[0]);
+      }
+
+      let localManualItems = [];
+      if (manualInput && manualInput.trim()) {
+        localManualItems = parseInputLocally(manualInput).map(item => {
+          const weight = estimateWeightLocally(item.food_name, item.unit, item.quantity);
+          return {
+            food_name: item.food_name,
+            quantity: item.quantity,
+            unit: item.unit,
+            estimated_weight_g: weight,
+            total_gram: weight
+          };
+        });
+        formData.append("manual_items", JSON.stringify(localManualItems));
+      }
+
+      console.time("Fallback: HuggingFace predict API");
+      const response = await axios.post(`${mlApiUrl}/predict`, formData, {
+        headers: {
+          ...formData.getHeaders(),
+        },
+        timeout: 15000
       });
-    }
+      console.timeEnd("Fallback: HuggingFace predict API");
 
-    let analysisResult = null;
-    let isQuotaExhausted = false;
+      const fastapiResult = response.data;
+      let isSuccess = fastapiResult.success || fastapiResult.sucess || fastapiResult.succes === true;
+      const hasManualInput = localManualItems.length > 0;
 
-    console.log("Calling Gemini LLM to refine texts...");
-    try {
-      const unifiedResult = await getUnifiedLLMRecommendation(formattedFoodName, nutrition, req.user, fastapiRecommendations, ruleResult);
-      if (unifiedResult) {
-        // Merge Gemini refined text with local ruleEngine score, grade, and alternatives
+      let nutrition = fastapiResult.grand_total_nutrition || fastapiResult.nutrition || {};
+      let foodNamesList = [];
+
+      if (!isSuccess && req.file) {
+        console.log("FastAPI image analysis failed, attempting Gemini Vision fallback...");
+        try {
+          const geminiVisionResult = await analyzeImageWithGemini(req.file.buffer, req.file.mimetype);
+          if (geminiVisionResult && geminiVisionResult.food_name) {
+            isSuccess = true;
+            foodNamesList.push(geminiVisionResult.food_name);
+            nutrition = geminiVisionResult.nutrition;
+          }
+        } catch (geminiError) {
+          console.error("Gemini Vision fallback also failed:", geminiError.message);
+        }
+      }
+
+      if (!isSuccess && hasManualInput) {
+         isSuccess = true;
+         let totalNutrition = { calories: 0, protein: 0, fat: 0, carbohydrates: 0, sugar: 0, sodium: 0, fiber: 0 };
+         localManualItems.forEach(item => {
+            foodNamesList.push(item.food_name);
+            const match = findBestFoodMatch(item.food_name);
+            if (match) {
+               const factor = item.estimated_weight_g / 100;
+               totalNutrition.calories += (match.calories || 0) * factor;
+               totalNutrition.protein += (match.protein || 0) * factor;
+               totalNutrition.fat += (match.fat || 0) * factor;
+               totalNutrition.carbohydrates += (match.carbohydrates || 0) * factor;
+               totalNutrition.sugar += (match.sugar || 0) * factor;
+               totalNutrition.sodium += (match.sodium || 0) * factor;
+               totalNutrition.fiber += (match.fiber || 0) * factor;
+            }
+         });
+         nutrition = totalNutrition;
+      }
+
+      if (!isSuccess) {
+        return res.status(422).json({
+          success: false,
+          message: "Gambar kurang jelas, tolong foto lebih detail atau lebih dekat. Jika masih tidak terdeteksi, silakan input manual."
+        });
+      }
+
+      if (fastapiResult.image_result?.best_prediction?.food_name) {
+        foodNamesList.push(fastapiResult.image_result.best_prediction.food_name);
+      }
+      if (fastapiResult.manual_items && fastapiResult.manual_items.length > 0) {
+        const manualNames = fastapiResult.manual_items.map((m) => m.food_name).filter(Boolean);
+        foodNamesList.push(...manualNames);
+      }
+
+      const foodName = foodNamesList.join(", ") || "Makanan";
+      const formattedFoodName = foodName.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+      const csvMatch = findBestFoodMatch(formattedFoodName);
+      const servingSizeG = csvMatch?.serving_size_g || 100;
+      const servingUnit = getServingUnit(formattedFoodName);
+
+      const meal = {
+        food_name: formattedFoodName,
+        calories: nutrition.calories || 0,
+        protein: nutrition.protein || 0,
+        fat: nutrition.fat || 0,
+        carbohydrates: nutrition.carbohydrates || 0,
+        sugar: nutrition.sugar || 0,
+        sodium: nutrition.sodium || 0,
+        fiber: nutrition.fiber || 0,
+      };
+
+      const ruleResult = await runRuleEngine(meal, req.user);
+      const fastapiRecommendations = fastapiResult.recommendation ? [fastapiResult.recommendation] : [];
+
+      let analysisResult = null;
+      try {
+        const unifiedResult = await getUnifiedLLMRecommendation(formattedFoodName, nutrition, req.user, fastapiRecommendations, ruleResult);
+        if (unifiedResult) {
+          analysisResult = {
+            healthScore: ruleResult.healthScore || 50,
+            healthGrade: ruleResult.healthGrade || "C",
+            healthAnalysis: (unifiedResult.healthAnalysis || []).map(a => a.replace(/diet/gi, "pola makan")),
+            warning: unifiedResult.warning || "",
+            recommendation: (unifiedResult.recommendation || "").replace(/diet/gi, "pola makan"),
+            alternatives: ruleResult.alternatives || [],
+          };
+        }
+      } catch (geminiRefError) {
+        console.error("Gemini refinement failed during fallback:", geminiRefError);
+      }
+
+      if (!analysisResult) {
         analysisResult = {
-          healthScore: ruleResult.healthScore || 50,
-          healthGrade: ruleResult.healthGrade || "C",
-          healthAnalysis: (unifiedResult.healthAnalysis || []).map(a => a.replace(/diet/gi, "pola makan")),
-          warning: unifiedResult.warning || "",
-          recommendation: (unifiedResult.recommendation || "").replace(/diet/gi, "pola makan"),
+          healthScore: ruleResult.healthScore,
+          healthGrade: ruleResult.healthGrade,
+          healthAnalysis: ruleResult.healthAnalysis.map(a => a.replace(/diet/gi, "pola makan")),
+          warning: ruleResult.warning || "",
+          recommendation: ruleResult.recommendation.replace(/diet/gi, "pola makan"),
           alternatives: ruleResult.alternatives || [],
         };
       }
-    } catch (geminiError) {
-      console.error("Gemini call failed during scan refinement:", geminiError);
-      isQuotaExhausted = isGeminiQuotaError(geminiError);
-    }
 
-    if (!analysisResult) {
-      console.warn("Unified LLM refinement failed, falling back entirely to local rule engine...");
-      const isAllergenDetected = ruleResult.healthAnalysis.some(a => a.includes("alergen") || a.includes("PERINGATAN KERAS"));
-      const fallbackRec = isAllergenDetected
-        ? ruleResult.recommendation
-        : (ruleResult.recommendation || `Rekomendasi pola makan Anda: ${ruleResult.healthAnalysis.join(" ")}`);
-      
-      const customWarning = isQuotaExhausted
-        ? ("⚠️ Kuota AI utama habis. Hasil menggunakan analisis cadangan lokal." + (ruleResult.warning ? ` ${ruleResult.warning}` : ""))
-        : (ruleResult.warning || "");
-
-      const customRec = isQuotaExhausted
-        ? (fallbackRec + " [Catatan: Hasil analisis menggunakan sistem cadangan lokal karena kuota AI utama sedang penuh]")
-        : fallbackRec;
-
-      analysisResult = {
-        healthScore: ruleResult.healthScore,
-        healthGrade: ruleResult.healthGrade,
-        healthAnalysis: ruleResult.healthAnalysis.map(a => a.replace(/diet/gi, "pola makan")),
-        warning: customWarning,
-        recommendation: customRec.replace(/diet/gi, "pola makan"),
-        alternatives: ruleResult.alternatives || [],
+      finalResult = {
+        food_name: formattedFoodName,
+        serving_size_g: servingSizeG,
+        serving_unit: servingUnit,
+        nutrition,
+        healthScore: analysisResult.healthScore,
+        healthGrade: analysisResult.healthGrade,
+        healthAnalysis: analysisResult.healthAnalysis,
+        warning: analysisResult.warning,
+        recommendation: analysisResult.recommendation,
+        alternatives: analysisResult.alternatives,
       };
     }
 
-    // Calculate unique components count (prevent duplicate counting, case-insensitive, trim space/empty, support AI + manual)
-    const uniqueComponents = new Set();
-    
-    // 1. Add AI prediction food name
-    if (fastapiResult.image_result?.best_prediction?.food_name) {
-      const norm = fastapiResult.image_result.best_prediction.food_name.toLowerCase().replace(/_/g, " ").trim();
-      if (norm) uniqueComponents.add(norm);
-    }
-    
-    // 2. Add manual items from FastAPI result
-    if (fastapiResult.manual_items && fastapiResult.manual_items.length > 0) {
-      fastapiResult.manual_items.forEach((m) => {
-        if (m.food_name) {
-          const norm = m.food_name.toLowerCase().replace(/_/g, " ").trim();
-          if (norm) uniqueComponents.add(norm);
-        }
-      });
-    } else if (manualInput && manualInput.trim()) {
-      // Fallback: parse manualInput locally if FastAPI result didn't include them
-      const parsedItems = parseInputLocally(manualInput);
-      parsedItems.forEach((m) => {
-        if (m.food_name) {
-          const norm = m.food_name.toLowerCase().replace(/_/g, " ").trim();
-          if (norm) uniqueComponents.add(norm);
-        }
-      });
-    }
+    // Pre-generate MongoDB _id to return immediately to frontend
+    const historyId = new mongoose.Types.ObjectId();
 
-    const componentsCount = uniqueComponents.size || 1;
-
-    // Save to Database Scan History
+    // Save to Database Scan History asynchronously in background
     const imageBase64 = req.file ? `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}` : "";
-    const history = await historyService.createHistory({
+    
+    historyService.createHistory({
+      _id: historyId,
       userId: req.user._id,
-      foodName: formattedFoodName,
+      foodName: finalResult.food_name,
       image: imageBase64,
-      calories: nutrition.calories || 0,
-      protein: nutrition.protein || 0,
-      carbs: nutrition.carbohydrates || 0,
-      fat: nutrition.fat || 0,
-      fiber: nutrition.fiber || 0,
-      sugar: nutrition.sugar || 0,
-      sodium: nutrition.sodium || 0,
-      confidence: fastapiResult.image_result?.best_prediction?.confidence_score || 1.0,
-      recommendation: analysisResult.recommendation,
-      healthAnalysis: analysisResult.healthAnalysis || [],
-      healthScore: analysisResult.healthScore || 0,
-      components: componentsCount,
-      serving_size_g: servingSizeG,
-      serving_unit: servingUnit,
+      calories: finalResult.nutrition.calories || 0,
+      protein: finalResult.nutrition.protein || 0,
+      carbs: finalResult.nutrition.carbohydrates || 0,
+      fat: finalResult.nutrition.fat || 0,
+      fiber: finalResult.nutrition.fiber || 0,
+      sugar: finalResult.nutrition.sugar || 0,
+      sodium: finalResult.nutrition.sodium || 0,
+      confidence: 1.0,
+      recommendation: finalResult.recommendation,
+      healthAnalysis: finalResult.healthAnalysis,
+      healthScore: finalResult.healthScore,
+      components: finalResult.alternatives.length || 1,
+      serving_size_g: finalResult.serving_size_g,
+      serving_unit: finalResult.serving_unit,
+    }).catch(historyErr => {
+      console.error("Failed to save scan history to DB in background:", historyErr);
     });
 
-    // Return final enriched response to frontend
+    // Return final enriched response to frontend immediately
     return res.status(200).json({
       success: true,
       best_prediction: {
-        food_name: formattedFoodName,
-        confidence_score: fastapiResult.image_result?.best_prediction?.confidence_score || 1.0,
-        serving_size_g: servingSizeG,
-        serving_unit: servingUnit,
+        food_name: finalResult.food_name,
+        confidence_score: 1.0,
+        serving_size_g: finalResult.serving_size_g,
+        serving_unit: finalResult.serving_unit,
       },
-      nutrition,
-      recommendation: analysisResult.recommendation,
-      warning: analysisResult.warning || analysisResult.healthAnalysis.find((a) => a.startsWith("⚠️"))?.replace("⚠️", "").trim() || "",
-      healthScore: analysisResult.healthScore,
-      healthGrade: analysisResult.healthGrade,
-      healthAnalysis: analysisResult.healthAnalysis,
-      alternatives: analysisResult.alternatives,
-      historyId: history._id,
-      components: componentsCount,
+      nutrition: finalResult.nutrition,
+      recommendation: finalResult.recommendation,
+      warning: finalResult.warning,
+      healthScore: finalResult.healthScore,
+      healthGrade: finalResult.healthGrade,
+      healthAnalysis: finalResult.healthAnalysis,
+      alternatives: finalResult.alternatives,
+      historyId: historyId,
+      components: finalResult.alternatives.length || 1,
     });
 
   } catch (error) {

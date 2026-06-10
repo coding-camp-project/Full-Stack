@@ -83,26 +83,32 @@ function ScanUploadSection({
         )}
       </section>
 
-      <section className="min-w-0 overflow-hidden rounded-2xl border border-[#D8D8D8] bg-white p-4 shadow-sm sm:p-6">
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8 xl:grid-cols-[1.2fr_1px_1fr]">
+      <section className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-6">
+        <div className="relative grid gap-6 lg:grid-cols-2 lg:gap-8 xl:grid-cols-[1.2fr_1fr]">
+          
+          {/* LEFT: UPLOAD IMAGE */}
           <UploadBox imagePreview={imagePreview} onImageChange={onImageChange} />
 
-          <div className="hidden bg-[#D8D8D8] lg:block" />
+          {/* MIDDLE: OR DIVIDER */}
+          <div className="relative lg:absolute lg:inset-y-0 lg:left-[calc(50%-16px)] xl:left-[calc(54.54%-16px)] flex items-center justify-center py-2 lg:py-0 z-10 pointer-events-none">
+            <div className="absolute inset-0 flex items-center lg:flex-col lg:justify-center">
+              <div className="h-px w-full bg-slate-100 lg:h-full lg:w-px" />
+            </div>
+            <span className="relative z-10 rounded-full border border-slate-100 bg-white px-3.5 py-1.5 text-xs font-extrabold text-slate-400 shadow-xs uppercase tracking-wider">
+              atau
+            </span>
+          </div>
 
+          {/* RIGHT: MANUAL INPUT */}
           <div className="flex flex-col justify-between">
             <ManualInput value={manualInput} onChange={onManualInputChange} />
-            <div className="my-5 flex items-center gap-3 lg:hidden">
-              <div className="h-px flex-1 bg-[#D8D8D8]" />
-              <span className="text-[12px] text-[#777]">dan / atau</span>
-              <div className="h-px flex-1 bg-[#D8D8D8]" />
-            </div>
             <TipsCard onAnalyze={onAnalyze} disabled={!canAnalyze} />
           </div>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[#49AE84] bg-[#ECFFF8] p-5 shadow-sm">
-        <h3 className="text-[16px] font-bold text-[#1E1E1E]">
+      <section className="rounded-2xl border border-[#49AE84]/20 bg-[#ECFFF8]/50 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)]">
+        <h3 className="text-[16px] font-bold text-slate-800">
           Cara kerja scan nutrify
         </h3>
 
@@ -126,14 +132,14 @@ function ScanUploadSection({
         </div>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-2xl border border-[#F0C778] bg-[#FFF9EB] p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <section className="flex flex-col gap-4 rounded-2xl border border-[#F0C778]/30 bg-[#FFF9EB]/50 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FFF2CF] text-[#F2A51A]">
             <Utensils size={18} />
           </div>
 
           <div>
-            <h4 className="text-[14px] font-bold text-[#1E1E1E]">
+            <h4 className="text-[14px] font-bold text-slate-800">
               Tidak yakin jumlahnya?
             </h4>
             <p className="mt-1 text-[12px] text-[#555]">
