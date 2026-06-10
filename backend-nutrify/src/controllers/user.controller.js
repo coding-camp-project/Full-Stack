@@ -49,7 +49,7 @@ export const getAllUsers = async (req, res) => {
 
 export const getUserById = async (req, res) => {
   try {
-    // IDOR protection: Verify ownership
+
     if (req.user._id.toString() !== req.params.id) {
       return res.status(403).json({
         success: false,
@@ -78,7 +78,7 @@ export const getUserById = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    // IDOR protection: Verify ownership
+
     if (req.user._id.toString() !== req.params.id) {
       return res.status(403).json({
         success: false,
@@ -107,7 +107,7 @@ export const updateUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
-    // IDOR protection: Verify ownership
+
     if (req.user._id.toString() !== req.params.id) {
       return res.status(403).json({
         success: false,

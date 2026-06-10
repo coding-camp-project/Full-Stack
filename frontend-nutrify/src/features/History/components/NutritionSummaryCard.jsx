@@ -23,7 +23,7 @@ function NutritionSummaryCard({
   const selectedTone = tones[tone];
 
   return (
-    <div className={`min-w-0 overflow-hidden rounded-2xl border border-slate-100 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-6 ${selectedTone.wrapper}`}>
+    <div className={`min-w-0 overflow-hidden rounded-2xl border border-[#103020]/15 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-6 ${selectedTone.wrapper}`}>
       <div className="flex min-w-0 items-start gap-3 sm:gap-5">
         <div className={`flex h-13 w-13 shrink-0 items-center justify-center rounded-full transition-transform duration-300 hover:rotate-12 ${selectedTone.icon}`}>
           {icon}

@@ -33,10 +33,10 @@ function DashboardSidebar({ setIsSidebarOpen }) {
 
   const handleLogout = async () => {
     try {
-      // Clear manual login session details (both localStorage and sessionStorage)
+
       clearUserSession();
       
-      // Clear Firebase session if active
+
       await signOut(auth);
       
       navigate("/");

@@ -1,12 +1,12 @@
 
-// --- LOCAL PARSING ENGINE ---
+
 export const parseInputLocally = (userInput) => {
   if (!userInput) return [];
-  // Normalize bullets, newlines, and other separators
+
   let normalizedInput = userInput;
-  // Replace bullets at the start of lines or start of the string
+
   normalizedInput = normalizedInput.replace(/(?:^|\n)\s*[-*•+]\s+/g, "\n");
-  // Replace inline bullets or separators (like •, *, or a hyphen surrounded by spaces) with a comma
+
   normalizedInput = normalizedInput.replace(/\s*[•*]\s*/g, ",");
   normalizedInput = normalizedInput.replace(/\s+-\s+/g, ",");
 
@@ -80,7 +80,7 @@ export const estimateWeightLocally = (foodName, unit, quantity) => {
     return quantity;
   }
 
-  // Exact units mapping from FastAPI
+
   const unitWeights = {
     "porsi": 150,
     "piring": 200,
@@ -105,12 +105,12 @@ export const estimateWeightLocally = (foodName, unit, quantity) => {
     "kg": 1000
   };
 
-  // If a recognized unit is specified (other than generic porsi/piring/mangkok), use its weight.
+
   if (unitWeights[unitLower] && !["porsi", "piring", "mangkok", "mangkuk"].includes(unitLower)) {
     return unitWeights[unitLower] * quantity;
   }
 
-  // Otherwise check if we have a food-specific baseWeight
+
   let baseWeight = null;
   if (nameLower.includes("nasi") || nameLower.includes("mie") || nameLower.includes("bihun") || nameLower.includes("kwetiau") || nameLower.includes("bubur")) {
     baseWeight = 150;
@@ -141,6 +141,6 @@ export const estimateWeightLocally = (foodName, unit, quantity) => {
   return 100 * quantity;
 };
 
-// Only parseInputLocally and estimateWeightLocally are used externally.
-// All local fuzzy analysis functions have been removed — analysis is now handled
-// directly by FastAPI + ruleEngine.service.js inside scan.controller.js.
+
+
+

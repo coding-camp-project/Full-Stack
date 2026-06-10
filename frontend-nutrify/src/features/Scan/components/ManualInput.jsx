@@ -42,7 +42,7 @@ function ManualInput({ value, onChange }) {
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-  // Parse what the user is currently typing at their cursor position
+
   useEffect(() => {
     if (!value) {
       setQuery("");
@@ -50,11 +50,11 @@ function ManualInput({ value, onChange }) {
     }
 
     const textBeforeCursor = value.slice(0, cursorPos);
-    // Split by comma, semicolon, or newline to get the current item being typed
+
     const parts = textBeforeCursor.split(/[,;\n]+/);
     const lastPart = parts[parts.length - 1] || "";
 
-    // Ignore if last part contains numbers (likely typing quantity/unit)
+
     if (/\d+/.test(lastPart)) {
       setQuery("");
       return;
@@ -63,7 +63,7 @@ function ManualInput({ value, onChange }) {
     setQuery(lastPart.trim());
   }, [value, cursorPos]);
 
-  // Fetch suggestions with 50ms debounce for near-instant responsiveness
+
   useEffect(() => {
     if (query.length < 1) {
       setSuggestions([]);
@@ -89,7 +89,7 @@ function ManualInput({ value, onChange }) {
     return () => clearTimeout(delayDebounce);
   }, [query, API_URL]);
 
-  // Close dropdown on click outside
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -113,10 +113,10 @@ function ManualInput({ value, onChange }) {
     const textBeforeCursor = value.slice(0, cursorPos);
     const textAfterCursor = value.slice(cursorPos);
 
-    // Split keeping delimiters to rebuild string accurately
+
     const parts = textBeforeCursor.split(/([,;\n]+)/);
     
-    // Replace the last text item with the selected suggestion and a default quantity
+
     let leadingSpace = "";
     if (parts.length > 1 && parts[parts.length - 2].includes(",")) {
       leadingSpace = " ";
@@ -128,13 +128,13 @@ function ManualInput({ value, onChange }) {
     const rebuiltBefore = parts.join("");
     const newValue = rebuiltBefore + textAfterCursor;
 
-    // Trigger change event to update parent state
+
     onChange({ target: { value: newValue } });
 
     setSuggestions([]);
     setShowSuggestions(false);
 
-    // Refocus and place cursor directly after the inserted item
+
     if (textareaRef.current) {
       textareaRef.current.focus();
       const newPos = rebuiltBefore.length;

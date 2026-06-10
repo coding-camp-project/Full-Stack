@@ -15,7 +15,7 @@ function VerifyEmailForm() {
   const token = searchParams.get("token")
 
   useEffect(() => {
-    // Clear any previous active login session immediately to prevent auto-login bug
+
     clearUserSession()
   }, [])
 

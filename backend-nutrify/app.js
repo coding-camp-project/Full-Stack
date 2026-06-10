@@ -9,10 +9,10 @@ import historyRoutes from "./src/routes/history.routes.js";
 
 const app = express();
 
-// Secure HTTP headers
+
 app.use(helmet());
 
-// Configure CORS
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
   : [
@@ -36,10 +36,10 @@ app.use(
   })
 );
 
-// General Rate Limiter (to prevent DoS)
+
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 150, // Limit each IP to 150 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  limit: 150,
   standardHeaders: "draft-7",
   legacyHeaders: false,
   message: {
@@ -49,7 +49,7 @@ const apiLimiter = rateLimit({
 });
 app.use("/api", apiLimiter);
 
-// Parse JSON bodies (restrict size to prevent payload overflow DoS)
+
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ limit: "2mb", extended: true }));
 

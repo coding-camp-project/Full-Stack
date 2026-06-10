@@ -1,13 +1,13 @@
-// ─────────────────────────────────────────────
-//  PreferenceSection – Section 3: Alergi & Pantangan
-//  Tag-selector dengan search + custom input
-// ─────────────────────────────────────────────
+
+
+
+
 
 import { useRef, useEffect } from "react";
 import { X, ChevronDown, UtensilsCrossed } from "lucide-react";
 import { COMMON_ALLERGIES, COMMON_RESTRICTIONS } from "../data/options";
 
-// ── Reusable Tag Selector ───────────────────
+
 function TagSelector({
   label,
   tags,
@@ -179,7 +179,7 @@ function TagSelector({
   );
 }
 
-// ── Main component ───────────────────────────
+
 export default function PreferenceSection({
   formData,
   allergySearch,

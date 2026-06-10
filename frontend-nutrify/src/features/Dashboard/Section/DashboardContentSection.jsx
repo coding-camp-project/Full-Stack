@@ -20,7 +20,7 @@ function DashboardContentSection({
       <div className="min-w-0 space-y-4 sm:space-y-5 lg:col-span-8 xl:col-span-9">
         <div className="grid min-w-0 grid-cols-1 gap-4 sm:gap-5 xl:grid-cols-2">
           
-          <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
+          <div className="min-w-0 overflow-hidden rounded-2xl border border-[#103020]/15 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
             <h2 className="text-lg font-bold text-slate-800 sm:text-xl">
               Ringkasan Nutrisi
             </h2>
@@ -36,7 +36,7 @@ function DashboardContentSection({
             </div>
           </div>
  
-          <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
+          <div className="min-w-0 overflow-hidden rounded-2xl border border-[#103020]/15 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
             <h2 className="text-lg font-bold text-slate-800 sm:text-xl">
               Tren Asupan Kalori
             </h2>
@@ -47,7 +47,7 @@ function DashboardContentSection({
           </div>
         </div>
 
-        <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
+        <div className="min-w-0 overflow-hidden rounded-2xl border border-[#103020]/15 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
           <h2 className="text-lg font-bold text-slate-800 sm:text-xl">
             Riwayat Makanan
           </h2>
@@ -57,7 +57,7 @@ function DashboardContentSection({
             </div>
         </div>
 
-        <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
+        <div className="min-w-0 overflow-hidden rounded-2xl border border-[#103020]/15 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
             <InsightCard 
               totalCalories={totalCalories}
               totalCarbs={totalCarbs}
@@ -69,7 +69,7 @@ function DashboardContentSection({
 
       <div className="min-w-0 space-y-4 sm:space-y-5 lg:col-span-4 xl:col-span-3">
         
-        <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
+        <div className="min-w-0 overflow-hidden rounded-2xl border border-[#103020]/15 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
           <h2 className="text-lg font-bold text-slate-800 sm:text-xl">
             Kalender
           </h2>
@@ -78,7 +78,7 @@ function DashboardContentSection({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)]">
+        <div className="rounded-2xl border border-[#103020]/15 bg-[#FBFDFD]/95 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)]">
           <WaterIntakeWidget />
         </div>
         

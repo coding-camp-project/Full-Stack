@@ -22,13 +22,13 @@ function Navbar() {
   const { isPersonalized, userData } = useUserSession()
   const isLoggedIn = Boolean(userData && userData.email)
 
-  // Listen for scroll events to change navbar styling dynamically
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20)
 
-      // Active section tracking
-      const scrollPosition = window.scrollY + 120 // offset for fixed navbar
+
+      const scrollPosition = window.scrollY + 120
       
       for (const link of navLinks) {
         const element = document.getElementById(link.id)
@@ -44,7 +44,7 @@ function Navbar() {
     }
     
     window.addEventListener("scroll", handleScroll)
-    // Initial check
+
     handleScroll()
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])

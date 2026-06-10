@@ -35,9 +35,9 @@ function NotificationDropdown({ onClose, onUnreadCountChange }) {
   const userData = getUserData();
   const userId = userData?.id || "guest";
 
-  // Load totals and history on mount
+
   useEffect(() => {
-    // 1. Load read IDs from localStorage
+
     const savedReadIds = localStorage.getItem(`readNotifications_${userId}`);
     if (savedReadIds) {
       try {
@@ -47,7 +47,7 @@ function NotificationDropdown({ onClose, onUnreadCountChange }) {
       }
     }
 
-    // 2. Fetch fresh summary from API (with local fallback)
+
     getDashboardSummary()
       .then((data) => {
         if (data) {
@@ -66,7 +66,7 @@ function NotificationDropdown({ onClose, onUnreadCountChange }) {
         }
       })
       .catch(() => {
-        // Local fallback
+
         const localHistoryKey = `scanHistory_${userId}`;
         const historyStr = localStorage.getItem(localHistoryKey);
         let localHistory = [];
@@ -101,16 +101,16 @@ function NotificationDropdown({ onClose, onUnreadCountChange }) {
       });
   }, [userId]);
 
-  // Generate dynamic notifications
+
   const rawNotifications = generateNotifications(userData, totals, historyItems);
   
-  // Attach read status
+
   const allNotifications = rawNotifications.map(notif => ({
     ...notif,
     isRead: readIds.includes(notif.id),
   }));
 
-  // Update unread count back to the navbar parent
+
   const unreadCount = allNotifications.filter(n => !n.isRead).length;
   useEffect(() => {
     if (onUnreadCountChange) {
@@ -118,7 +118,7 @@ function NotificationDropdown({ onClose, onUnreadCountChange }) {
     }
   }, [unreadCount, onUnreadCountChange]);
 
-  // Close dropdown on click outside
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -129,7 +129,7 @@ function NotificationDropdown({ onClose, onUnreadCountChange }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  // Handlers
+
   const handleMarkAsRead = (id) => {
     if (readIds.includes(id)) return;
     const nextReadIds = [...readIds, id];
@@ -143,7 +143,7 @@ function NotificationDropdown({ onClose, onUnreadCountChange }) {
     localStorage.setItem(`readNotifications_${userId}`, JSON.stringify(allIds));
   };
 
-  // Filter based on active tab
+
   const filteredNotifications = allNotifications.filter(notif => {
     if (activeTab === "Semua") return true;
     if (activeTab === "Hari Ini") return notif.category === "Hari Ini";

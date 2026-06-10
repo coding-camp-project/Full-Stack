@@ -12,8 +12,8 @@ if (!process.env.MONGO_URI) {
   throw new Error("MONGO_URI is missing");
 }
 
-// Connect to MongoDB when the serverless function starts
+
 connectDB();
 
-// Export the Express API
+
 export default app;

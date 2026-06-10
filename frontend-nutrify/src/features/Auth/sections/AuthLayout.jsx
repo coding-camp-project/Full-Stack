@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
 
 export default function AuthLayout({ children, isRegister }) {
-  // Variasi animasi untuk seluruh halaman (fade + slight scale)
+
   const pageVariants = {
     initial: { opacity: 0, x: isRegister ? 50 : -50 },
     animate: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } },

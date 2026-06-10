@@ -3,15 +3,15 @@ import { CheckCircle2, Heart } from "lucide-react";
 function ResultHeader({ foodName = "Nasi Goreng", confidence = 0.92, healthScore = 75, healthGrade = "B", servingSizeG, servingUnit }) {
   const formattedName = foodName.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
   
-  // Calculate display confidence score
+
   let displayConfidence = 100.0;
   if (confidence !== undefined && confidence !== null) {
     displayConfidence = parseFloat((confidence * 100).toFixed(1));
-    // If confidence was parsed from 100 down
+
     if (displayConfidence > 100) displayConfidence = 100;
   }
 
-  // Determine color and description based on healthGrade
+
   let gradeColor = "bg-[#49AE84] text-white";
   let gradeText = "Sangat Sehat";
   if (healthGrade === "B") {

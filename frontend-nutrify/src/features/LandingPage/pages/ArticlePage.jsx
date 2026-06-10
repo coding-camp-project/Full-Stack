@@ -106,7 +106,7 @@ function ArticlePage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Scroll to top on mount
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -120,7 +120,7 @@ function ArticlePage() {
     }
   };
 
-  // Ambil artikel sesuai id, atau gunakan artikel pertama sebagai fallback
+
   const article = articles[id] || articles["bulking-prep"];
 
   return (

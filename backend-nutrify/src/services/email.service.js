@@ -4,7 +4,7 @@ export const sendVerificationEmail = async (email, token) => {
   const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:5173").replace(/\/$/, "");
   const verificationUrl = `${frontendUrl}/verify-email?token=${token}`;
 
-  // Log to console for local testing and debugging convenience
+
   console.log("\n========================================================");
   console.log("📨 EMAIL VERIFICATION LINK FOR DEVELOPMENT:");
   console.log(`Email: ${email}`);
@@ -16,7 +16,7 @@ export const sendVerificationEmail = async (email, token) => {
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASS;
 
-  // If email configuration is missing, throw an error in production/Vercel, or skip in development
+
   if (!host || !user || !pass) {
     if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
       throw new Error("Konfigurasi email SMTP (EMAIL_HOST, EMAIL_USER, atau EMAIL_PASS) belum lengkap di environment server Vercel.");
@@ -28,7 +28,7 @@ export const sendVerificationEmail = async (email, token) => {
   const transporter = nodemailer.createTransport({
     host,
     port,
-    secure: port == 465, // true for 465, false for other ports
+    secure: port == 465,
     auth: {
       user,
       pass,

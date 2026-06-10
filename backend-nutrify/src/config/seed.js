@@ -5,7 +5,7 @@ const seedDatabase = async () => {
   try {
     const foods = loadFoodsFromCSV();
     
-    // Filter out duplicate food names in-memory to respect the unique index constraint
+
     const seenNames = new Set();
     const uniqueFoods = [];
     
@@ -26,7 +26,7 @@ const seedDatabase = async () => {
 
     console.log(`Food count in database (${foodCount}) does not match unique CSV records (${uniqueFoods.length}). Re-seeding food database...`);
     
-    // Clear existing foods
+
     await Food.deleteMany({});
     
     if (uniqueFoods.length === 0) {
@@ -34,7 +34,7 @@ const seedDatabase = async () => {
       return;
     }
 
-    // Insert all unique foods in chunks
+
     const chunkSize = 500;
     for (let i = 0; i < uniqueFoods.length; i += chunkSize) {
       const chunk = uniqueFoods.slice(i, i + chunkSize);

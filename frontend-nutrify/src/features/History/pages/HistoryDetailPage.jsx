@@ -76,6 +76,7 @@ function HistoryDetailPage() {
       imagePreview={historyDetail.image}
       result={mapHistoryRecordToScanResult(historyDetail)}
       showRescanButton={false}
+      onBack={() => navigate("/history")}
     />
   );
 }

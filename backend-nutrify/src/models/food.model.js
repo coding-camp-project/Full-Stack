@@ -79,7 +79,7 @@ const foodSchema = new mongoose.Schema(
   }
 );
 
-// Add text index for autocomplete search
+
 foodSchema.index({ food_name: "text" });
 
 const Food = mongoose.model("Food", foodSchema);

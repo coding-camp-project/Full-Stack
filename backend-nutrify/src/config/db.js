@@ -6,7 +6,7 @@ let isConnected = false;
 const connectDB = async () => {
   if (isConnected) return;
 
-  // If already connected in Mongoose connections array, reuse it
+
   if (mongoose.connections && mongoose.connections[0] && mongoose.connections[0].readyState) {
     isConnected = true;
     return;

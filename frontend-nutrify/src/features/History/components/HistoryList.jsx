@@ -5,7 +5,7 @@ import FoodHistoryCard from "./FoodHistoryCard";
 
 function HistoryList({ items, loading = false, onDelete }) {
   return (
-    <section className="rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)]">
+    <section className="rounded-2xl border border-[#103020]/15 bg-[#FBFDFD]/95 p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)]">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-[20px] font-extrabold text-slate-800">
           Riwayat Makanan

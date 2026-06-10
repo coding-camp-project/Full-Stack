@@ -7,7 +7,7 @@ import { protect } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// All chat routes require a valid JWT token
+
 router.use(protect);
 
 router.post("/", sendChatMessage);

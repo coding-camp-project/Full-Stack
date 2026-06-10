@@ -36,14 +36,11 @@ function ScanUploadSection({
               <Info size={20} className="animate-pulse" />
             </div>
             <div>
-              <h4 className="text-[15px] font-bold text-blue-900 flex items-center gap-2">
-                Ketentuan & Batasan AI Image Scanner
+              <h4 className="text-[14px] font-bold text-blue-900 flex items-center gap-2">
+                Batasan Fitur Scan Gambar
               </h4>
-              <p className="mt-1 text-[13px] leading-relaxed text-blue-800">
-                Saat ini, fitur <strong>pindai gambar</strong> kami baru mendukung <strong>25 jenis makanan Indonesia</strong> populer secara visual. Kami sedang terus mengembangkan kecerdasan AI agar dapat mengenali lebih banyak hidangan ke depannya!
-              </p>
-              <p className="mt-2 text-[12px] text-blue-700/95 italic">
-                Tips: Jika makanan Anda tidak terdaftar atau tidak terdeteksi, silakan ketik langsung di bagian <strong>Input Manual</strong> (Fitur pencarian instan lokal kami mendukung ribuan data makanan).
+              <p className="mt-1 text-[12px] leading-relaxed text-blue-800">
+                Fitur pindai gambar baru mendukung <strong>25 makanan Indonesia</strong> terpopuler. Jika makanan tidak terdeteksi, silakan ketik langsung di bagian <strong>Input Manual</strong> (mendukung pencarian ribuan data makanan).
               </p>
             </div>
           </div>
@@ -83,16 +80,16 @@ function ScanUploadSection({
         )}
       </section>
 
-      <section className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-6">
+      <section className="min-w-0 overflow-hidden rounded-2xl border border-[#103020]/15 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-6">
         <div className="grid gap-6 grid-cols-1 lg:grid-cols-[1.2fr_auto_1fr] lg:gap-8 items-stretch">
           
           <UploadBox imagePreview={imagePreview} onImageChange={onImageChange} />
 
           <div className="relative flex items-center justify-center py-2 lg:py-0 lg:px-4">
             <div className="absolute inset-0 flex items-center lg:flex-col lg:justify-center">
-              <div className="h-px w-full bg-slate-100 lg:h-full lg:w-px" />
+              <div className="h-[2px] w-full bg-[#103020]/15 lg:h-full lg:w-[2px]" />
             </div>
-            <span className="relative z-10 rounded-full border border-slate-100 bg-white px-3.5 py-1.5 text-xs font-extrabold text-slate-400 shadow-xs uppercase tracking-wider">
+            <span className="relative z-10 rounded-full border border-[#103020]/15 bg-white px-3.5 py-1.5 text-xs font-extrabold text-slate-400 shadow-xs uppercase tracking-wider">
               atau
             </span>
           </div>
@@ -112,18 +109,18 @@ function ScanUploadSection({
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
           <WorkflowCard
             icon={<ImagePlus size={30} />}
-            title="1.Upload atau Input"
-            description="Upload foto makanan anda atau tuliskan komposisinya secara manual."
+            title="1. Unggah / Input"
+            description="Unggah foto makanan atau ketik menu secara manual."
           />
           <WorkflowCard
             icon={<Sparkles size={30} />}
-            title="2.Analisis AI"
-            description="AI akan mendeteksi makanan dan menghitung kandungan nutrisi secara otomatis."
+            title="2. Analisis AI"
+            description="AI mendeteksi hidangan dan menghitung nutrisinya secara otomatis."
           />
           <WorkflowCard
             icon={<BarChart3 size={30} />}
-            title="3.Dapatkan Hasil"
-            description="Lihat informasi nutrisi lengkap beserta rekomendasi untuk pola makan sehat anda."
+            title="3. Hasil Nutrisi"
+            description="Dapatkan rincian kandungan gizi dan rekomendasi kesehatan."
             showArrow={false}
           />
         </div>
@@ -137,10 +134,10 @@ function ScanUploadSection({
 
           <div>
             <h4 className="text-[14px] font-bold text-slate-800">
-              Tidak yakin jumlahnya?
+              Bingung Porsi Makanan?
             </h4>
-            <p className="mt-1 text-[12px] text-[#555]">
-              Anda bisa memilih perkiraan umum atau lihat panduan takaran di sini.
+            <p className="mt-0.5 text-[12px] text-[#555]">
+              Lihat panduan takaran porsi untuk perkiraan yang lebih tepat.
             </p>
           </div>
         </div>

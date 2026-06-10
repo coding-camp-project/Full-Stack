@@ -19,7 +19,7 @@ export default function RegisterForm() {
   const [registrationSuccess, setRegistrationSuccess] = useState(false)
   const navigate = useNavigate()
 
-  // Handle redirect result from Google sign-in (especially for mobile devices)
+
   useEffect(() => {
     const handleRedirectResult = async () => {
       try {
@@ -54,14 +54,14 @@ export default function RegisterForm() {
     handleRedirectResult();
   }, [navigate]);
 
-  // Warm up the backend serverless function (prevent cold start delay)
+
   useEffect(() => {
     const warmupBackend = () => {
       try {
         const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
         axios.get(API_URL).catch(() => {});
       } catch (e) {
-        // Fail silently
+
       }
     };
     warmupBackend();
@@ -103,8 +103,8 @@ export default function RegisterForm() {
     setError("")
     setSuccess("")
     try {
-      // signInWithPopup works on all devices (desktop & mobile modern browsers)
-      // If popup is blocked, fallback to redirect
+
+
       let result;
       try {
         result = await signInWithPopup(auth, googleProvider);
@@ -112,7 +112,7 @@ export default function RegisterForm() {
         if (popupErr.code === "auth/popup-blocked" || popupErr.code === "auth/popup-closed-by-user") {
           console.log("Popup diblok browser, beralih ke redirect...");
           await signInWithRedirect(auth, googleProvider);
-          return; // redirect will reload page, result handled in useEffect below
+          return;
         }
         throw popupErr;
       }

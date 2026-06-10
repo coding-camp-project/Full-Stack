@@ -22,7 +22,7 @@ function ForgotPasswordForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       })
-      // Always show success to prevent email enumeration
+
       setSuccess(true)
     } catch (err) {
       console.error("Forgot password error:", err)

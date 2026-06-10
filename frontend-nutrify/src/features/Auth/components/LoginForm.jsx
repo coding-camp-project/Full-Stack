@@ -17,7 +17,7 @@ export default function LoginForm() {
   const [rememberMe, setRememberMe] = useState(false)
   const navigate = useNavigate()
 
-  // Redirect if already logged in
+
   useEffect(() => {
     const token = localStorage.getItem("userToken") || sessionStorage.getItem("userToken");
     const userDataStr = localStorage.getItem("userData") || sessionStorage.getItem("userData");
@@ -32,20 +32,20 @@ export default function LoginForm() {
     }
   }, [navigate]);
 
-  // Warm up the backend serverless function (prevent cold start delay)
+
   useEffect(() => {
     const warmupBackend = () => {
       try {
         const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
         axios.get(API_URL).catch(() => {});
       } catch (e) {
-        // Fail silently
+
       }
     };
     warmupBackend();
   }, []);
 
-  // Handle redirect result from Google sign-in (especially for mobile devices)
+
   useEffect(() => {
     const handleRedirectResult = async () => {
       try {
@@ -93,7 +93,7 @@ export default function LoginForm() {
         password,
       })
 
-      // Simpan token JWT dan data user menggunakan setUserSession
+
       const { token, name, email: userEmail, _id, profilePicture, isPersonalized } = response.data.data
       setUserSession(token, { id: _id, name, email: userEmail, profilePicture, isPersonalized }, rememberMe)
 
@@ -115,17 +115,17 @@ export default function LoginForm() {
     setError("")
     setSuccess("")
     try {
-      // signInWithPopup works on all devices (desktop & mobile modern browsers)
-      // If popup is blocked, fallback to redirect
+
+
       let result;
       try {
         result = await signInWithPopup(auth, googleProvider);
       } catch (popupErr) {
-        // popup blocked or closed by browser — fallback to redirect
+
         if (popupErr.code === "auth/popup-blocked" || popupErr.code === "auth/popup-closed-by-user") {
           console.log("Popup diblok browser, beralih ke redirect...");
           await signInWithRedirect(auth, googleProvider);
-          return; // redirect will reload page, result handled in useEffect below
+          return;
         }
         throw popupErr;
       }

@@ -14,7 +14,7 @@ function HistoryFilter({ currentDate, timeRange, onTimeRangeChange }) {
     year: "numeric",
   });
  
-  // Sync state with props
+
   useEffect(() => {
     setStartHour(timeRange.startHour);
     setEndHour(timeRange.endHour);

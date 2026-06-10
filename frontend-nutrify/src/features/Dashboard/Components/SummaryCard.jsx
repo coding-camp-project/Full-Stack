@@ -8,7 +8,7 @@ function SummaryCard({
   targetValue,
 }) {
   return (
-    <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-[#FBFDFD]/90 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-[#103020]/15 bg-[#FBFDFD]/90 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-5">
       
       {/* TOP */}
       <div className="flex items-start justify-between">
