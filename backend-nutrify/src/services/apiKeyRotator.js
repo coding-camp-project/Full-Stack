@@ -44,7 +44,6 @@ export const executeWithRotatedKey = async (type, callback) => {
       const isSafetyBlocked = errorMsg.includes("safety") || errorMsg.includes("blocked");
 
       if (isSafetyBlocked) {
-        // If the content is blocked due to safety settings, throw immediately
         throw error;
       }
     }

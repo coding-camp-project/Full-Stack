@@ -36,11 +36,9 @@ function DashboardPage() {
     const userId = userData?.id || "guest";
     setUserName(userData?.name || "Pengguna");
 
-    // Pre-calculate local targets immediately for snappy UI
     const localTargets = calculateDailyNeeds(userData);
     setTargets(localTargets);
 
-    // 1. Instantly load from local storage cache to show data immediately
     const localHistoryKey = `scanHistory_${userId}`;
     const historyStr = localStorage.getItem(localHistoryKey);
     if (historyStr) {
@@ -50,7 +48,6 @@ function DashboardPage() {
         startOfToday.setHours(0, 0, 0, 0);
         const startOfTodayTime = startOfToday.getTime();
         
-        // Filter items that are from today for the active history list
         const localTodayHistory = allItems.filter(item => {
           const itemTime = new Date(item.date || item.createdAt).getTime();
           return itemTime >= startOfTodayTime;
@@ -59,7 +56,6 @@ function DashboardPage() {
         const mappedItems = localTodayHistory.map(mapHistoryRecordToCardItem);
         setHistoryItems(mappedItems);
 
-        // Aggregate local history for today
         const totalCalories = Math.round(mappedItems.reduce((sum, item) => sum + (item.calories || 0), 0));
         const totalCarbs = Math.round(mappedItems.reduce((sum, item) => sum + (item.carbs || 0), 0));
         const totalFat = Math.round(mappedItems.reduce((sum, item) => sum + (item.fat || 0), 0));
@@ -78,7 +74,6 @@ function DashboardPage() {
           fiber: totalFiber,
         });
 
-        // Compute local 6-day trend
         const localTrend = [];
         for (let i = 5; i >= 0; i--) {
           const d = new Date();
@@ -97,7 +92,6 @@ function DashboardPage() {
       }
     }
 
-    // 2. Fetch fresh data from server in the background
     getDashboardSummary()
       .then((data) => {
         if (data) {
@@ -114,7 +108,6 @@ function DashboardPage() {
           setChartData(data.chartData || []);
           if (data.history) {
             setHistoryItems(data.history.map(mapHistoryRecordToCardItem));
-            // Cache the fresh history in local storage
             localStorage.setItem(localHistoryKey, JSON.stringify(data.history));
           }
         }
@@ -130,7 +123,6 @@ function DashboardPage() {
   useEffect(() => {
     loadData();
 
-    // Refresh dashboard if user finishes scan or storage updates
     window.addEventListener("storage", loadData);
     window.addEventListener("userDataUpdated", loadData);
 

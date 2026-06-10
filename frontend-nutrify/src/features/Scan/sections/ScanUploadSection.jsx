@@ -28,7 +28,7 @@ function ScanUploadSection({
 
   return (
     <div className="w-full min-w-0 max-w-full space-y-5 px-3 py-5 sm:px-4 sm:py-8 lg:px-6 lg:max-w-[1360px] lg:mx-auto">
-      {/* Prominent Info Alert Banner for Image Recognition Classes */}
+
       <section className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50/70 p-5 shadow-sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex gap-3">
@@ -58,7 +58,7 @@ function ScanUploadSection({
           </button>
         </div>
 
-        {/* Collapsible Food List Grid */}
+
         {showFoodList && (
           <div className="mt-4 rounded-xl border border-blue-200/60 bg-white/70 p-4 transition-all duration-300">
             <h5 className="text-[12px] font-bold uppercase tracking-wider text-blue-900/70 mb-3">
@@ -86,10 +86,8 @@ function ScanUploadSection({
       <section className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-6">
         <div className="grid gap-6 grid-cols-1 lg:grid-cols-[1.2fr_auto_1fr] lg:gap-8 items-stretch">
           
-          {/* LEFT: UPLOAD IMAGE */}
           <UploadBox imagePreview={imagePreview} onImageChange={onImageChange} />
 
-          {/* MIDDLE: OR DIVIDER */}
           <div className="relative flex items-center justify-center py-2 lg:py-0 lg:px-4">
             <div className="absolute inset-0 flex items-center lg:flex-col lg:justify-center">
               <div className="h-px w-full bg-slate-100 lg:h-full lg:w-px" />
@@ -99,7 +97,6 @@ function ScanUploadSection({
             </span>
           </div>
 
-          {/* RIGHT: MANUAL INPUT */}
           <div className="flex flex-col justify-between">
             <ManualInput value={manualInput} onChange={onManualInputChange} />
             <TipsCard onAnalyze={onAnalyze} disabled={!canAnalyze} />

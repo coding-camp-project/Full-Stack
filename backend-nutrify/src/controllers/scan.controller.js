@@ -151,7 +151,7 @@ export const scanFood = async (req, res) => {
         alternatives: geminiResult.alternatives || [],
       };
     } else {
-      // FALLBACK PATH: Hugging Face space + local rule engine + single refinement Gemini call
+
       console.log("Executing fallback Hugging Face Space path...");
       const formData = new FormData();
       const mlApiUrl = (process.env.ML_API_URL || "https://damassdev-nutrify-ai-api.hf.space").replace(/\/$/, "");
@@ -311,10 +311,7 @@ export const scanFood = async (req, res) => {
       };
     }
 
-    // Pre-generate MongoDB _id to return immediately to frontend
     const historyId = new mongoose.Types.ObjectId();
-
-    // Save to Database Scan History asynchronously in background
     const imageBase64 = req.file ? `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}` : "";
     
     historyService.createHistory({
@@ -340,7 +337,7 @@ export const scanFood = async (req, res) => {
       console.error("Failed to save scan history to DB in background:", historyErr);
     });
 
-    // Return final enriched response to frontend immediately
+
     return res.status(200).json({
       success: true,
       best_prediction: {
