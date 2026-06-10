@@ -35,7 +35,7 @@ function InsightCard({
   }
 
   return (
-    <div className="flex w-full min-w-0 flex-col items-stretch justify-between gap-5 rounded-[22px] border border-[#B7E4CF] bg-[#F3FBF7] px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-7 lg:flex-row lg:items-center lg:gap-6">
+    <div className="flex w-full min-w-0 flex-col items-stretch justify-between gap-5 rounded-2xl border border-[#B7E4CF]/60 bg-[#F3FBF7] px-4 py-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:px-6 sm:py-6 md:px-8 md:py-7 lg:flex-row lg:items-center lg:gap-6">
       
       {/* LEFT */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">

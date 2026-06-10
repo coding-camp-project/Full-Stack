@@ -41,16 +41,9 @@ export const executeWithRotatedKey = async (type, callback) => {
       lastError = error;
 
       const errorMsg = String(error.message || error).toLowerCase();
-      const isQuotaOrServer = errorMsg.includes("429") || 
-                              errorMsg.includes("quota") || 
-                              errorMsg.includes("limit") || 
-                              errorMsg.includes("exhausted") || 
-                              errorMsg.includes("503") || 
-                              errorMsg.includes("high demand") ||
-                              errorMsg.includes("resource_exhausted");
+      const isSafetyBlocked = errorMsg.includes("safety") || errorMsg.includes("blocked");
 
-      if (!isQuotaOrServer) {
-        // If it's a structural error (like content blocking or invalid prompt), throw it immediately
+      if (isSafetyBlocked) {
         throw error;
       }
     }

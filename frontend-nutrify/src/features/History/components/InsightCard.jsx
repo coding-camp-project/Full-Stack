@@ -4,7 +4,7 @@ import healthyFoodImage from "../../../assets/healthy-food.png";
 
 function InsightCard() {
   return (
-    <aside className="flex min-h-0 w-full min-w-0 flex-col rounded-xl border border-[#D8D8D8] bg-[#F8FCFA] p-4 shadow-sm sm:min-h-130 sm:p-5 xl:sticky xl:top-4">
+    <aside className="flex min-h-0 w-full min-w-0 flex-col rounded-2xl border border-slate-100 bg-[#F8FCFA] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:min-h-130 sm:p-5 xl:sticky xl:top-4">
       <h3 className="text-[14px] font-bold text-[#1E1E1E]">
         Insight Hari Ini
       </h3>

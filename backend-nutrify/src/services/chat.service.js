@@ -22,14 +22,8 @@ export const getConversationHistory = async (conversationId, userId) => {
 
 const MODELS = [
   "gemini-2.5-flash-lite",
-  "gemini-3.1-flash-lite",
-  "gemini-flash-lite-latest",
-  "gemini-3-flash",
-  "gemini-3.5-flash",
-  "gemini-1.5-flash-8b",
   "gemini-2.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash"
+  "gemini-2.0-flash"
 ];
 
 const isGeminiQuotaError = (error) => {
@@ -72,6 +66,9 @@ export const sendMessageToAI = async (message, history = []) => {
         const model = genAI.getGenerativeModel({
           model: modelName,
           systemInstruction,
+          generationConfig: {
+            temperature: 0.3,
+          }
         });
 
         const chat = model.startChat({

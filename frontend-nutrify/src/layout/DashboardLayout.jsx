@@ -28,7 +28,7 @@ function DashboardLayout() {
   }
 
   return (
-    <div className="relative flex h-dvh min-h-0 w-full max-w-[100vw] overflow-hidden bg-gray-100">
+    <div className="relative flex h-dvh min-h-0 w-full max-w-[100vw] overflow-hidden bg-white">
       {/* SIDEBAR OVERLAY – mobile & tablet */}
       {isSidebarOpen && (
         <div
@@ -55,7 +55,7 @@ function DashboardLayout() {
           {/* Route-change overlay – hidden on /personalisasi because that page
               renders its own full-page fetching spinner (avoids double loader). */}
           {isRouteLoading && location.pathname !== "/personalisasi" && (
-            <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-100/60 backdrop-blur-[2px] transition-all duration-300">
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/70 backdrop-blur-[4px] transition-all duration-300">
               <div className="flex flex-col items-center gap-3">
                 <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-[#04A16E]" />
                 <span className="text-xs font-semibold text-gray-500 tracking-wider">Memuat...</span>

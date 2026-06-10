@@ -77,7 +77,7 @@ function ChatInput({
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28 }}
-      className="relative mx-auto flex w-full max-w-full items-center rounded-full border border-[#222]/30 bg-white px-3 py-2.5 shadow-sm transition-all duration-300 focus-within:border-[#49AE84]/50 focus-within:shadow-[0_14px_40px_rgba(73,174,132,0.14)] sm:max-w-3xl sm:px-5 sm:py-3 lg:max-w-4xl xl:max-w-5xl"
+      className="relative mx-auto flex w-full max-w-full items-center rounded-full border border-slate-200 bg-white px-3 py-2.5 shadow-md shadow-slate-100/50 transition-all duration-300 focus-within:border-[#0AAE72]/50 focus-within:shadow-[0_14px_40px_rgba(10,174,114,0.14)] sm:max-w-3xl sm:px-5 sm:py-3 lg:max-w-4xl xl:max-w-5xl"
     >
       <AnimatePresence>
         {listening && <ListeningIndicator />}
@@ -117,7 +117,7 @@ function ChatInput({
           disabled={loading || !message.trim()}
           whileHover={!loading && message.trim() ? { scale: 1.06 } : undefined}
           whileTap={!loading && message.trim() ? { scale: 0.94 } : undefined}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black text-white transition-all duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:bg-black/30 disabled:hover:scale-100 sm:h-11 sm:w-11"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0AAE72] text-white transition-all duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:bg-[#0AAE72]/30 disabled:hover:scale-100 sm:h-11 sm:w-11"
         >
           <SendHorizontal size={20} />
         </motion.button>

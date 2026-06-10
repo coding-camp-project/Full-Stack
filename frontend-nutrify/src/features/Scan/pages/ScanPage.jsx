@@ -6,6 +6,58 @@ import ScanUploadSection from "../sections/ScanUploadSection";
 import PortionGuideModal from "../components/PortionGuideModal";
 import { getUserData } from "@/utils/userSession";
 
+// Compress image on the client-side to speed up upload & processing
+const compressImage = (file, maxWidth = 500, maxHeight = 500, quality = 0.6) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+    };
+    reader.onerror = () => resolve(file);
+  });
+};
+
 function ScanPage() {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
@@ -58,8 +110,9 @@ function ScanPage() {
       
       let response;
       if (uploadedImage) {
+        const compressed = await compressImage(uploadedImage);
         const formData = new FormData();
-        formData.append("image", uploadedImage);
+        formData.append("image", compressed);
         if (manualInput.trim()) {
           formData.append("manualInput", manualInput.trim());
         }

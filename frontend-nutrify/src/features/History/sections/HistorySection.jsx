@@ -36,9 +36,8 @@ function getStoredHistoryItems() {
       return itemTime >= startOfTodayTime;
     });
  
-    // Clean up local storage
     localStorage.setItem(localHistoryKey, JSON.stringify(filteredItems));
- 
+
     return filteredItems.map(mapHistoryRecordToCardItem);
   } catch (err) {
     console.error("Gagal membaca riwayat", err);
@@ -59,8 +58,6 @@ function HistorySection() {
     try {
       await deleteHistoryItem(id);
       setHistoryItems((prev) => prev.filter((item) => item.id !== id));
-      
-      // Update local storage fallback
       const userData = getUserData();
       const userId = userData?.id || "guest";
       const localHistoryKey = `scanHistory_${userId}`;
@@ -79,19 +76,16 @@ function HistorySection() {
   useEffect(() => {
     let isMounted = true;
 
-    // 1. Instantly load from localStorage cache to show data immediately
     const cachedItems = getStoredHistoryItems();
     if (cachedItems && cachedItems.length > 0) {
       setHistoryItems(cachedItems);
       setLoading(false);
     }
 
-    // 2. Fetch fresh history from server in the background
     getHistory()
       .then((history) => {
         if (isMounted) {
           setHistoryItems(history.map(mapHistoryRecordToCardItem));
-          // Store fresh history to cache
           const userData = getUserData();
           const userId = userData?.id || "guest";
           const localHistoryKey = `scanHistory_${userId}`;
@@ -100,7 +94,6 @@ function HistorySection() {
       })
       .catch((err) => {
         console.error("Gagal mengambil riwayat dari server", err);
-        // Only fallback to localStorage if we haven't already displayed cached data
         if (isMounted && (!cachedItems || cachedItems.length === 0)) {
           setHistoryItems(getStoredHistoryItems());
         }
@@ -139,7 +132,6 @@ function HistorySection() {
     filteredHistoryItems.reduce((sum, item) => sum + item.protein, 0)
   );
  
-  // Dynamic target from personalized calculator
   const userData = getUserData();
   const targets = calculateDailyNeeds(userData);
   const targetCalories = targets.targetCalories || 2000;
