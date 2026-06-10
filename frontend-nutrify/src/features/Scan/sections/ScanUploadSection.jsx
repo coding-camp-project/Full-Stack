@@ -84,13 +84,13 @@ function ScanUploadSection({
       </section>
 
       <section className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-[#FBFDFD]/95 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_24px_rgb(0,0,0,0.04)] sm:p-6">
-        <div className="relative grid gap-6 lg:grid-cols-2 lg:gap-8 xl:grid-cols-[1.2fr_1fr]">
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-[1.2fr_auto_1fr] lg:gap-8 items-stretch">
           
           {/* LEFT: UPLOAD IMAGE */}
           <UploadBox imagePreview={imagePreview} onImageChange={onImageChange} />
 
           {/* MIDDLE: OR DIVIDER */}
-          <div className="relative lg:absolute lg:inset-y-0 lg:left-[calc(50%-16px)] xl:left-[calc(54.54%-16px)] flex items-center justify-center py-2 lg:py-0 z-10 pointer-events-none">
+          <div className="relative flex items-center justify-center py-2 lg:py-0 lg:px-4">
             <div className="absolute inset-0 flex items-center lg:flex-col lg:justify-center">
               <div className="h-px w-full bg-slate-100 lg:h-full lg:w-px" />
             </div>
