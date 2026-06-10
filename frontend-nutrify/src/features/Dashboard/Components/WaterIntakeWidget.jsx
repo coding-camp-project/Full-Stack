@@ -21,7 +21,7 @@ function WaterIntakeWidget() {
     let newIntake;
     const clickedVolume = (index + 1) * mlPerGlass;
     
-    // If clicking the current exact level, remove one glass
+
     if (intake === clickedVolume) {
       newIntake = intake - mlPerGlass;
     } else {

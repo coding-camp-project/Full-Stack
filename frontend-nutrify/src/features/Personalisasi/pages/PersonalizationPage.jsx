@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────
-//  PersonalizationPage – Container (pure orchestrator)
-//
-//  
-// ─────────────────────────────────────────────
+
+
+
+
+
 
 import { RefreshCw, Shield, AlertCircle, Lock, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -45,7 +45,7 @@ export default function PersonalizationPage() {
     setMessage,
   } = usePersonalizationForm({ isOnboardingMode });
 
-  // ── Loading skeleton ──────────────────────
+
   if (fetching) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center px-4 sm:min-h-[60vh]">

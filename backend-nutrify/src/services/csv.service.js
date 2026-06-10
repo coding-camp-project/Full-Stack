@@ -102,14 +102,14 @@ export const findBestFoodMatch = (queryName) => {
 
     let score = 0;
     
-    // Substring boost
+
     if (foodClean.includes(queryClean) || queryClean.includes(foodClean)) {
       score += 0.8;
       const lenDiff = Math.abs(foodClean.length - queryClean.length);
       score += (1 / (1 + lenDiff)) * 0.19;
     }
 
-    // Levenshtein similarity
+
     const lev = levenshtein(queryClean, foodClean);
     const levSim = 1 - lev / Math.max(queryClean.length, foodClean.length);
     score += levSim * 0.1;

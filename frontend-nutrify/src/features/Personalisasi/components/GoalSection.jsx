@@ -1,6 +1,6 @@
-// ─────────────────────────────────────────────
-//  GoalSection – Section 4: Preferensi & Tujuan
-// ─────────────────────────────────────────────
+
+
+
 
 import { Target } from "lucide-react";
 import { PRIMARY_GOALS, FOOD_PREFERENCES } from "../data/options";

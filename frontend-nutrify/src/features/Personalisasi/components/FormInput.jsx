@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────
-//  FormInput – Reusable input component
-//  Mendukung: text, number, date, select,
-//             textarea.  Styling konsisten
-//             dengan design system Nutrify.
-// ─────────────────────────────────────────────
+
+
+
+
+
+
 
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
@@ -48,7 +48,7 @@ export default function FormInput({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 
-  // Close on click outside
+
   useEffect(() => {
     if (!isOpen) return;
     function handleOutsideClick(event) {

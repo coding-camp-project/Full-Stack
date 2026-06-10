@@ -16,8 +16,8 @@ const router = express.Router();
 import { rateLimit } from "express-rate-limit";
 
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 20, // Limit each IP to 20 auth requests per 15 minutes
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
   standardHeaders: "draft-7",
   legacyHeaders: false,
   message: {
@@ -26,13 +26,13 @@ const authLimiter = rateLimit({
   },
 });
 
-// Public routes
+
 router.post("/register", authLimiter, registerUser);
 router.post("/login", authLimiter, loginUser);
 router.post("/google-login", authLimiter, googleLoginUser);
 router.get("/verify-email", verifyEmail);
 
-// Protected routes (require valid JWT)
+
 router.get("/", protect, getAllUsers);
 router.get("/:id", protect, getUserById);
 router.put("/:id", protect, updateUser);

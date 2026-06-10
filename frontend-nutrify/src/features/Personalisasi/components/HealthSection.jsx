@@ -1,6 +1,6 @@
-// ─────────────────────────────────────────────
-//  HealthSection – Section 2: Riwayat Kesehatan
-// ─────────────────────────────────────────────
+
+
+
 
 import { Heart, Lightbulb } from "lucide-react";
 import { HEALTH_CONDITIONS } from "../data/options";

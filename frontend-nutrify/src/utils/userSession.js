@@ -26,7 +26,7 @@ export function isPersonalizationCompleted() {
 /** True when user must complete personalization before other dashboard features. */
 export function isOnboardingRequired() {
   const data = getUserData();
-  // Onboarding is only required if the user is actually logged in (has an email) but hasn't completed personalization yet
+
   return data && data.email && data.isPersonalized === false;
 }
 
@@ -34,7 +34,7 @@ export function updateUserData(partial) {
   const current = getUserData();
   const next = { ...current, ...partial };
   
-  // Update in whichever storage currently has the user data
+
   if (localStorage.getItem(USER_DATA_KEY)) {
     localStorage.setItem(USER_DATA_KEY, JSON.stringify(next));
   } else {

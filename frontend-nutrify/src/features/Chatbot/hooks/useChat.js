@@ -31,7 +31,7 @@ function useChat() {
 
   const scrollToLatest = useCallback((behavior = "smooth", force = false) => {
     const now = Date.now();
-    // Throttle automatic scroll during streaming to once every 150ms to prevent layout thrashing on mobile
+
     if (!force && behavior === "auto" && now - lastScrollTimeRef.current < 150) {
       return;
     }

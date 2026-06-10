@@ -1,8 +1,8 @@
-// ─────────────────────────────────────────────
-//  Static Options – Personalization Feature
-//  Semua pilihan statis dipusatkan di sini agar
-//  mudah diupdate tanpa menyentuh komponen.
-// ─────────────────────────────────────────────
+
+
+
+
+
 
 export const GENDER_OPTIONS = [
   { value: "Perempuan", label: "Perempuan" },
@@ -62,7 +62,7 @@ export const FOOD_PREFERENCES = [
   "Kacang-kacangan",
 ];
 
-// Default form values – dipakai oleh hook dan reset
+
 export const DEFAULT_FORM_DATA = {
   name: "",
   birthDate: "",

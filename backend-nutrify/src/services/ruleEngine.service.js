@@ -33,7 +33,7 @@ export const calculateDailyNeeds = (user) => {
   const height = parseFloat(user?.height) || 170;
   const gender = (user?.gender || "pria").toLowerCase();
   
-  // Mifflin-St Jeor Formula
+
   let bmr = 0;
   if (gender === "pria" || gender === "laki-laki" || gender === "laki") {
     bmr = 10 * weight + 6.25 * height - 5 * age + 5;
@@ -41,7 +41,7 @@ export const calculateDailyNeeds = (user) => {
     bmr = 10 * weight + 6.25 * height - 5 * age - 161;
   }
 
-  // Activity Factor
+
   const activityLevel = (user?.activityLevel || "moderate").toLowerCase();
   let activityFactor = 1.55;
   if (activityLevel === "sedentary" || activityLevel === "sangat jarang" || activityLevel === "sangat_jarang") {
@@ -58,7 +58,7 @@ export const calculateDailyNeeds = (user) => {
 
   const tdee = bmr * activityFactor;
   
-  // Adjust based on goal
+
   const goal = (user?.primaryGoal || "menjaga berat badan").toLowerCase();
   let targetCalories = tdee;
   
@@ -76,63 +76,63 @@ export const calculateDailyNeeds = (user) => {
     hasCalorieSurplus = true;
   }
 
-  // Ensure safe minimum
+
   targetCalories = Math.max(targetCalories, 1200);
 
-  // Health Conditions
+
   const conditions = (user?.healthConditions || []).map(c => c.toLowerCase());
   
-  // Default percentages
+
   let carbPct = 0.55;
   let proteinPct = 0.20;
   let fatPct = 0.25;
   
-  let maxSugar = 50; // default max sugar 50g
-  let maxSodium = 2000; // default max sodium 2000mg
-  let targetFiber = 25; // default target fiber 25g
+  let maxSugar = 50;
+  let maxSodium = 2000;
+  let targetFiber = 25;
 
-  // Smart condition adjustments
+
   
-  // 1. Diabetes / Kencing Manis
+
   if (conditions.includes("diabetes") || conditions.includes("kencing manis") || conditions.includes("gula")) {
-    carbPct = 0.45; // Controlled carbohydrate
-    maxSugar = 25;  // Lower sugar target
-    proteinPct = 0.25; // Slightly higher protein to compensate
-    fatPct = 0.30;     // Healthy fat to compensate
+    carbPct = 0.45;
+    maxSugar = 25;
+    proteinPct = 0.25;
+    fatPct = 0.30;
   }
 
-  // 2. Hipertensi / Tekanan Darah Tinggi
+
   if (conditions.includes("hipertensi") || conditions.includes("tekanan darah tinggi") || conditions.includes("tensi")) {
-    maxSodium = 1500; // Lower sodium target
+    maxSodium = 1500;
   }
 
-  // 3. Obesitas / Berat Badan Lebih
+
   if (conditions.includes("obesitas") || conditions.includes("overweight") || conditions.includes("gemuk")) {
     if (!hasCalorieDeficit) {
       targetCalories = Math.max(targetCalories - 500, 1200);
       hasCalorieDeficit = true;
     }
-    fatPct = Math.min(fatPct, 0.20); // Lower fat target
+    fatPct = Math.min(fatPct, 0.20);
   }
 
-  // 4. Kolesterol
+
   if (conditions.includes("kolesterol") || conditions.includes("hypercholesterolemia")) {
-    fatPct = Math.min(fatPct, 0.20); // Lower fat target
+    fatPct = Math.min(fatPct, 0.20);
   }
 
-  // Goal modifications
+
   if (goal.includes("otot") || goal.includes("muscle") || goal.includes("bangun")) {
-    proteinPct = 0.30; // Higher protein target
+    proteinPct = 0.30;
     carbPct = 0.45;
     fatPct = 0.25;
   }
   
   if (goal.includes("turun") || goal.includes("loss")) {
-    maxSugar = Math.min(maxSugar, 30); // Lower sugar for weight loss
-    fatPct = Math.min(fatPct, 0.20);   // Lower fat for weight loss
+    maxSugar = Math.min(maxSugar, 30);
+    fatPct = Math.min(fatPct, 0.20);
   }
 
-  // Normalize percentages to sum to 100% (1.0)
+
   const totalPct = carbPct + proteinPct + fatPct;
   carbPct = carbPct / totalPct;
   proteinPct = proteinPct / totalPct;
@@ -213,7 +213,7 @@ Format respon HARUS dalam JSON valid (hanya JSON, tanpa markdown code blocks \`\
       const text = result.response.text().trim();
       console.log("[Gemini] Response received");
       
-      // Clean JSON formatting if Gemini wrapped it in markdown code blocks
+
       const jsonStart = text.indexOf("{");
       const jsonEnd = text.lastIndexOf("}");
       if (jsonStart !== -1 && jsonEnd !== -1) {
@@ -313,7 +313,7 @@ export const runRuleEngine = async (food, user) => {
   const allergies = (user?.allergies || []).map(a => a.toLowerCase().trim());
   const goal = (user?.primaryGoal || "").toLowerCase();
 
-  // Run database lookups in parallel for better performance
+
   const cleanName = name.toLowerCase().trim();
   const escapeRegex = (string) => string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
   
@@ -350,7 +350,7 @@ export const runRuleEngine = async (food, user) => {
   let isAllergenDetected = false;
   let detectedAllergen = "";
 
-  // 1. Check Allergies (Critical)
+
   for (const allergen of allergies) {
     if (name.toLowerCase().includes(allergen)) {
       isAllergenDetected = true;
@@ -363,7 +363,7 @@ export const runRuleEngine = async (food, user) => {
     score = 0;
     analysis.push(`⚠️ PERINGATAN KERAS: Makanan ini terdeteksi mengandung bahan alergen (${detectedAllergen}) yang terdaftar pada profil Anda!`);
   } else {
-    // 2. Base Nutrient Density Rules (per 100g)
+
     if (sugar > 15) {
       score -= 15;
       analysis.push(`• Kandungan gula cukup tinggi (${sugar.toFixed(1)}g), batasi porsinya.`);
@@ -402,7 +402,7 @@ export const runRuleEngine = async (food, user) => {
       score += 4;
     }
 
-    // 3. Personalized Health Conditions Rules
+
     if (conditions.includes("diabetes") || conditions.includes("kencing manis")) {
       if (sugar > 5) {
         score -= 20;
@@ -458,18 +458,18 @@ export const runRuleEngine = async (food, user) => {
       }
     }
 
-    // Default neutral comment if list is empty
+
     if (analysis.length === 0) {
       analysis.push("• Kandungan nutrisi makanan ini berada dalam rentang seimbang.");
     }
   }
 
-  // Cap score between 10 and 100 (unless allergen detected)
+
   if (!isAllergenDetected) {
     score = Math.max(10, Math.min(100, score));
   }
 
-  // Grade translation
+
   let grade = "C";
   if (score >= 85) grade = "A";
   else if (score >= 70) grade = "B";
@@ -477,7 +477,7 @@ export const runRuleEngine = async (food, user) => {
   else if (score >= 40) grade = "D";
   else grade = "E";
 
-  // Generate customized recommendation statement based on the user's personalization profile and warnings
+
   const displayConditions = (user?.healthConditions || []).length > 0
     ? (user?.healthConditions || []).map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(", ")
     : "Umum";
@@ -572,7 +572,7 @@ const getAlternativeRecommendations = async (foodName, healthConditions = [], go
     console.error("Alternative query error:", error);
   }
   
-  // Fallbacks
+
   return ["nasi merah", "apel washington", "pepes tahu"];
 };
 
@@ -693,7 +693,7 @@ Format respon HARUS dalam JSON valid:
 `;
 
   return executeWithRotatedKey("scan", async (genAI) => {
-    // Both flash models support vision
+
     const modelName = MODELS[0] || "gemini-2.0-flash";
     console.log(`[Gemini Vision] Request started using ${modelName}`);
     const model = genAI.getGenerativeModel({ 

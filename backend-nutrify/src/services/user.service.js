@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendVerificationEmail } from "./email.service.js";
 
-// Generate JWT Token
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "30d",
@@ -14,19 +14,19 @@ const generateToken = (id) => {
 export const registerUser = async (userData) => {
   const { name, email, password } = userData;
 
-  // Check if email already exists
+
   const userExists = await User.findOne({ email });
   if (userExists) {
     if (userExists.isVerified) {
       throw new Error("Email already registered");
     }
 
-    // If the email exists but is NOT verified, we update the existing record
-    // and resend the verification email (allows user to try registering again or fix typo)
+
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const verificationToken = crypto.randomBytes(32).toString("hex");
-    const verificationTokenExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
+    const verificationTokenExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
     userExists.name = name;
     userExists.password = hashedPassword;
@@ -52,15 +52,15 @@ export const registerUser = async (userData) => {
     };
   }
 
-  // Hash password for new registration
+
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  // Generate verification token
-  const verificationToken = crypto.randomBytes(32).toString("hex");
-  const verificationTokenExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
 
-  // Create user in DB with isVerified: false
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+  const verificationTokenExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+
   const user = await User.create({
     name,
     email,
@@ -70,7 +70,7 @@ export const registerUser = async (userData) => {
     verificationTokenExpiresAt,
   });
 
-  // Send verification email and await it for Serverless compatibility (like Vercel)
+
   try {
     await sendVerificationEmail(user.email, verificationToken);
   } catch (error) {
@@ -90,18 +90,18 @@ export const registerUser = async (userData) => {
 };
 
 export const loginUser = async (email, password) => {
-  // Find user by email (using lean() for faster read-only performance)
+
   const user = await User.findOne({ email }).lean();
   if (!user) {
     throw new Error("Invalid email or password");
   }
 
-  // Check if email is verified
+
   if (!user.isVerified) {
     throw new Error("Email Anda belum diverifikasi. Silakan periksa inbox/spam email Anda.");
   }
 
-  // Compare password
+
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     throw new Error("Invalid email or password");
@@ -130,7 +130,7 @@ export const getUserById = async (id) => {
 export const updateUser = async (id, userData) => {
   const payload = { ...userData };
 
-  // Normalize multi-select fields so empty selections overwrite old values.
+
   const arrayFields = [
     "healthConditions",
     "allergies",
@@ -143,12 +143,12 @@ export const updateUser = async (id, userData) => {
     }
   }
 
-  // Enforce max 2 health conditions limit
+
   if (payload.healthConditions && payload.healthConditions.length > 2) {
     throw new Error("Maksimal penyakit/kondisi kesehatan yang dapat dipilih adalah 2.");
   }
 
-  // If updating password, hash it first
+
   if (payload.password) {
     const salt = await bcrypt.genSalt(10);
     payload.password = await bcrypt.hash(payload.password, salt);
@@ -167,11 +167,11 @@ export const deleteUser = async (id) => {
 export const googleLoginUser = async (googleData) => {
   const { name, email, profilePicture } = googleData;
 
-  // Find user by email (don't use lean() because we might need to call save())
+
   let user = await User.findOne({ email });
 
   if (!user) {
-    // Generate a secure random password for new Google users
+
     const randomPassword = Math.random().toString(36).substring(2) + Date.now().toString(36);
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(randomPassword, salt);
@@ -181,10 +181,10 @@ export const googleLoginUser = async (googleData) => {
       email,
       password: hashedPassword,
       profilePicture: profilePicture || "",
-      isVerified: true, // Google login verified email automatically
+      isVerified: true,
     });
   } else if (!user.isVerified) {
-    // If user registered manually but never verified, mark them verified since they verified ownership via Google
+
     user.isVerified = true;
     user.verificationToken = "";
     await user.save();
@@ -208,7 +208,7 @@ export const verifyEmail = async (token) => {
     throw new Error("Token verifikasi tidak valid.");
   }
 
-  // Enforce 5-minute expiration time
+
   if (user.verificationTokenExpiresAt && user.verificationTokenExpiresAt < new Date()) {
     throw new Error("Token verifikasi sudah kedaluwarsa (hanya berlaku 5 menit). Silakan lakukan registrasi ulang.");
   }

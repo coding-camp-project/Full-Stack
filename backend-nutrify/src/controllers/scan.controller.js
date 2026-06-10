@@ -6,7 +6,7 @@ import { runRuleEngine, getUnifiedLLMRecommendation, analyzeImageWithGemini, sca
 import { parseInputLocally, estimateWeightLocally } from "../services/manualScan.service.js";
 import { findBestFoodMatch, loadFoodsFromCSV } from "../services/csv.service.js";
 
-// Map food names to standard Indonesian portions/units
+
 const getServingUnit = (foodName) => {
   const name = (foodName || "").toLowerCase();
   if (name.includes("tomat")) return "iris";
@@ -33,7 +33,7 @@ const isGeminiQuotaError = (error) => {
          message.includes("resource_exhausted");
 };
 
-// Map user diseases to FastAPI strict options (returns all matching diseases)
+
 const mapDiseasesForFastAPI = (user) => {
   if (!user) return [];
   const conditions = (user.healthConditions || []).concat(user.otherConditions ? [user.otherConditions] : []).map(c => c.toLowerCase().trim());
@@ -62,13 +62,13 @@ export const suggestFood = async (req, res) => {
     const cleanQueryLower = cleanQuery.toLowerCase();
     const mlApiUrl = (process.env.ML_API_URL || "https://damassdev-nutrify-ai-api.hf.space").replace(/\/$/, "");
 
-    // 1. Search locally in Indonesian food CSV dataset first (instant)
+
     const foods = loadFoodsFromCSV();
     const localMatches = foods
       .filter((f) => f.food_name && f.food_name.toLowerCase().includes(cleanQueryLower))
       .map((f) => f.food_name);
 
-    // Sort matches: startsWith gets higher priority than includes, then shorter length first
+
     localMatches.sort((a, b) => {
       const aLower = a.toLowerCase();
       const bLower = b.toLowerCase();
@@ -81,23 +81,23 @@ export const suggestFood = async (req, res) => {
 
     let suggestions = [...localMatches];
 
-    // 2. Fetch from remote Hugging Face API with short timeout fallback
+
     try {
       const response = await axios.get(
         `${mlApiUrl}/search-food?q=${encodeURIComponent(cleanQuery)}&limit=15`,
-        { timeout: 400 } // Fail fast to keep autocomplete responsive
+        { timeout: 400 }
       );
       const data = response.data;
       const hfSuggestions = (data.candidates || []).map((c) => c.food_name);
 
-      // Merge and remove duplicates
+
       const merged = new Set([...localMatches, ...hfSuggestions]);
       suggestions = Array.from(merged);
     } catch (error) {
       console.warn("HF Space search-food failed or timed out, falling back to local CSV matches:", error.message);
     }
 
-    // Return top 15 suggestions
+
     return res.status(200).json({
       success: true,
       suggestions: suggestions.slice(0, 15),

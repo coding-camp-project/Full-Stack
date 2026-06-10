@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { auth } from "@/config/firebase"
 
-// Standalone isolated typing text component to prevent re-rendering the whole Hero section
+
 function TypingText() {
   const words = ["Nutrisi Pintar", "Hidup Lebih Sehat", "Diet Seimbang", "Gizi Ideal"]
   const [currentWordIdx, setCurrentWordIdx] = useState(0)
@@ -54,7 +54,7 @@ function Hero() {
   const navigate = useNavigate()
 
   const handleAction = () => {
-    // Mengecek apakah ada user yang sedang login
+
     const token = localStorage.getItem("userToken") || sessionStorage.getItem("userToken");
     if (auth.currentUser || token) {
       navigate("/dashboard")

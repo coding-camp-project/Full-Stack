@@ -32,11 +32,11 @@ export const generateNotifications = (user, totals, historyItems = []) => {
   const tSod = targets.targetSodium || 2000;
   const tFib = targets.targetFiber || 25;
 
-  // ────────────────────────────────────────────────────────
-  // 1. ACHIEVEMENTS (Green)
-  // ────────────────────────────────────────────────────────
+
+
+
   
-  // Calorie Target Achieved
+
   if (cCal >= tCal * 0.9 && cCal <= tCal * 1.1) {
     notifications.push({
       id: "achieve_calorie",
@@ -48,7 +48,7 @@ export const generateNotifications = (user, totals, historyItems = []) => {
     });
   }
 
-  // Protein Target Achieved
+
   if (cPro >= tPro) {
     notifications.push({
       id: "achieve_protein",
@@ -60,7 +60,7 @@ export const generateNotifications = (user, totals, historyItems = []) => {
     });
   }
 
-  // Fiber Target Achieved
+
   if (cFib >= tFib) {
     notifications.push({
       id: "achieve_fiber",
@@ -72,11 +72,11 @@ export const generateNotifications = (user, totals, historyItems = []) => {
     });
   }
 
-  // ────────────────────────────────────────────────────────
-  // 2. HEALTH ALERTS (Red / Yellow)
-  // ────────────────────────────────────────────────────────
 
-  // Hypertension / Sodium warnings
+
+
+
+
   if (conditions.includes("hipertensi") || conditions.includes("tekanan darah tinggi") || conditions.includes("tensi")) {
     if (cSod > tSod) {
       notifications.push({
@@ -108,7 +108,7 @@ export const generateNotifications = (user, totals, historyItems = []) => {
     });
   }
 
-  // Diabetes / Sugar & Carbs warnings
+
   if (conditions.includes("diabetes") || conditions.includes("kencing manis") || conditions.includes("gula")) {
     if (cSug > tSug) {
       notifications.push({
@@ -142,7 +142,7 @@ export const generateNotifications = (user, totals, historyItems = []) => {
     }
   }
 
-  // Cholesterol / Obesity Fat warning
+
   if (conditions.includes("kolesterol") || conditions.includes("obesitas") || goal.includes("turun") || goal.includes("loss")) {
     if (cFat > tFat) {
       notifications.push({
@@ -156,11 +156,11 @@ export const generateNotifications = (user, totals, historyItems = []) => {
     }
   }
 
-  // ────────────────────────────────────────────────────────
-  // 3. NUTRITION PROGRESS (Yellow / Red reminders)
-  // ────────────────────────────────────────────────────────
+
+
+
   
-  // Calorie under-eating (only trigger if they logged something but are far under)
+
   if (cCal > 0 && cCal < tCal * 0.6) {
     notifications.push({
       id: "progress_calorie_under",
@@ -172,7 +172,7 @@ export const generateNotifications = (user, totals, historyItems = []) => {
     });
   }
 
-  // Protein target deficiency
+
   if (cPro > 0 && cPro < tPro * 0.6) {
     notifications.push({
       id: "progress_protein_under",
@@ -184,7 +184,7 @@ export const generateNotifications = (user, totals, historyItems = []) => {
     });
   }
 
-  // Fiber target deficiency
+
   if (cFib > 0 && cFib < tFib * 0.6) {
     notifications.push({
       id: "progress_fiber_under",
@@ -196,11 +196,11 @@ export const generateNotifications = (user, totals, historyItems = []) => {
     });
   }
 
-  // ────────────────────────────────────────────────────────
-  // 4. DAILY REMINDERS (Blue/Yellow general status)
-  // ────────────────────────────────────────────────────────
 
-  // No Scan Today Alert
+
+
+
+
   const loggedToday = historyItems.some(item => {
     const itemDate = new Date(item.date || item.createdAt);
     return itemDate.toDateString() === new Date().toDateString();
@@ -217,7 +217,7 @@ export const generateNotifications = (user, totals, historyItems = []) => {
     });
   }
 
-  // Water Hydration reminder
+
   notifications.push({
     id: "reminder_water",
     title: "Jangan Lupa Minum Air Putih 💧",

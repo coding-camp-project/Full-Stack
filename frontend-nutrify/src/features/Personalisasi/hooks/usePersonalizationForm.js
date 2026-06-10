@@ -1,9 +1,9 @@
-// ─────────────────────────────────────────────
-//  usePersonalizationForm
-//  Custom hook – semua state & logic form
-//  dipusatkan di sini. PersonalizationPage
-//  cukup call hook ini dan pass ke komponen.
-// ─────────────────────────────────────────────
+
+
+
+
+
+
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -18,15 +18,15 @@ const normalizeArray = (value) => (Array.isArray(value) ? value : []);
 
 export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
   const navigate = useNavigate();
-  // ── Core form state ──────────────────────────
+
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
 
-  // ── UI state ─────────────────────────────────
+
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [message, setMessage] = useState({ type: "", text: "" });
 
-  // Auto-dismiss all messages after 4 seconds
+
   useEffect(() => {
     if (message.text) {
       const timer = setTimeout(() => {
@@ -36,13 +36,13 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
     }
   }, [message.text]);
 
-  // ── Tag-selector dropdown states ─────────────
+
   const [allergySearch, setAllergySearch] = useState("");
   const [showAllergies, setShowAllergies] = useState(false);
   const [restrictionSearch, setRestrictionSearch] = useState("");
   const [showRestrictions, setShowRestrictions] = useState(false);
 
-  // ── Load data from backend on mount ──────────
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -74,7 +74,7 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
     load();
   }, []);
 
-  // ── Utilities ────────────────────────────────
+
   const calculateAge = (birthDateString) => {
     if (!birthDateString) return "-";
     const birthDate = new Date(birthDateString);
@@ -91,7 +91,7 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
     return `${age} Tahun`;
   };
 
-  // ── Handlers ─────────────────────────────────
+
 
   /** Generic text / select / textarea handler */
   const handleChange = (e) => {
@@ -101,7 +101,7 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
 
   /** Health condition checkbox dengan logika "Tidak Ada" exclusive dan batas maksimal 2 */
   const handleConditionChange = (condition) => {
-    // Validasi batasan maksimal 2 penyakit di luar updater state (React pure best practice)
+
     if (condition !== "Tidak Ada" && !formData.healthConditions.includes(condition)) {
       const activeConditions = formData.healthConditions.filter((c) => c !== "Tidak Ada");
       if (activeConditions.length >= 2) {
@@ -228,8 +228,8 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
     if (window.confirm("Apakah Anda yakin ingin menyetel ulang semua isian? Data yang dihapus tidak dapat dikembalikan.")) {
       const resetData = {
         ...DEFAULT_FORM_DATA,
-        name: formData.name, // Pertahankan nama
-        profilePicture: formData.profilePicture, // Pertahankan foto profil
+        name: formData.name,
+        profilePicture: formData.profilePicture,
       };
 
       setLoading(true);
@@ -250,7 +250,7 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
   };
 
   return {
-    // state
+
     formData,
     loading,
     fetching,
@@ -264,7 +264,7 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
     setRestrictionSearch,
     showRestrictions,
     setShowRestrictions,
-    // handlers
+
     handleChange,
     handleConditionChange,
     handleRemoveAllergy,
@@ -274,7 +274,7 @@ export function usePersonalizationForm({ isOnboardingMode = false } = {}) {
     handlePreferenceChange,
     handleSubmit,
     handleReset,
-    // utils
+
     calculateAge,
   };
 }

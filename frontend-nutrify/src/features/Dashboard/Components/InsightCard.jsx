@@ -12,7 +12,7 @@ function InsightCard({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Calculate target needs based on user personalization
+
   const user = getUserData();
   const targets = calculateDailyNeeds(user);
   const targetCalories = targets.targetCalories;
@@ -20,7 +20,7 @@ function InsightCard({
   const targetCarbs = targets.targetCarbs;
   const targetFat = targets.targetFat;
 
-  // Generate dynamic nutritional insight message
+
   let insightText = "";
   if (totalProtein > 0 && totalProtein < targetProtein * 0.6) {
     insightText = `Asupan protein Anda masih di bawah target hari ini (${totalProtein}g / ${targetProtein}g). Coba tambahkan 1-2 potong dada ayam (50g per potong) atau 2 butir telur rebus pada menu makan berikutnya untuk memenuhi kebutuhan protein harian Anda.`;

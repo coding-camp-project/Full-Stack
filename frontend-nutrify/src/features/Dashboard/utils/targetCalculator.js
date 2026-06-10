@@ -23,7 +23,7 @@ export const calculateDailyNeeds = (user) => {
   const height = parseFloat(user?.height) || 170;
   const gender = (user?.gender || "pria").toLowerCase();
   
-  // Mifflin-St Jeor Formula
+
   let bmr = 0;
   if (gender === "pria" || gender === "laki-laki" || gender === "laki") {
     bmr = 10 * weight + 6.25 * height - 5 * age + 5;
@@ -31,7 +31,7 @@ export const calculateDailyNeeds = (user) => {
     bmr = 10 * weight + 6.25 * height - 5 * age - 161;
   }
 
-  // Activity Factor
+
   const activityLevel = (user?.activityLevel || "moderate").toLowerCase();
   let activityFactor = 1.55;
   if (activityLevel === "sedentary" || activityLevel === "sangat jarang" || activityLevel === "sangat_jarang") {
@@ -48,7 +48,7 @@ export const calculateDailyNeeds = (user) => {
 
   const tdee = bmr * activityFactor;
   
-  // Adjust based on goal
+
   const goal = (user?.primaryGoal || "menjaga berat badan").toLowerCase();
   let targetCalories = tdee;
   
@@ -66,63 +66,63 @@ export const calculateDailyNeeds = (user) => {
     hasCalorieSurplus = true;
   }
 
-  // Ensure safe minimum
+
   targetCalories = Math.max(targetCalories, 1200);
 
-  // Health Conditions
+
   const conditions = (user?.healthConditions || []).map(c => c.toLowerCase());
   
-  // Default percentages
+
   let carbPct = 0.55;
   let proteinPct = 0.20;
   let fatPct = 0.25;
   
-  let maxSugar = 50; // default max sugar 50g
-  let maxSodium = 2000; // default max sodium 2000mg
-  let targetFiber = 25; // default target fiber 25g
+  let maxSugar = 50;
+  let maxSodium = 2000;
+  let targetFiber = 25;
 
-  // Smart condition adjustments
+
   
-  // 1. Diabetes / Kencing Manis
+
   if (conditions.includes("diabetes") || conditions.includes("kencing manis") || conditions.includes("gula")) {
-    carbPct = 0.45; // Controlled carbohydrate
-    maxSugar = 25;  // Lower sugar target
-    proteinPct = 0.25; // Slightly higher protein to compensate
-    fatPct = 0.30;     // Healthy fat to compensate
+    carbPct = 0.45;
+    maxSugar = 25;
+    proteinPct = 0.25;
+    fatPct = 0.30;
   }
 
-  // 2. Hipertensi / Tekanan Darah Tinggi
+
   if (conditions.includes("hipertensi") || conditions.includes("tekanan darah tinggi") || conditions.includes("tensi")) {
-    maxSodium = 1500; // Lower sodium target
+    maxSodium = 1500;
   }
 
-  // 3. Obesitas / Berat Badan Lebih
+
   if (conditions.includes("obesitas") || conditions.includes("overweight") || conditions.includes("gemuk")) {
     if (!hasCalorieDeficit) {
       targetCalories = Math.max(targetCalories - 500, 1200);
       hasCalorieDeficit = true;
     }
-    fatPct = Math.min(fatPct, 0.20); // Lower fat target
+    fatPct = Math.min(fatPct, 0.20);
   }
 
-  // 4. Kolesterol
+
   if (conditions.includes("kolesterol") || conditions.includes("hypercholesterolemia")) {
-    fatPct = Math.min(fatPct, 0.20); // Lower fat target
+    fatPct = Math.min(fatPct, 0.20);
   }
 
-  // Goal modifications
+
   if (goal.includes("otot") || goal.includes("muscle") || goal.includes("bangun")) {
-    proteinPct = 0.30; // Higher protein target
+    proteinPct = 0.30;
     carbPct = 0.45;
     fatPct = 0.25;
   }
   
   if (goal.includes("turun") || goal.includes("loss")) {
-    maxSugar = Math.min(maxSugar, 30); // Lower sugar for weight loss
-    fatPct = Math.min(fatPct, 0.20);   // Lower fat for weight loss
+    maxSugar = Math.min(maxSugar, 30);
+    fatPct = Math.min(fatPct, 0.20);
   }
 
-  // Normalize percentages to sum to 100% (1.0)
+
   const totalPct = carbPct + proteinPct + fatPct;
   carbPct = carbPct / totalPct;
   proteinPct = proteinPct / totalPct;

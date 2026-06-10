@@ -32,7 +32,7 @@ function DashboardNavbar({ toggleSidebar }) {
     navigate("/personalisasi", { state: { mode: "edit" } });
   };
 
-  // close dropdown when click outside
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (

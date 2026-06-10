@@ -9,6 +9,7 @@ import {
   Sprout,
   TestTube2,
   RefreshCcw,
+  ArrowLeft,
 } from "lucide-react";
 
 import healthyFoodImage from "../../../assets/healthy-food-img.png";
@@ -18,7 +19,7 @@ import NutritionCard from "../components/NutritionCard";
 import RecommendationCard from "../components/RecommendationCard";
 import ResultHeader from "../components/ResultHeader";
 
-function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
+function ScanResultSection({ imagePreview, result, showRescanButton = true, onBack }) {
   if (!result || !result.nutrition) return null;
 
   const { best_prediction, nutrition, recommendation, warning, healthAnalysis } = result;
@@ -75,7 +76,7 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
     },
   ];
 
-  // We can derive some basic health items from nutrition if we want, or from recommendation text
+
   const dynamicHealthItems = [];
   if (nutrition.sodium > 400) {
     dynamicHealthItems.push({
@@ -142,19 +143,32 @@ function ScanResultSection({ imagePreview, result, showRescanButton = true }) {
 
   return (
     <div className="w-full min-w-0 max-w-full px-3 py-4 sm:px-4 sm:py-6 lg:px-6 lg:py-8 lg:max-w-[1360px] lg:mx-auto">
-      <section className="min-w-0 overflow-hidden rounded-2xl border border-[#D8D8D8] bg-white p-3 shadow-sm sm:p-5 lg:p-6">
+      <section className="min-w-0 overflow-hidden rounded-2xl border border-[#103020]/15 bg-white p-3 shadow-sm sm:p-5 lg:p-6">
 
-        {/* Rescan button */}
-        {showRescanButton && (
-          <div className="mb-3 flex justify-end sm:mb-4">
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              className="flex h-9 items-center justify-center gap-1.5 rounded-xl bg-[#1E7F4E] px-3 text-[12px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#16663E] sm:h-10 sm:gap-2 sm:px-4 sm:text-[14px]"
-            >
-              <RefreshCcw size={14} className="sm:size-4" />
-              Scan Ulang
-            </button>
+        {/* Action Buttons Row */}
+        {(onBack || showRescanButton) && (
+          <div className="mb-4 flex items-center justify-between gap-3">
+            {onBack ? (
+              <button
+                type="button"
+                onClick={onBack}
+                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-[#103020]/15 bg-white px-3 text-[12px] font-bold text-slate-700 shadow-xs transition-all duration-200 hover:bg-slate-50 hover:text-slate-900 active:scale-95 sm:h-10 sm:gap-2 sm:px-4 sm:text-[14px]"
+              >
+                <ArrowLeft size={16} />
+                Kembali ke Riwayat
+              </button>
+            ) : <div />}
+            
+            {showRescanButton && (
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="flex h-9 items-center justify-center gap-1.5 rounded-xl bg-[#1E7F4E] px-3 text-[12px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#16663E] sm:h-10 sm:gap-2 sm:px-4 sm:text-[14px]"
+              >
+                <RefreshCcw size={14} className="sm:size-4" />
+                Scan Ulang
+              </button>
+            )}
           </div>
         )}
 

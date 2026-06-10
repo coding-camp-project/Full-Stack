@@ -7,7 +7,7 @@ const isValidString = (value) => typeof value === "string" && value.trim().lengt
 export const sendChatMessage = async (req, res) => {
   try {
     const { message, conversationId } = req.body;
-    const userId = req.user._id; // Set securely from JWT token
+    const userId = req.user._id;
 
     if (!isValidString(message)) {
       return res.status(400).json({
@@ -40,7 +40,7 @@ export const sendChatMessage = async (req, res) => {
 export const getChatHistory = async (req, res) => {
   try {
     const { conversationId } = req.params;
-    const userId = req.user._id; // Securely verify ownership
+    const userId = req.user._id;
 
     if (!isValidString(conversationId)) {
       return res.status(400).json({

@@ -11,9 +11,9 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-45HGSDX2KM"
 };
 
-// Inisialisasi Firebase
+
 const app = initializeApp(firebaseConfig);
 
-// Inisialisasi Auth & Google Provider
+
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();

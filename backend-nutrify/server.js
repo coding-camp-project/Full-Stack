@@ -16,7 +16,7 @@ if (!process.env.MONGO_URI) {
   throw new Error("MONGO_URI is missing");
 }
 
-// Connect to MongoDB
+
 connectDB();
 
 const PORT = process.env.PORT || 5000;

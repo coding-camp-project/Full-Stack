@@ -22,15 +22,15 @@ export const executeWithRotatedKey = async (type, callback) => {
   }
 
   let lastError = null;
-  // Create a copy of keys to track tried keys
+
   const remainingKeys = [...keys];
 
   while (remainingKeys.length > 0) {
-    // Pick a random key from remaining to distribute load
+
     const randomIndex = Math.floor(Math.random() * remainingKeys.length);
     const key = remainingKeys[randomIndex];
     
-    // Remove the selected key so we don't retry it
+
     remainingKeys.splice(randomIndex, 1);
 
     try {

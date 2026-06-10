@@ -6,7 +6,7 @@ import ScanUploadSection from "../sections/ScanUploadSection";
 import PortionGuideModal from "../components/PortionGuideModal";
 import { getUserData } from "@/utils/userSession";
 
-// Compress image on the client-side to speed up upload & processing
+
 const compressImage = (file, maxWidth = 500, maxHeight = 500, quality = 0.6) => {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -142,7 +142,7 @@ function ScanPage() {
       setScanResult(data);
       setShowResult(true);
 
-      // Simpan ke riwayat lokal
+
       try {
         const userData = getUserData();
         const userId = userData?.id || "guest";
@@ -169,7 +169,7 @@ function ScanPage() {
         history.unshift(newHistoryItem);
         localStorage.setItem(localHistoryKey, JSON.stringify(history));
         
-        // Dispatch storage event to immediately update dashboard totals
+
         window.dispatchEvent(new Event("storage"));
       } catch (err) {
         console.error("Gagal menyimpan ke riwayat lokal", err);
