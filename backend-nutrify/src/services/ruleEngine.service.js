@@ -584,23 +584,40 @@ export const scanFoodWithGeminiDirectly = async (imageBuffer, mimeType, manualIn
   const goal = user?.primaryGoal || "";
   const otherConditions = user?.otherConditions || "";
 
-  let inputDetails = "";
-  if (manualInput && manualInput.trim()) {
-    inputDetails = `\n- Tambahan informasi/komposisi dari pengguna: "${manualInput}"`;
+  let analysisType = "";
+  let step1Instruction = "";
+  let step2Instruction = "";
+  let step3Instruction = "";
+
+  if (imageBuffer && manualInput && manualInput.trim()) {
+    analysisType = "gambar makanan DAN tambahan informasi teks (gabungan/mix)";
+    step1Instruction = `Identifikasi nama makanan yang ada di gambar DAN gabungkan dengan informasi/komposisi tambahan dari teks pengguna: "${manualInput}". Buat nama makanan gabungan yang representatif (contoh jika gambar adalah Nasi Goreng dan tambahan informasi adalah telur mata sapi, buat nama makanan gabungan seperti "Nasi Goreng dengan Telur Mata Sapi").`;
+    step2Instruction = `Estimasikan berat porsi standar total/gabungan (dalam gram) dan satuan porsi gabungan tersebut (contoh: "porsi", "butir", "potong", "mangkuk", "gelas").`;
+    step3Instruction = `Estimasikan nilai nutrisi total/gabungan per porsi tersebut (Kalori dalam kkal, Protein dalam gram, Lemak dalam gram, Karbohidrat dalam gram, Gula dalam gram, Sodium dalam mg, Serat dalam gram) dengan menjumlahkan/mengakumulasikan nutrisi dari makanan yang teridentifikasi di gambar dan informasi/komposisi tambahan di teks pengguna.`;
+  } else if (imageBuffer) {
+    analysisType = "gambar makanan";
+    step1Instruction = `Identifikasi nama makanan yang ada di gambar (gunakan nama dalam Bahasa Indonesia yang umum dan ringkas, contoh: "Nasi Goreng Ayam", "Sate Madura", "Pecel Lele").`;
+    step2Instruction = `Estimasikan berat porsi standard (dalam gram) dan satuan porsinya (contoh: "porsi", "butir", "potong", "mangkuk", "gelas").`;
+    step3Instruction = `Estimasikan nilai nutrisi per porsi tersebut (Kalori dalam kkal, Protein dalam gram, Lemak dalam gram, Karbohidrat dalam gram, Gula dalam gram, Sodium dalam mg, Serat dalam gram).`;
+  } else {
+    analysisType = "input makanan/komposisi secara manual";
+    step1Instruction = `Identifikasi nama makanan atau bahan-bahan makanan yang ditulis oleh pengguna pada input/teks berikut: "${manualInput}". Buat nama makanan yang representatif.`;
+    step2Instruction = `Estimasikan berat porsi standard (dalam gram) dan satuan porsinya (contoh: "porsi", "butir", "potong", "mangkuk", "gelas").`;
+    step3Instruction = `Estimasikan nilai nutrisi total per porsi tersebut (Kalori dalam kkal, Protein dalam gram, Lemak dalam gram, Karbohidrat dalam gram, Gula dalam gram, Sodium dalam mg, Serat dalam gram).`;
   }
 
   const prompt = `
-Anda adalah pakar nutrisi, gizi, dan asisten kuliner AI. Analisis ${imageBuffer ? "gambar makanan" : "input makanan"} berikut secara sangat ringkas dan akurat untuk pengguna dengan profil kesehatan ini:
+Anda adalah pakar nutrisi, gizi, dan asisten kuliner AI. Analisis ${analysisType} berikut secara sangat ringkas dan akurat untuk pengguna dengan profil kesehatan ini:
 - Kondisi Kesehatan: ${conditions.join(", ")} ${otherConditions ? `(${otherConditions})` : ""}
 - Alergi: ${allergies.join(", ")}
 - Pantangan Makanan: ${restrictions.join(", ")}
 - Preferensi Makanan: ${preferences.join(", ")}
-- Target/Goal: ${goal}${inputDetails}
+- Target/Goal: ${goal}${imageBuffer && manualInput && manualInput.trim() ? `\n- Tambahan informasi/komposisi teks dari pengguna: "${manualInput}"` : ""}
 
 Langkah Analisis Anda:
-1. Identifikasi nama makanan yang ada di ${imageBuffer ? "gambar" : "input"} (gunakan nama dalam Bahasa Indonesia yang umum dan ringkas, contoh: "Nasi Goreng Ayam", "Sate Madura", "Pecel Lele").
-2. Estimasikan berat porsi standard (dalam gram) dan satuan porsinya (contoh: "porsi", "butir", "potong", "mangkuk", "gelas").
-3. Estimasikan nilai nutrisi per porsi tersebut (Kalori dalam kkal, Protein dalam gram, Lemak dalam gram, Karbohidrat dalam gram, Gula dalam gram, Sodium dalam mg, Serat dalam gram).
+1. ${step1Instruction}
+2. ${step2Instruction}
+3. ${step3Instruction}
 4. Hitung skor kesehatan (healthScore) antara 10 - 100 berdasarkan kecocokan nutrisi dengan kondisi kesehatan pengguna, berikan grade (healthGrade) A/B/C/D/E.
 5. Berikan analisis kesehatan (healthAnalysis) berupa array berisi 2-3 penjelasan/poin deskriptif yang ramah dan mendalam dalam bahasa Indonesia, menjelaskan dampak nutrisi makanan ini terhadap tubuh dan kondisi kesehatan pengguna secara informatif.
 6. Tentukan warning berupa pesan peringatan singkat (maksimal 7 kata) jika makanan mengandung bahan alergen atau perlu dibatasi untuk kondisi kesehatan pengguna. Jika aman, kosongkan "".

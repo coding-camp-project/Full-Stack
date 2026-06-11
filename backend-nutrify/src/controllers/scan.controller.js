@@ -196,41 +196,57 @@ export const scanFood = async (req, res) => {
       let isSuccess = fastapiResult.success || fastapiResult.sucess || fastapiResult.succes === true;
       const hasManualInput = localManualItems.length > 0;
 
-      let nutrition = fastapiResult.grand_total_nutrition || fastapiResult.nutrition || {};
+      let nutrition = fastapiResult.grand_total_nutrition || fastapiResult.nutrition || { calories: 0, protein: 0, fat: 0, carbohydrates: 0, sugar: 0, sodium: 0, fiber: 0 };
       let foodNamesList = [];
 
-      if (!isSuccess && req.file) {
-        console.log("FastAPI image analysis failed, attempting Gemini Vision fallback...");
-        try {
-          const geminiVisionResult = await analyzeImageWithGemini(req.file.buffer, req.file.mimetype);
-          if (geminiVisionResult && geminiVisionResult.food_name) {
-            isSuccess = true;
-            foodNamesList.push(geminiVisionResult.food_name);
-            nutrition = geminiVisionResult.nutrition;
-          }
-        } catch (geminiError) {
-          console.error("Gemini Vision fallback also failed:", geminiError.message);
-        }
-      }
+      if (!isSuccess) {
+        let hasImageResult = false;
+        let imageNutrition = { calories: 0, protein: 0, fat: 0, carbohydrates: 0, sugar: 0, sodium: 0, fiber: 0 };
 
-      if (!isSuccess && hasManualInput) {
-         isSuccess = true;
-         let totalNutrition = { calories: 0, protein: 0, fat: 0, carbohydrates: 0, sugar: 0, sodium: 0, fiber: 0 };
-         localManualItems.forEach(item => {
-            foodNamesList.push(item.food_name);
-            const match = findBestFoodMatch(item.food_name);
-            if (match) {
-               const factor = item.estimated_weight_g / 100;
-               totalNutrition.calories += (match.calories || 0) * factor;
-               totalNutrition.protein += (match.protein || 0) * factor;
-               totalNutrition.fat += (match.fat || 0) * factor;
-               totalNutrition.carbohydrates += (match.carbohydrates || 0) * factor;
-               totalNutrition.sugar += (match.sugar || 0) * factor;
-               totalNutrition.sodium += (match.sodium || 0) * factor;
-               totalNutrition.fiber += (match.fiber || 0) * factor;
+        if (req.file) {
+          console.log("FastAPI image analysis failed, attempting Gemini Vision fallback...");
+          try {
+            const geminiVisionResult = await analyzeImageWithGemini(req.file.buffer, req.file.mimetype);
+            if (geminiVisionResult && geminiVisionResult.food_name) {
+              hasImageResult = true;
+              foodNamesList.push(geminiVisionResult.food_name);
+              imageNutrition = {
+                calories: geminiVisionResult.nutrition?.calories || 0,
+                protein: geminiVisionResult.nutrition?.protein || 0,
+                fat: geminiVisionResult.nutrition?.fat || 0,
+                carbohydrates: geminiVisionResult.nutrition?.carbohydrates || 0,
+                sugar: geminiVisionResult.nutrition?.sugar || 0,
+                sodium: geminiVisionResult.nutrition?.sodium || 0,
+                fiber: geminiVisionResult.nutrition?.fiber || 0,
+              };
             }
-         });
-         nutrition = totalNutrition;
+          } catch (geminiError) {
+            console.error("Gemini Vision fallback also failed:", geminiError.message);
+          }
+        }
+
+        if (hasImageResult || hasManualInput) {
+          isSuccess = true;
+          let totalNutrition = { ...imageNutrition };
+
+          if (hasManualInput) {
+            localManualItems.forEach(item => {
+              foodNamesList.push(item.food_name);
+              const match = findBestFoodMatch(item.food_name);
+              if (match) {
+                const factor = item.estimated_weight_g / 100;
+                totalNutrition.calories += (match.calories || 0) * factor;
+                totalNutrition.protein += (match.protein || 0) * factor;
+                totalNutrition.fat += (match.fat || 0) * factor;
+                totalNutrition.carbohydrates += (match.carbohydrates || 0) * factor;
+                totalNutrition.sugar += (match.sugar || 0) * factor;
+                totalNutrition.sodium += (match.sodium || 0) * factor;
+                totalNutrition.fiber += (match.fiber || 0) * factor;
+              }
+            });
+          }
+          nutrition = totalNutrition;
+        }
       }
 
       if (!isSuccess) {
